@@ -16,7 +16,7 @@ let geo = new THREE.BoxGeometry();
 let mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
 let cube = new THREE.Mesh(geo,mat);
 
-var controls = new THREE.OrbitControls( camera, renderer.domElement );
+// var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 // camera.rotation.y = 1.6;
 camera.rotation.x = -.14;
@@ -47,6 +47,9 @@ window.glb;
 let collision = [];
 
 
+let jumping = false
+	, jump_time = 0;
+
 /**
  * LOAD SCENE
  */
@@ -70,14 +73,14 @@ loader.load( '/assets/env1.glb', function ( glb ) {
 
 
 let animations = {
-	IDLE: 'Idle',
-	JUMP: 'Jump',
-	LEFT: 'Left',
-	RIGHT: 'Right',
-	PUSH: 'push'
+	Ollie: 'Ollie',
+	Heelflip: 'Heelflip',
+	TurnLeft: 'TurnLeft',
+	TurnRight: 'TurnRight',
+	Push: 'Push'
 }
 
-let current_animation = animations.IDLE;
+let current_animation = animations.Push;
 
 /**
  * LOAD AVATAR
@@ -95,24 +98,25 @@ function getAction(action) {
 				return boy_mixer.clipAction(boy_clips[j]);
 }
 
-loader.load( '/assets/boy.glb', function ( glb ) {
+loader.load( '/assets/bSkater_CompleteSet_RC1.gltf', function ( glb ) {
 	scene.add( glb.scene );
 	avatar = glb.scene;
 
 	console.log('loaded!!',glb)
 
-	glb.scene.scale.set( .34, .34, .34 );			   
+
+	glb.scene.scale.set( .012, .012, .012 );			   
 	glb.scene.position.x = 0;				    
     glb.scene.position.y = -1;				    
 	glb.scene.position.z = .1;				    
 	
-	// glb.scene.rotation.y = -1.6;
+	glb.scene.rotation.y = -3.14;
 	avatar = glb.scene;
 
-	// window.avatar = glb;
+	// // window.avatar = glb;
 	boy_clips = glb.animations;
 
-	// console.log('the clips',boy_clips)
+	// // console.log('the clips',boy_clips)
 	boy_mixer = new THREE.AnimationMixer( glb.scene );
 
 
@@ -123,60 +127,15 @@ loader.load( '/assets/boy.glb', function ( glb ) {
 		action.setEffectiveTimeScale( 1 );
 		action.setEffectiveWeight( clip.name.toLowerCase() === 'idle' ? 1 : 0 );
 
-		// console.log('playing', action)
+		console.log('playing', action)
 		action.play()
 	})
-	// getAction(current_animation).play()
+	getAction(current_animation).play()
 
 }, undefined, err => {
 	console.error('Error loading avatar glb',err);
 });
 
-/**
- * LOAD BOARD
- */
-let board, board_clips, board_mixer;
-
-function getBoardAction(action) {
-	console.log('getting', action)
-	let clip;
-	if(board_clips)
-		for(let j = 0; j < board_clips.length; j++)
-			if(board_clips[j].name !== action)
-				continue;
-			else
-				return board_mixer.clipAction(board_clips[j]);
-}
-
-loader.load( '/assets/board.glb', function ( glb ) {
-	scene.add( glb.scene );
-	avatar = glb.scene;
-
-	console.log('loaded!!',glb)
-
-	glb.scene.scale.set( .3, .3, .3 );			   
-	glb.scene.position.x = 0;				    
-    glb.scene.position.y = -1;				    
-	glb.scene.position.z = .1;				    
-	
-	glb.scene.rotation.y = -1.6;
-	board = glb.scene;
-
-	board_clips = glb.animations;
-	console.log('board_clips', board_clips)
-
-	board_mixer = new THREE.AnimationMixer( glb.scene );
-
-	let action = getBoardAction('jump');
-	action.play()
-	// board_clips.forEach(clip => {
-	// 	let action = getBoardAction(clip.name)
-	// 	console.log('playing', action)
-	// 	action.play()
-	// })
-}, undefined, err => {
-	console.error('Error loading avatar glb',err);
-});
 
 let val = 0.01;
 
@@ -213,8 +172,6 @@ function render() {
 
 	if(boy_mixer)
 		boy_mixer.update(.025)
-	if(board_mixer)
-		board_mixer.update(.025)
 
 	if(window.glb)
 		window.glb.scene.position.x += .4
@@ -258,9 +215,6 @@ let camera_positions = {
 	'MIDDLE': .1,
 	'LEFT': .1 - 1.2
 }
-
-let jumping = false
-	, jump_time = 0;
 
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
