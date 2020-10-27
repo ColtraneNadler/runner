@@ -149,6 +149,7 @@ function clearScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			envController.Reset();
+			stopAllTweens();
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -301,7 +302,7 @@ function handleTouchMove(evt) {
  * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
  */
 function movePlayer(dir) {
-	let startAction, endAction;
+	if(currentScene != SCENE.GAMEPLAY) return;
 	switch (dir) {
 		case 'UP':
 			if (jumping)
@@ -332,20 +333,20 @@ function movePlayer(dir) {
 	}
 
 	// ANIMATE
-	if (avatar_tween)
-		avatar_tween.stop();
-
 	avatar_tween = new TWEEN(avatar.position);
 	avatar_tween.to({ x: lane_positions[current_lane] }, 240);
 	avatar_tween.start();
 
-
-	if (camera_tween)
-		camera_tween.stop();
-
 	camera_tween = new TWEEN(camera.position);
 	camera_tween.to({ x: camera_positions[current_lane] }, 240);
 	camera_tween.start();
+}
+
+function stopAllTweens() {
+	if (avatar_tween)
+		avatar_tween.stop();
+	if (camera_tween)
+		camera_tween.stop();
 }
 
 function playerMovementUpdate(dt) {
