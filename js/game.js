@@ -199,13 +199,21 @@ function updateForScene(scene) {
 	animationUpdate(dt);
 }
 
+//Keep track of FPS
+var stats = new Stats();
+stats.showPanel( 0 ); 
+console.log(stats.domElement)
+document.getElementById('stats').appendChild( stats.domElement );
+
 /**
  * RENDER
  */
 function render() {
 	requestAnimationFrame(render);
+	stats.begin();
 	renderer.render(scene, camera);
 	updateForScene(currentScene)
+	stats.end();
 }
 render();
 

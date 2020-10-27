@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 * {
 	padding: 0;
 	margin: 0;
@@ -45,15 +44,27 @@ button:hover {
 	background: #fff;
 }
 
+#stats {
+	position: absolute;
+	top: 0;
+}
+
+#startGame {
+	z-index: 100000;
+	bottom: 50px;
+	font-size: 20px;
+	position: fixed;
+	width: 100vw;
+	text-align: center;
+}
+
 @media screen and (max-width: 700px) {
 	#content {
 		margin-top: -6rem;
 	}
-
 	#content img {
 		max-width: 100%;
 	}
-
 	button {
 		font-size: 16px;
 		border-width: .3rem;
