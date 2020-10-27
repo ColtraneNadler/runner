@@ -1,6 +1,6 @@
-let scoreP = document.getElementById('score_p')
-	, score = document.getElementById('score')
-	, wrapper = document.getElementById('wrapper');
+let score = document.getElementById('score')
+let startButton = document.getElementById('startGame')
+let wrapper = document.getElementById('wrapper');
 
 /**
  * SETUP THREE.JS SCENE
@@ -11,6 +11,7 @@ scene.fog = new THREE.FogExp2('#cce6ff', .02);
 renderer = new THREE.WebGLRenderer({ alpha: true });//renderer with transparent backdrop
 renderer.setClearColor(0xcce6ff, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
 let geo = new THREE.BoxGeometry();
 let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
@@ -94,9 +95,6 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 	avatar = glb.scene;
 
 	glb.scene.scale.set(.01, .01, .01);
-	glb.scene.position.x = 0;
-	glb.scene.position.y = -1;
-	glb.scene.position.z = .1;
 	glb.scene.rotation.y = -3.14;
 	avatar = glb.scene;
 
@@ -116,9 +114,90 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 	boy_actions[animations.PUSH].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.PUSH].clampWhenFinished = false;
 	current_animation = animations.PUSH;
+
+	setupForScene(currentScene);
 }, undefined, err => {
 	console.error('Error loading avatar glb', err);
 });
+
+/**
+ * GAME STATE
+ */
+SCENE = {
+	OUTFIT: 0,
+	GAMEPLAY: 1,
+	GAMEOVER: 2
+}
+let currentScene = SCENE.OUTFIT;
+let currentScore = 0;
+startButton.addEventListener("click", () => {
+	clearScene(SCENE.OUTFIT);
+	currentScene = SCENE.GAMEPLAY;
+	setupForScene(currentScene);
+})
+
+function setupForScene(scene) {
+	switch (scene) {
+		case SCENE.OUTFIT: {
+			avatar.position.set(200, 0, 0)
+			camera.position.set(200, 1.4, 4.6)
+			score.innerHTML = "outfit select"
+			startButton.hidden = false;
+			break;
+		}
+		case SCENE.GAMEPLAY: {
+			avatar.position.set(0, -1, .1)
+			camera.position.set(0, 1.4, 4.6)
+			currentScore = 0;
+			score.innerHTML = "score: " + Math.floor(currentScore);
+			break;
+		}
+		case SCENE.GAMEOVER: {
+			score.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
+			avatar.position.set(300, 0, 0)
+			camera.position.set(300, 1.4, 4.6)
+			break;
+		}
+	}
+}
+function clearScene(scene) {
+	switch (scene) {
+		case SCENE.OUTFIT: {
+			startButton.hidden = true;
+			break;
+		}
+		case SCENE.GAMEPLAY: {
+			break;
+		}
+		case SCENE.GAMEOVER: {
+			break;
+		}
+	}
+}
+
+function updateForScene(scene) {
+	let dt = 0.025
+	switch (scene) {
+		case SCENE.OUTFIT: {
+			break;
+		}
+		case SCENE.GAMEPLAY: {
+			//TODO: sync w/ framerate
+
+			playerMovementUpdate(dt);
+			sceneTileUpdate(3.0 * dt);
+
+			currentScore += dt;
+			score.innerHTML = "score: " + Math.floor(currentScore);
+
+			break;
+		}
+		case SCENE.GAMEOVER: {
+			break;
+		}
+	}
+	animationUpdate(dt);
+}
 
 /**
  * RENDER
@@ -126,33 +205,9 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 function render() {
 	requestAnimationFrame(render);
 	renderer.render(scene, camera);
-
-	//TODO: sync w/ framerate
-	let dt = 0.025
-
-	animationUpdate(dt);
-	playerMovementUpdate(dt);
-	sceneTileUpdate(3.0*dt);
+	updateForScene(currentScene)
 }
-
-/**
- * START GAME
- */
-function startGame() {
-
-	setInterval(() => {
-		score.innerHTML = parseInt(score.innerHTML) + 1;
-	}, 750)
-
-	// wrapper.remove()
-	score_p.hidden = false;
-	// wrapper.hidden = true;
-	document.body.appendChild(renderer.domElement);
-	render();
-}
-
-startGame()
-
+render();
 
 /**
  * MOVEMENT CONFIG
@@ -187,8 +242,6 @@ let movementParams = {
  * KEYBINDING CONTROLS
  */
 window.addEventListener('keydown', e => {
-	let pos;
-	// to do animate position
 	switch (e.keyCode) {
 		case 38:
 			movePlayer('UP');
@@ -199,6 +252,16 @@ window.addEventListener('keydown', e => {
 		case 39:
 			movePlayer('RIGHT')
 			break;
+		case 32:
+			if (currentScene == SCENE.GAMEOVER) {
+				clearScene(currentScene)
+				currentScene = SCENE.OUTFIT
+				setupForScene(currentScene)
+			} else if (currentScene == SCENE.GAMEPLAY) {
+				clearScene(currentScene)
+				currentScene = SCENE.GAMEOVER
+				setupForScene(currentScene)
+			}
 	}
 })
 
@@ -329,10 +392,8 @@ function animationUpdate(dt) {
 function sceneTileUpdate(dt) {
 	for (let i = 0; i < groundTiles.length; i++) {
 		groundTiles[i].position.z += dt;
-		if(groundTiles[i].position.z > tileWidth)
-		{
-			groundTiles[i].position.z = -(numTiles-1) * tileWidth;
-			console.log("resetting")
+		if (groundTiles[i].position.z > tileWidth) {
+			groundTiles[i].position.z = -(numTiles - 1) * tileWidth;
 		}
 	}
 }
