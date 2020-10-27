@@ -6,15 +6,15 @@ let scoreP = document.getElementById('score_p')
  * SETUP THREE.JS SCENE
  */
 let scene = new THREE.Scene();
-let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-scene.fog = new THREE.FogExp2( '#cce6ff', .005 );
-renderer = new THREE.WebGLRenderer({alpha:true});//renderer with transparent backdrop
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene.fog = new THREE.FogExp2('#cce6ff', .02);
+renderer = new THREE.WebGLRenderer({ alpha: true });//renderer with transparent backdrop
 renderer.setClearColor(0xcce6ff, 1);
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize(window.innerWidth, window.innerHeight);
 
 let geo = new THREE.BoxGeometry();
-let mat = new THREE.MeshBasicMaterial({color: 0x00ff00});
-let cube = new THREE.Mesh(geo,mat);
+let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+let cube = new THREE.Mesh(geo, mat);
 
 // var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -26,12 +26,12 @@ camera.position.z = 4.6;
 
 window.camera = camera;
 
-let hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-hemiLight.position.set( 0, 20, 0 );
-scene.add( hemiLight );
+let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+hemiLight.position.set(0, 20, 0);
+scene.add(hemiLight);
 
-let dirLight = new THREE.DirectionalLight( 0xffffff );
-dirLight.position.set( 3, 10, 10 );
+let dirLight = new THREE.DirectionalLight(0xffffff);
+dirLight.position.set(3, 10, 10);
 dirLight.castShadow = true;
 dirLight.shadow.camera.top = 2;
 dirLight.shadow.camera.bottom = - 2;
@@ -39,143 +39,100 @@ dirLight.shadow.camera.left = - 2;
 dirLight.shadow.camera.right = 2;
 dirLight.shadow.camera.near = 0.1;
 dirLight.shadow.camera.far = 40;
-scene.add( dirLight );
+scene.add(dirLight);
 
 let loader = new THREE.GLTFLoader();
-
-window.glb;
-let collision = [];
-
 
 let jumping = false
 	, jump_time = 0;
 
+let groundTiles = []
+let tileWidth = 5.3
+let numTiles = 20;
 /**
  * LOAD SCENE
  */
-loader.load( '/assets/env1.glb', function ( glb ) {
+loader.load('/assets/env1.glb', function (glb) {
+	let tileableWorld = new THREE.Object3D();
 	glb.scene.children.forEach(node => {
 		node.position.y = -1;
 
-		if(node.name.toLowerCase() === 'ground')
-			scene.add( node )
-		if(node.name.toLowerCase() === 'ground2')
-			scene.add( node )
-		if(node.name.toLowerCase() === 'sideground')
-			scene.add( node )
+		if (node.name.toLowerCase() === 'ground')
+			tileableWorld.add(node)
+		if (node.name.toLowerCase() === 'ground2')
+			tileableWorld.add(node)
+		if (node.name.toLowerCase() === 'sideground')
+			tileableWorld.add(node)
 	})
-
-	console.log('the world',glb.scene.children);
+	for (let i = 0; i < numTiles; i++) {
+		let tile2 = tileableWorld.clone()
+		tile2.position.z = -tileWidth * i;
+		groundTiles.push(tile2);
+		scene.add(tile2);
+	}
+	console.log('the world', glb.scene.children);
 
 }, undefined, err => {
-	console.error('Error loading scene glb',err);
+	console.error('Error loading scene glb', err);
 });
 
-
-let animations = {
-	Ollie: 'Ollie',
-	Heelflip: 'Heelflip',
-	TurnLeft: 'TurnLeft',
-	TurnRight: 'TurnRight',
-	Push: 'Push'
-}
-
-let current_animation = animations.Push;
-
 /**
- * LOAD AVATAR
+ * LOAD AVATAR AND ANIMATIONS
  */
 let avatar, boy_clips, boy_mixer;
-
-function getAction(action) {
-	console.log('getting', action)
-	let clip;
-	if(boy_clips)
-		for(let j = 0; j < boy_clips.length; j++)
-			if(boy_clips[j].name !== action)
-				continue;
-			else
-				return boy_mixer.clipAction(boy_clips[j]);
+let boy_actions = []
+const animations = {
+	NONE: -1,
+	JUMP: 1,
+	PUSH: 2,
+	TURN_LEFT: 3,
+	TURN_RIGHT: 4,
 }
-
-loader.load( '/assets/bSkater_CompleteSet_RC1.gltf', function ( glb ) {
-	scene.add( glb.scene );
+let current_animation = animations.Push;
+loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
+	scene.add(glb.scene);
 	avatar = glb.scene;
 
-	console.log('loaded!!',glb)
-
-
-	glb.scene.scale.set( .012, .012, .012 );			   
-	glb.scene.position.x = 0;				    
-    glb.scene.position.y = -1;				    
-	glb.scene.position.z = .1;				    
-	
+	glb.scene.scale.set(.01, .01, .01);
+	glb.scene.position.x = 0;
+	glb.scene.position.y = -1;
+	glb.scene.position.z = .1;
 	glb.scene.rotation.y = -3.14;
 	avatar = glb.scene;
 
-	// // window.avatar = glb;
+	// set up mixer
 	boy_clips = glb.animations;
+	boy_mixer = new THREE.AnimationMixer(glb.scene);
 
-	// // console.log('the clips',boy_clips)
-	boy_mixer = new THREE.AnimationMixer( glb.scene );
-
-
-	boy_clips.forEach(clip => {
-		let action = getAction(clip.name)
-
-		action.enabled = true;
-		action.setEffectiveTimeScale( 1 );
-		action.setEffectiveWeight( clip.name.toLowerCase() === 'idle' ? 1 : 0 );
-
-		console.log('playing', action)
-		action.play()
-	})
-	getAction(current_animation).play()
-
+	//initialize clip actions
+	boy_clips.forEach((clip) => {
+		let action = boy_mixer.clipAction(clip);
+		action.play();
+		boy_actions.push(action)
+		action.setEffectiveWeight(0);
+		action.setLoop(THREE.LoopOnce);
+		action.clampWhenFinished = true;
+	});
+	boy_actions[animations.PUSH].setLoop(THREE.LoopRepeat);
+	boy_actions[animations.PUSH].clampWhenFinished = false;
+	current_animation = animations.PUSH;
 }, undefined, err => {
-	console.error('Error loading avatar glb',err);
+	console.error('Error loading avatar glb', err);
 });
-
-
-let val = 0.01;
-
-/**
- * COLLISION CHECK
- */
-function collisionCheck() {
-	for(let j = 0; j < collision.length; j++) {
-		let mesh = collision[j];
-
-		let {position, scale} = mesh;
-		// console.log(position,scale);
-		// let v1 = {x: position.x * scale.x, y: , z: }
-	}
-}
 
 /**
  * RENDER
  */
 function render() {
-	collisionCheck()
-	requestAnimationFrame( render );
-	renderer.render( scene, camera );
+	requestAnimationFrame(render);
+	renderer.render(scene, camera);
 
-	if(jumping) {
-		let dT = Date.now() - jump_time;
-		let nY = avatar.position.y + (dT * -.0025) + .5;
-		if(nY <= -1) {
-			jumping = false;
-			avatar.position.y = -1	
-		} else
-			avatar.position.y = nY;
-	}
+	//TODO: sync w/ framerate
+	let dt = 0.025
 
-	if(boy_mixer)
-		boy_mixer.update(.025)
-
-	if(window.glb)
-		window.glb.scene.position.x += .4
-
+	animationUpdate(dt);
+	playerMovementUpdate(dt);
+	sceneTileUpdate(3.0*dt);
 }
 
 /**
@@ -190,80 +147,40 @@ function startGame() {
 	// wrapper.remove()
 	score_p.hidden = false;
 	// wrapper.hidden = true;
-	document.body.appendChild( renderer.domElement );
+	document.body.appendChild(renderer.domElement);
 	render();
 }
 
 startGame()
 
 
-
+/**
+ * MOVEMENT CONFIG
+ */
 let lanes = {
 	LEFT: 'LEFT',
 	MIDDLE: 'MIDDLE',
 	RIGHT: 'RIGHT'
 }
-
 let lane_positions = {
 	'RIGHT': 0.1 + 2,
 	'MIDDLE': 0.1,
 	'LEFT': 0.1 - 2
 }
-
 let camera_positions = {
 	'RIGHT': .1 + 1.2,
 	'MIDDLE': .1,
 	'LEFT': .1 - 1.2
 }
-
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
 
-/**
- * MovePlayer
- * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
- */
-function movePlayer(dir) {
-	let startAction, endAction;
-	switch(dir) {
-		case 'UP':
-			if(jumping)
-				return;
-
-			jumping = true;
-			jump_time = Date.now()
-			current_animation = animations.JUMP;
-			return;
-		case 'DOWN':
-			// slide
-			break;
-		case 'LEFT':
-			if(current_lane === lanes.LEFT) return;
-				current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
-			break;
-		case 'RIGHT':
-			if(current_lane === lanes.RIGHT) return;
-				current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
-
-			current_animation = animations.RIGHT;
-			break;
-	}
-
-	// ANIMATE
-	if(avatar_tween)
-		avatar_tween.stop();
-
-	avatar_tween = new TWEEN(avatar.position);
-	avatar_tween.to({x: lane_positions[current_lane]}, 120);
-	avatar_tween.start();
-
-
-	if(camera_tween)
-		camera_tween.stop();
-
-	camera_tween = new TWEEN(camera.position);
-	camera_tween.to({x: camera_positions[current_lane]}, 120);
-	camera_tween.start();
+let movementParams = {
+	forwardSpeed: 400,
+	turnSpeed: 150,
+	blendSpeed: 3.0,
+	jumpHeight: 2,
+	jumpSpeed: 0.7,
 }
 
 /**
@@ -272,8 +189,8 @@ function movePlayer(dir) {
 window.addEventListener('keydown', e => {
 	let pos;
 	// to do animate position
-	switch(e.keyCode) {
-		case 38: 
+	switch (e.keyCode) {
+		case 38:
 			movePlayer('UP');
 			break;
 		case 37:
@@ -285,42 +202,137 @@ window.addEventListener('keydown', e => {
 	}
 })
 
-
 /**
  * TOUCH CONTROLS
- */ 
-document.addEventListener('touchstart', handleTouchStart, false);        
+ */
+document.addEventListener('touchstart', handleTouchStart, false);
 document.addEventListener('touchmove', handleTouchMove, false);
-var xDown = null;                                                        
-var yDown = null;  
+var xDown = null;
+var yDown = null;
 
-function handleTouchStart(evt) {                                         
-    xDown = evt.touches[0].clientX;                                      
-    yDown = evt.touches[0].clientY;                                      
-}; 
+function handleTouchStart(evt) {
+	xDown = evt.touches[0].clientX;
+	yDown = evt.touches[0].clientY;
+};
 
 
 function handleTouchMove(evt) {
-    if ( ! xDown || ! yDown ) {
-        return;
-    }
-    var xUp = evt.touches[0].clientX;                                    
-    var yUp = evt.touches[0].clientY;
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
+	if (!xDown || !yDown) {
+		return;
+	}
+	var xUp = evt.touches[0].clientX;
+	var yUp = evt.touches[0].clientY;
+	var xDiff = xDown - xUp;
+	var yDiff = yDown - yUp;
 
-    if(Math.abs(xDiff) > Math.abs(yDiff))
-        if (xDiff > 0)
-        	movePlayer('LEFT');
-        else
-			movePlayer('RIGHT');  
-    else
-        if(yDiff > 0)
+	if (Math.abs(xDiff) > Math.abs(yDiff))
+		if (xDiff > 0)
+			movePlayer('LEFT');
+		else
+			movePlayer('RIGHT');
+	else
+		if (yDiff > 0)
 			movePlayer('UP')
-        else
-        	console.log('DOWN')
+		else
+			console.log('DOWN')
 
-    /* reset values */
-    xDown = null;
-    yDown = null;                                             
+	/* reset values */
+	xDown = null;
+	yDown = null;
 };
+
+/**
+ * MovePlayer
+ * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
+ */
+function movePlayer(dir) {
+	let startAction, endAction;
+	switch (dir) {
+		case 'UP':
+			if (jumping)
+				return;
+
+			jumping = true;
+			jump_time = 0
+			current_animation = animations.JUMP;
+			boy_actions[animations.JUMP].reset()
+			boy_actions[animations.JUMP].time = 0.1;
+			return;
+		case 'DOWN':
+			// slide
+			break;
+		case 'LEFT':
+			if (current_lane === lanes.LEFT) return;
+			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
+			current_animation = animations.TURN_LEFT;
+			boy_actions[animations.TURN_LEFT].reset()
+			break;
+		case 'RIGHT':
+			if (current_lane === lanes.RIGHT) return;
+			current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
+
+			current_animation = animations.TURN_RIGHT;
+			boy_actions[animations.TURN_RIGHT].reset()
+			break;
+	}
+
+	// ANIMATE
+	if (avatar_tween)
+		avatar_tween.stop();
+
+	avatar_tween = new TWEEN(avatar.position);
+	avatar_tween.to({ x: lane_positions[current_lane] }, 240);
+	avatar_tween.start();
+
+
+	if (camera_tween)
+		camera_tween.stop();
+
+	camera_tween = new TWEEN(camera.position);
+	camera_tween.to({ x: camera_positions[current_lane] }, 240);
+	camera_tween.start();
+}
+
+function playerMovementUpdate(dt) {
+	if (jumping) {
+		jump_time += movementParams.jumpSpeed * dt;
+		if (jump_time >= 1) {
+			jumping = false;
+			jump_time = 1;
+		}
+		let jumpVal = Math.sin(Math.PI * jump_time);
+		avatar.position.y = -1 + movementParams.jumpHeight * jumpVal;
+	}
+}
+
+function animationUpdate(dt) {
+	if (boy_actions.length < 1) return;
+	//blend to current animation, once current animation is complete, set anim state back to push
+	let action = boy_actions[current_animation];
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.2) {
+		current_animation = animations.PUSH;
+	}
+	// blend in / out target and other animations
+	for (let i = 0; i < boy_actions.length; i++) {
+		let cWeight = boy_actions[i].getEffectiveWeight()
+		if (i == current_animation) {
+			cWeight = Math.min(cWeight + movementParams.blendSpeed * dt, 1)
+			boy_actions[i].setEffectiveWeight(cWeight)
+		} else {
+			cWeight = Math.max(cWeight - movementParams.blendSpeed * dt, 0)
+			boy_actions[i].setEffectiveWeight(cWeight)
+		}
+	}
+	boy_mixer.update(dt)
+}
+
+function sceneTileUpdate(dt) {
+	for (let i = 0; i < groundTiles.length; i++) {
+		groundTiles[i].position.z += dt;
+		if(groundTiles[i].position.z > tileWidth)
+		{
+			groundTiles[i].position.z = -(numTiles-1) * tileWidth;
+			console.log("resetting")
+		}
+	}
+}
