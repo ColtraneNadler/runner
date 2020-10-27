@@ -47,32 +47,12 @@ let loader = new THREE.GLTFLoader();
 let jumping = false
 	, jump_time = 0;
 
-let groundTiles = []
-let tileWidth = 5.3
-let numTiles = 20;
+let envController = new EnvController();
 /**
  * LOAD SCENE
  */
 loader.load('/assets/env1.glb', function (glb) {
-	let tileableWorld = new THREE.Object3D();
-	glb.scene.children.forEach(node => {
-		node.position.y = -1;
-
-		if (node.name.toLowerCase() === 'ground')
-			tileableWorld.add(node)
-		if (node.name.toLowerCase() === 'ground2')
-			tileableWorld.add(node)
-		if (node.name.toLowerCase() === 'sideground')
-			tileableWorld.add(node)
-	})
-	for (let i = 0; i < numTiles; i++) {
-		let tile2 = tileableWorld.clone()
-		tile2.position.z = -tileWidth * i;
-		groundTiles.push(tile2);
-		scene.add(tile2);
-	}
-	console.log('the world', glb.scene.children);
-
+	envController.Init(glb);
 }, undefined, err => {
 	console.error('Error loading scene glb', err);
 });
@@ -185,7 +165,7 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 
 			playerMovementUpdate(dt);
-			sceneTileUpdate(3.0 * dt);
+			envController.EnvUpdate(3.0 * dt);
 
 			currentScore += dt;
 			score.innerHTML = "score: " + Math.floor(currentScore);
@@ -201,9 +181,9 @@ function updateForScene(scene) {
 
 //Keep track of FPS
 var stats = new Stats();
-stats.showPanel( 0 ); 
+stats.showPanel(0);
 console.log(stats.domElement)
-document.getElementById('stats').appendChild( stats.domElement );
+document.getElementById('stats').appendChild(stats.domElement);
 
 /**
  * RENDER
@@ -397,11 +377,3 @@ function animationUpdate(dt) {
 	boy_mixer.update(dt)
 }
 
-function sceneTileUpdate(dt) {
-	for (let i = 0; i < groundTiles.length; i++) {
-		groundTiles[i].position.z += dt;
-		if (groundTiles[i].position.z > tileWidth) {
-			groundTiles[i].position.z = -(numTiles - 1) * tileWidth;
-		}
-	}
-}
