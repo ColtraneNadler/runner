@@ -126,6 +126,7 @@ function setupForScene(scene) {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
+			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
@@ -147,6 +148,7 @@ function clearScene(scene) {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
+			envController.Reset();
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -166,10 +168,13 @@ function updateForScene(scene) {
 
 			playerMovementUpdate(dt);
 			envController.EnvUpdate(3.0 * dt);
-
 			currentScore += dt;
 			score.innerHTML = "score: " + Math.floor(currentScore);
-
+			if (envController.CollisionCheck()) {
+				clearScene(currentScene);
+				currentScene = SCENE.GAMEOVER;
+				setupForScene(currentScene);
+			}
 			break;
 		}
 		case SCENE.GAMEOVER: {

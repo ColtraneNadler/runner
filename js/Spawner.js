@@ -1,5 +1,4 @@
 //populate spawner types 
-
 let SpawnTypes = {
     GrindPipe: {
         Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
@@ -21,6 +20,13 @@ class EnvController {
         this.groundTiles = []
         this.tileWidth = 5.3
         this.numTiles = 20;
+        this.currentTile = 0;
+
+        this.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, -1));
+        //Ray helpers
+        this.inverseMatrix = new THREE.Matrix4();
+        this.tRay = new THREE.Ray();
+        this.intersectionPoint = new THREE.Vector3();
     }
     Init(glb) {
         let tileableWorld = new THREE.Object3D();
@@ -62,9 +68,11 @@ class EnvController {
         return returnType;
     }
     InitTilesWithSpawnedObjects() {
-        this.groundTiles.forEach((tile) => {
+        for (let i = 4; i < (this.numTiles - 4); i++) {
+            let idx = (this.currentTile + i) % this.numTiles;
+            let tile = this.groundTiles[idx];
             this.AddSpawnedObjectsToTile(tile);
-        })
+        }
     }
     AddSpawnedObjectsToTile(tile) {
         let occupiedLanes = []
@@ -103,8 +111,46 @@ class EnvController {
                 tile.position.z = -(this.numTiles - 1) * this.tileWidth;
                 this.ReturnSpawnedObjectsToPool(tile);
                 this.AddSpawnedObjectsToTile(tile);
+                this.currentTile = i;
             }
         }
+    }
+    Reset() {
+        //remove objects from the beginning of array 
+        for (let i = 0; i < this.numTiles; i++) {
+            let idx = (this.currentTile + i) % this.numTiles;
+            let tile = this.groundTiles[idx];
+            this.ReturnSpawnedObjectsToPool(tile);
+        }
+    }
+    CollisionCheck() {
+        // do a raycast from player to spawned objects nearby
+        // get spawned objects in the nearby tiles
+        let nearbyObjectsToCollide = []
+        for (let i = 1; i < 4; i++) {
+            let idx = (this.currentTile + i) % this.numTiles;
+            let tile = this.groundTiles[idx];
+
+            tile.children.forEach((child) => {
+                if (this.GetSpawnType(child.name)) {
+                    nearbyObjectsToCollide.push(child);
+                }
+            })
+        }
+        this.raycaster.set(new THREE.Vector3(0, 0.5, -0.05).add(avatar.position), new THREE.Vector3(0, 0, -1))
+        for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
+            let obj = nearbyObjectsToCollide[i];
+            this.inverseMatrix.getInverse(obj.matrixWorld);
+            this.tRay.copy(this.raycaster.ray).applyMatrix4(this.inverseMatrix);
+            let intersect = this.tRay.intersectsBox(obj.geometry.boundingBox, this.intersectionPoint);
+            if (intersect) {
+                let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100
+                if (dist < 1.5) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 
