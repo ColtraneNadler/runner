@@ -63,32 +63,46 @@ class EnvController {
     }
     InitTilesWithSpawnedObjects() {
         this.groundTiles.forEach((tile) => {
-            let occupiedLanes = []
-            Object.keys(SpawnTypes).forEach((key) => {
-                let spawnType = SpawnTypes[key];
-                let el = spawnType.Obj.children[0];
-                if (Math.random() < spawnType.Frequency && el) {
-                    tile.add(el);
-                    //pick a random lane 
-                    let startIdx = Math.floor(3 * Math.random());
-                    for (let i = 0; i < 3; i++) {
-                        let idx = (startIdx + i) % 3;
-                        if (!occupiedLanes.includes(idx)) {
-                            el.position.x = Object.entries(lane_positions)[idx][1];
-                            occupiedLanes.push(idx)
-                            break;
-                        }
+            this.AddSpawnedObjectsToTile(tile);
+        })
+    }
+    AddSpawnedObjectsToTile(tile) {
+        let occupiedLanes = []
+        Object.keys(SpawnTypes).forEach((key) => {
+            let spawnType = SpawnTypes[key];
+            let el = spawnType.Obj.children[0];
+            if (Math.random() < spawnType.Frequency && el) {
+                tile.add(el);
+                //pick a random lane 
+                let startIdx = Math.floor(3 * Math.random());
+                for (let i = 0; i < 3; i++) {
+                    let idx = (startIdx + i) % 3;
+                    if (!occupiedLanes.includes(idx)) {
+                        el.position.x = Object.entries(lane_positions)[idx][1];
+                        occupiedLanes.push(idx)
+                        break;
                     }
                 }
-            })
+            }
         })
+    }
+    ReturnSpawnedObjectsToPool(tile) {
+        for (let j = tile.children.length - 1; j >= 0; j--) {
+            let child = tile.children[j];
+            let spawnType = this.GetSpawnType(child.name);
+            if (spawnType) {
+                spawnType.Obj.add(child);
+            }
+        }
     }
     EnvUpdate(dt) {
         for (let i = 0; i < this.groundTiles.length; i++) {
-            this.groundTiles[i].position.z += dt;
-            if (this.groundTiles[i].position.z > this.tileWidth) {
-                this.groundTiles[i].position.z = -(this.numTiles - 1) * this.tileWidth;
-                //decide which objects should be active for this tile and maybe move their positions 
+            let tile = this.groundTiles[i];
+            tile.position.z += dt;
+            if (tile.position.z > this.tileWidth) {
+                tile.position.z = -(this.numTiles - 1) * this.tileWidth;
+                this.ReturnSpawnedObjectsToPool(tile);
+                this.AddSpawnedObjectsToTile(tile);
             }
         }
     }

@@ -8,7 +8,7 @@ let wrapper = document.getElementById('wrapper');
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 scene.fog = new THREE.FogExp2('#cce6ff', .02);
-renderer = new THREE.WebGLRenderer({ alpha: true });//renderer with transparent backdrop
+renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });//renderer with transparent backdrop
 renderer.setClearColor(0xcce6ff, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -291,7 +291,6 @@ function handleTouchMove(evt) {
 	xDown = null;
 	yDown = null;
 };
-
 /**
  * MovePlayer
  * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
@@ -355,7 +354,6 @@ function playerMovementUpdate(dt) {
 		avatar.position.y = -1 + movementParams.jumpHeight * jumpVal;
 	}
 }
-
 function animationUpdate(dt) {
 	if (boy_actions.length < 1) return;
 	//blend to current animation, once current animation is complete, set anim state back to push
