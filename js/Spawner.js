@@ -1,16 +1,28 @@
 //populate spawner types 
 let SpawnTypes = {
     GrindPipe: {
+        CollideWith: true,
         Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
         MinSpacing: 0, //min spacing of 1 means that there must be atleast 1 tile between element
+        LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "GrindPipe",
     },
     Cone_1: {
+        CollideWith: true,
         Frequency: 0.4,
         MinSpacing: 0,
+        LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Cone_1",
+    },
+    Crane: {
+        CollideWith: false,
+        Frequency: 1,
+        MinSpacing: 10,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Crane",
     },
 }
 
@@ -28,9 +40,9 @@ class EnvController {
         this.tRay = new THREE.Ray();
         this.intersectionPoint = new THREE.Vector3();
     }
-    Init(glb) {
+    Init(gltfModel) {
         let tileableWorld = new THREE.Object3D();
-        glb.scene.children.forEach(node => {
+        gltfModel.scene.children.forEach(node => {
             node.position.y = -1;
             if (node.name.toLowerCase() === 'ground')
                 tileableWorld.add(node)
@@ -38,6 +50,9 @@ class EnvController {
                 tileableWorld.add(node)
             if (node.name.toLowerCase() === 'sideground')
                 tileableWorld.add(node)
+            if (node.name.toLowerCase() === 'poles') {
+                this.pole = node;
+            }
 
             let mbSpawnType = this.GetSpawnType(node.name)
             if (mbSpawnType) {
@@ -54,8 +69,8 @@ class EnvController {
             scene.add(tile2);
         }
         console.log(SpawnTypes)
-        this.InitTilesWithSpawnedObjects();
-        console.log('the world', glb.scene.children);
+        this.InitTilesWithSpawnedObjects(true);
+        console.log('the world', gltfModel.scene.children);
     }
     GetSpawnType(name) {
         let returnType = null;
@@ -67,28 +82,57 @@ class EnvController {
         })
         return returnType;
     }
-    InitTilesWithSpawnedObjects() {
+    InitTilesWithSpawnedObjects(firstInit) {
         for (let i = 4; i < (this.numTiles - 4); i++) {
             let idx = (this.currentTile + i) % this.numTiles;
             let tile = this.groundTiles[idx];
-            this.AddSpawnedObjectsToTile(tile);
+            this.AddSpawnedObjectsToTile(tile, idx);
+        }
+        if (firstInit) {
+            for (let i = 0; i < this.numTiles; i++) {
+                let tile = this.groundTiles[i];
+                //add poles to both sides 
+                let leftPole = this.pole.clone();
+                leftPole.position.x = -4;
+                tile.add(leftPole);
+                let rightPole = this.pole.clone();
+                rightPole.position.x = 4;
+                tile.add(rightPole);
+            }
         }
     }
-    AddSpawnedObjectsToTile(tile) {
+    AddSpawnedObjectsToTile(tile, tIdx) {
         let occupiedLanes = []
         Object.keys(SpawnTypes).forEach((key) => {
             let spawnType = SpawnTypes[key];
             let el = spawnType.Obj.children[0];
-            if (Math.random() < spawnType.Frequency && el) {
+            let distToLast = tIdx - spawnType.LastIdx;
+            distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
+            if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
                 tile.add(el);
                 //pick a random lane 
-                let startIdx = Math.floor(3 * Math.random());
-                for (let i = 0; i < 3; i++) {
-                    let idx = (startIdx + i) % 3;
-                    if (!occupiedLanes.includes(idx)) {
-                        el.position.x = Object.entries(lane_positions)[idx][1];
-                        occupiedLanes.push(idx)
-                        break;
+                if (spawnType.CollideWith) {
+                    let startIdx = Math.floor(3 * Math.random());
+                    for (let i = 0; i < 3; i++) {
+                        let idx = (startIdx + i) % 3;
+                        if (!occupiedLanes.includes(idx)) {
+                            el.position.x = Object.entries(lane_positions)[idx][1];
+                            occupiedLanes.push(idx)
+                            spawnType.LastIdx = tIdx;
+                            break;
+                        }
+                    }
+                } else {
+                    //pick a side : 
+                    let startIdx = Math.random() > 0.5 ? -6 : 6;
+                    if (!occupiedLanes.includes(startIdx)) {
+                        el.position.x = startIdx;
+                        occupiedLanes.push(startIdx)
+                        spawnType.LastIdx = tIdx;
+                    } else if (!occupiedLanes.includes(-startIdx)) {
+                        el.position.x = -startIdx;
+                        occupiedLanes.push(-startIdx)
+                        spawnType.LastIdx = tIdx;
                     }
                 }
             }
@@ -110,7 +154,7 @@ class EnvController {
             if (tile.position.z > this.tileWidth) {
                 tile.position.z = -(this.numTiles - 1) * this.tileWidth;
                 this.ReturnSpawnedObjectsToPool(tile);
-                this.AddSpawnedObjectsToTile(tile);
+                this.AddSpawnedObjectsToTile(tile, i);
                 this.currentTile = i;
             }
         }
@@ -130,9 +174,9 @@ class EnvController {
         for (let i = 1; i < 4; i++) {
             let idx = (this.currentTile + i) % this.numTiles;
             let tile = this.groundTiles[idx];
-
             tile.children.forEach((child) => {
-                if (this.GetSpawnType(child.name)) {
+                let spawnType = this.GetSpawnType(child.name);
+                if (spawnType && spawnType.CollideWith) {
                     nearbyObjectsToCollide.push(child);
                 }
             })

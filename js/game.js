@@ -53,9 +53,7 @@ let envController = new EnvController();
  */
 loader.load('/assets/env1.glb', function (glb) {
 	envController.Init(glb);
-}, undefined, err => {
-	console.error('Error loading scene glb', err);
-});
+}, console.log, console.log);
 
 /**
  * LOAD AVATAR AND ANIMATIONS
@@ -302,7 +300,7 @@ function handleTouchMove(evt) {
  * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
  */
 function movePlayer(dir) {
-	if(currentScene != SCENE.GAMEPLAY) return;
+	if (currentScene != SCENE.GAMEPLAY) return;
 	switch (dir) {
 		case 'UP':
 			if (jumping)
