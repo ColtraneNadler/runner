@@ -7,6 +7,9 @@ let SpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "GrindPipe",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0
     },
     Cone_1: {
         CollideWith: true,
@@ -15,6 +18,9 @@ let SpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Cone_1",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0
     },
     Crane: {
         CollideWith: false,
@@ -23,6 +29,31 @@ let SpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Crane",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0
+    },
+    Sign1: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 0,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Sign1",
+        Rotation: Math.PI / 2,
+        RandomizeRot: 1,
+        RandomizePos: 3
+    },
+    Sign2: {
+        CollideWith: false,
+        Frequency: 0.5,
+        MinSpacing: 0,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Sign2",
+        Rotation: -Math.PI,
+        RandomizeRot: 1,
+        RandomizePos: 3
     },
 }
 
@@ -44,8 +75,7 @@ class EnvController {
     Init(gltfModel) {
         let tileableWorld = new THREE.Object3D();
         //backwards iterating since the nodes may get removed
-        for (let i = gltfModel.scene.children.length -1 ; i >=0 ; i--)
-        {
+        for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
             let node = gltfModel.scene.children[i];
             node.position.y = -1;
             if (node.name.toLowerCase() === 'ground')
@@ -57,7 +87,7 @@ class EnvController {
             if (node.name.toLowerCase() === 'pole1') {
                 this.pole = node;
             }
-    
+
             let mbSpawnType = this.GetSpawnType(node.name)
             if (mbSpawnType) {
                 for (let i = 0; i < Math.round(this.numTiles * mbSpawnType.Frequency); i++) {
@@ -114,6 +144,7 @@ class EnvController {
             let distToLast = tIdx - spawnType.LastIdx;
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
+                el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
                 tile.add(el);
                 //pick a random lane 
                 if (spawnType.CollideWith) {
@@ -121,7 +152,7 @@ class EnvController {
                     for (let i = 0; i < 3; i++) {
                         let idx = (startIdx + i) % 3;
                         if (!occupiedLanes.includes(idx)) {
-                            el.position.x = Object.entries(lane_positions)[idx][1];
+                            el.position.x = Object.entries(lane_positions)[idx][1] + spawnType.RandomizePos * (Math.random() - 0.5);
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
                             break;
@@ -131,11 +162,11 @@ class EnvController {
                     //pick a side : 
                     let startIdx = Math.random() > 0.5 ? -12 : 12;
                     if (!occupiedLanes.includes(startIdx)) {
-                        el.position.x = startIdx;
+                        el.position.x = startIdx + spawnType.RandomizePos * (Math.random() - 0.5);;
                         occupiedLanes.push(startIdx)
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
-                        el.position.x = -startIdx;
+                        el.position.x = -startIdx + spawnType.RandomizePos * (Math.random() - 0.5);;
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
                     }
