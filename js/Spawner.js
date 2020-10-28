@@ -43,8 +43,10 @@ class EnvController {
     }
     Init(gltfModel) {
         let tileableWorld = new THREE.Object3D();
-        gltfModel.scene.children.forEach(node => {
-            console.log(node)
+        //backwards iterating since the nodes may get removed
+        for (let i = gltfModel.scene.children.length -1 ; i >=0 ; i--)
+        {
+            let node = gltfModel.scene.children[i];
             node.position.y = -1;
             if (node.name.toLowerCase() === 'ground')
                 tileableWorld.add(node)
@@ -55,7 +57,7 @@ class EnvController {
             if (node.name.toLowerCase() === 'pole1') {
                 this.pole = node;
             }
-
+    
             let mbSpawnType = this.GetSpawnType(node.name)
             if (mbSpawnType) {
                 for (let i = 0; i < Math.round(this.numTiles * mbSpawnType.Frequency); i++) {
@@ -63,7 +65,8 @@ class EnvController {
                     mbSpawnType.Obj.add(nodeClone)
                 }
             }
-        })
+        }
+
         for (let i = 0; i < this.numTiles; i++) {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
