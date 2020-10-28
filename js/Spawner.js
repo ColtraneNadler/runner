@@ -19,7 +19,7 @@ let SpawnTypes = {
     Crane: {
         CollideWith: false,
         Frequency: 1,
-        MinSpacing: 10,
+        MinSpacing: 5,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Crane",
@@ -30,9 +30,10 @@ let SpawnTypes = {
 class EnvController {
     constructor() {
         this.groundTiles = []
-        this.tileWidth = 5.3
+        this.tileWidth = 13.2
         this.numTiles = 20;
         this.currentTile = 0;
+        this.initialEmptyTileCount = 2;
 
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, -1));
         //Ray helpers
@@ -43,6 +44,7 @@ class EnvController {
     Init(gltfModel) {
         let tileableWorld = new THREE.Object3D();
         gltfModel.scene.children.forEach(node => {
+            console.log(node)
             node.position.y = -1;
             if (node.name.toLowerCase() === 'ground')
                 tileableWorld.add(node)
@@ -50,7 +52,7 @@ class EnvController {
                 tileableWorld.add(node)
             if (node.name.toLowerCase() === 'sideground')
                 tileableWorld.add(node)
-            if (node.name.toLowerCase() === 'poles') {
+            if (node.name.toLowerCase() === 'pole1') {
                 this.pole = node;
             }
 
@@ -83,7 +85,7 @@ class EnvController {
         return returnType;
     }
     InitTilesWithSpawnedObjects(firstInit) {
-        for (let i = 4; i < (this.numTiles - 4); i++) {
+        for (let i = this.initialEmptyTileCount; i < (this.numTiles - this.initialEmptyTileCount); i++) {
             let idx = (this.currentTile + i) % this.numTiles;
             let tile = this.groundTiles[idx];
             this.AddSpawnedObjectsToTile(tile, idx);
@@ -93,10 +95,10 @@ class EnvController {
                 let tile = this.groundTiles[i];
                 //add poles to both sides 
                 let leftPole = this.pole.clone();
-                leftPole.position.x = -4;
+                leftPole.position.x = -8;
                 tile.add(leftPole);
                 let rightPole = this.pole.clone();
-                rightPole.position.x = 4;
+                rightPole.position.x = 8;
                 tile.add(rightPole);
             }
         }
@@ -124,7 +126,7 @@ class EnvController {
                     }
                 } else {
                     //pick a side : 
-                    let startIdx = Math.random() > 0.5 ? -6 : 6;
+                    let startIdx = Math.random() > 0.5 ? -12 : 12;
                     if (!occupiedLanes.includes(startIdx)) {
                         el.position.x = startIdx;
                         occupiedLanes.push(startIdx)
@@ -171,7 +173,7 @@ class EnvController {
         // do a raycast from player to spawned objects nearby
         // get spawned objects in the nearby tiles
         let nearbyObjectsToCollide = []
-        for (let i = 1; i < 4; i++) {
+        for (let i = 1; i < 3; i++) {
             let idx = (this.currentTile + i) % this.numTiles;
             let tile = this.groundTiles[idx];
             tile.children.forEach((child) => {

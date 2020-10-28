@@ -51,7 +51,7 @@ let envController = new EnvController();
 /**
  * LOAD SCENE
  */
-loader.load('/assets/env1.glb', function (glb) {
+loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
 	envController.Init(glb);
 }, console.log, console.log);
 
@@ -210,14 +210,14 @@ let lanes = {
 	RIGHT: 'RIGHT'
 }
 let lane_positions = {
-	'RIGHT': 0.1 + 2,
+	'RIGHT': 0.1 + 2.5,
 	'MIDDLE': 0.1,
-	'LEFT': 0.1 - 2
+	'LEFT': 0.1 - 2.5
 }
 let camera_positions = {
-	'RIGHT': .1 + 1.2,
+	'RIGHT': .1 + 1.5,
 	'MIDDLE': .1,
-	'LEFT': .1 - 1.2
+	'LEFT': .1 - 1.5
 }
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
