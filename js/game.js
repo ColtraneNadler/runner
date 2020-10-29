@@ -1,15 +1,16 @@
-let score = document.getElementById('score')
-let startButton = document.getElementById('startGame')
-let wrapper = document.getElementById('wrapper');
+const sceneTitle = document.getElementById('sceneTitle')
+const outfitScreen = document.getElementById('outfitScreen')
+const startButton = document.getElementById('startGameButton')
+const wrapper = document.getElementById('wrapper');
+const prevOutfitBtn = document.getElementById('prevOutfitBtn');
+const nextOutfitBtn = document.getElementById('nextOutfitBtn');
 
 /**
  * SETUP THREE.JS SCENE
  */
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-scene.fog = new THREE.FogExp2('#cce6ff', .02);
 renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });//renderer with transparent backdrop
-renderer.setClearColor(0xcce6ff, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -24,8 +25,6 @@ camera.rotation.x = -.14;
 camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
-
-window.camera = camera;
 
 let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 hemiLight.position.set(0, 20, 0);
@@ -47,17 +46,28 @@ let loader = new THREE.GLTFLoader();
 let jumping = false
 	, jump_time = 0;
 
-let envController = new EnvController();
 /**
  * LOAD SCENE
  */
-loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
+
+let envs = [
+	['/assets/Enviroment1BigRoad.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
+	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes]
+]
+let randomSceneIdx = Math.floor(2 * Math.random());
+let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2, 10);
+loader.load(envs[randomSceneIdx][0], function (glb) {
 	envController.Init(glb);
-}, console.log, console.log);
+}, null, console.log);
 
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
+
+// TEMP FOR TEST
+const outfits = ['outfit1', 'outfit2', 'outfit3'];
+let currentOutfit = 0;
+
 let avatar, boy_clips, boy_mixer;
 let boy_actions = []
 const animations = {
@@ -73,7 +83,6 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 	avatar = glb.scene;
 
 	glb.scene.scale.set(.01, .01, .01);
-	glb.scene.rotation.y = -3.14;
 	avatar = glb.scene;
 
 	// set up mixer
@@ -99,6 +108,31 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 });
 
 /**
+ * UI EVENTS
+ */
+startButton.addEventListener("click", () => {
+	clearScene(SCENE.OUTFIT);
+	currentScene = SCENE.GAMEPLAY;
+	setupForScene(currentScene);
+});
+
+prevOutfitBtn.addEventListener("click", () => {
+	if (currentOutfit === 0) {
+		currentOutfit = outfits.length - 1;
+	} else {
+		currentOutfit--;
+	}
+});
+
+nextOutfitBtn.addEventListener("click", () => {
+	if (currentOutfit === outfits.length - 1) {
+		currentOutfit = 0;
+	} else {
+		currentOutfit++;
+	}
+});
+
+/**
  * GAME STATE
  */
 SCENE = {
@@ -108,33 +142,32 @@ SCENE = {
 }
 let currentScene = SCENE.OUTFIT;
 let currentScore = 0;
-startButton.addEventListener("click", () => {
-	clearScene(SCENE.OUTFIT);
-	currentScene = SCENE.GAMEPLAY;
-	setupForScene(currentScene);
-})
 
 function setupForScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
 			avatar.position.set(200, 0, 0)
-			camera.position.set(200, 1.4, 4.6)
-			score.innerHTML = "outfit select"
-			startButton.hidden = false;
+			avatar.rotation.y = 0;
+			camera.position.set(200, 1., 2.6)
+			sceneTitle.innerHTML = "outfit select"
+			outfitScreen.hidden = false;
 			break;
 		}
 		case SCENE.GAMEPLAY: {
 			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
+			avatar.rotation.y = Math.PI;
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
-			score.innerHTML = "score: " + Math.floor(currentScore);
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
+			current_lane = lanes.MIDDLE;
 			break;
 		}
 		case SCENE.GAMEOVER: {
-			score.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
-			camera.position.set(300, 1.4, 4.6)
+			avatar.rotation.y = -Math.PI / 4;
+			camera.position.set(300, 1.4, 2.6)
 			break;
 		}
 	}
@@ -142,7 +175,7 @@ function setupForScene(scene) {
 function clearScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
-			startButton.hidden = true;
+			outfitScreen.hidden = true;
 			break;
 		}
 		case SCENE.GAMEPLAY: {
@@ -164,11 +197,10 @@ function updateForScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			//TODO: sync w/ framerate
-
 			playerMovementUpdate(dt);
 			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;
-			score.innerHTML = "score: " + Math.floor(currentScore);
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			if (envController.CollisionCheck()) {
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
@@ -186,7 +218,6 @@ function updateForScene(scene) {
 //Keep track of FPS
 var stats = new Stats();
 stats.showPanel(0);
-console.log(stats.domElement)
 document.getElementById('stats').appendChild(stats.domElement);
 
 /**
@@ -210,14 +241,14 @@ let lanes = {
 	RIGHT: 'RIGHT'
 }
 let lane_positions = {
-	'RIGHT': 0.1 + 2.5,
-	'MIDDLE': 0.1,
-	'LEFT': 0.1 - 2.5
+	'RIGHT': 2.5,
+	'MIDDLE': 0.0,
+	'LEFT': - 2.5
 }
 let camera_positions = {
-	'RIGHT': .1 + 1.5,
-	'MIDDLE': .1,
-	'LEFT': .1 - 1.5
+	'RIGHT': 1.5,
+	'MIDDLE': 0.0,
+	'LEFT': -1.5
 }
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
@@ -321,7 +352,7 @@ function movePlayer(dir) {
 			if (current_lane === lanes.LEFT || jumping == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
-			boy_actions[animations.TURN_LEFT].reset() 
+			boy_actions[animations.TURN_LEFT].reset()
 			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
@@ -334,6 +365,8 @@ function movePlayer(dir) {
 			break;
 	}
 
+	stopAllTweens();
+
 	// ANIMATE
 	avatar_tween = new TWEEN(avatar.position);
 	avatar_tween.to({ x: lane_positions[current_lane] }, 380);
@@ -345,8 +378,9 @@ function movePlayer(dir) {
 }
 
 function stopAllTweens() {
-	if (avatar_tween)
+	if (avatar_tween) {
 		avatar_tween.stop();
+	}
 	if (camera_tween)
 		camera_tween.stop();
 }

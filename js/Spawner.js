@@ -1,70 +1,14 @@
-//populate spawner types 
-let SpawnTypes = {
-    GrindPipe: {
-        CollideWith: true,
-        Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
-        MinSpacing: 0, //min spacing of 1 means that there must be atleast 1 tile between element
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "GrindPipe",
-        Rotation: 0,
-        RandomizeRot: 0,
-        RandomizePos: 0
-    },
-    Cone_1: {
-        CollideWith: true,
-        Frequency: 0.4,
-        MinSpacing: 0,
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "Cone_1",
-        Rotation: 0,
-        RandomizeRot: 0,
-        RandomizePos: 0
-    },
-    Crane: {
-        CollideWith: false,
-        Frequency: 1,
-        MinSpacing: 5,
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "Crane",
-        Rotation: 0,
-        RandomizeRot: 0,
-        RandomizePos: 0
-    },
-    Sign1: {
-        CollideWith: true,
-        Frequency: 0.5,
-        MinSpacing: 0,
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "Sign1",
-        Rotation: Math.PI / 2,
-        RandomizeRot: 1,
-        RandomizePos: 3
-    },
-    Sign2: {
-        CollideWith: false,
-        Frequency: 0.5,
-        MinSpacing: 0,
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "Sign2",
-        Rotation: -Math.PI,
-        RandomizeRot: 1,
-        RandomizePos: 3
-    },
-}
-
-
 class EnvController {
-    constructor() {
+    constructor(initFunc, staticInitFunc, spawnTypes, tileWidth, numTiles) {
         this.groundTiles = []
-        this.tileWidth = 13.2
-        this.numTiles = 20;
-        this.currentTile = 0;
+        this.tileWidth = tileWidth;
+        this.numTiles = numTiles;
+        this.currentTile = -1;
         this.initialEmptyTileCount = 2;
+        this.SpawnTypes = spawnTypes;
+
+        this.initFunc = initFunc;
+        this.staticInitFunc = staticInitFunc;
 
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, -1));
         //Ray helpers
@@ -73,106 +17,78 @@ class EnvController {
         this.intersectionPoint = new THREE.Vector3();
     }
     Init(gltfModel) {
-        let tileableWorld = new THREE.Object3D();
-        //backwards iterating since the nodes may get removed
-        for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
-            let node = gltfModel.scene.children[i];
-            node.position.y = -1;
-            if (node.name.toLowerCase() === 'ground')
-                tileableWorld.add(node)
-            if (node.name.toLowerCase() === 'ground2')
-                tileableWorld.add(node)
-            if (node.name.toLowerCase() === 'sideground')
-                tileableWorld.add(node)
-            if (node.name.toLowerCase() === 'pole1') {
-                this.pole = node;
-            }
-
-            let mbSpawnType = this.GetSpawnType(node.name)
-            if (mbSpawnType) {
-                for (let i = 0; i < Math.round(this.numTiles * mbSpawnType.Frequency); i++) {
-                    let nodeClone = node.clone();
-                    mbSpawnType.Obj.add(nodeClone)
-                }
-            }
-        }
-
+        let tileableWorld = this.initFunc(this, gltfModel);
         for (let i = 0; i < this.numTiles; i++) {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
             this.groundTiles.push(tile2);
             scene.add(tile2);
         }
-        console.log(SpawnTypes)
-        this.InitTilesWithSpawnedObjects(true);
+        this.staticInitFunc(this);
         console.log('the world', gltfModel.scene.children);
     }
     GetSpawnType(name) {
         let returnType = null;
-        Object.keys(SpawnTypes).forEach((key) => {
-            let spawnType = SpawnTypes[key];
+        Object.keys(this.SpawnTypes).forEach((key) => {
+            let spawnType = this.SpawnTypes[key];
             if (name == spawnType.Name) {
                 returnType = spawnType;
             }
         })
         return returnType;
     }
-    InitTilesWithSpawnedObjects(firstInit) {
-        for (let i = this.initialEmptyTileCount; i < (this.numTiles - this.initialEmptyTileCount); i++) {
-            let idx = (this.currentTile + i) % this.numTiles;
+    InitTilesWithSpawnedObjects() {
+        for (let i = this.initialEmptyTileCount; i < this.numTiles; i++) {
+            let idx = (this.currentTile + i + 1) % this.numTiles;
             let tile = this.groundTiles[idx];
             this.AddSpawnedObjectsToTile(tile, idx);
-        }
-        if (firstInit) {
-            for (let i = 0; i < this.numTiles; i++) {
-                let tile = this.groundTiles[i];
-                //add poles to both sides 
-                let leftPole = this.pole.clone();
-                leftPole.position.x = -8;
-                tile.add(leftPole);
-                let rightPole = this.pole.clone();
-                rightPole.position.x = 8;
-                tile.add(rightPole);
-            }
         }
     }
     AddSpawnedObjectsToTile(tile, tIdx) {
         let occupiedLanes = []
-        Object.keys(SpawnTypes).forEach((key) => {
-            let spawnType = SpawnTypes[key];
+        Object.keys(this.SpawnTypes).forEach((key) => {
+            let spawnType = this.SpawnTypes[key];
             let el = spawnType.Obj.children[0];
             let distToLast = tIdx - spawnType.LastIdx;
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
                 el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-                tile.add(el);
                 //pick a random lane 
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
                         let idx = (startIdx + i) % 3;
                         if (!occupiedLanes.includes(idx)) {
-                            el.position.x = Object.entries(lane_positions)[idx][1] + spawnType.RandomizePos * (Math.random() - 0.5);
+                            this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
+                            tile.add(el);
                             break;
                         }
                     }
                 } else {
                     //pick a side : 
-                    let startIdx = Math.random() > 0.5 ? -12 : 12;
+                    let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
                     if (!occupiedLanes.includes(startIdx)) {
-                        el.position.x = startIdx + spawnType.RandomizePos * (Math.random() - 0.5);;
+                        this.SetPos(startIdx, spawnType.RandomizePos, el)
+                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(startIdx)
+                        tile.add(el);
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
-                        el.position.x = -startIdx + spawnType.RandomizePos * (Math.random() - 0.5);;
+                        this.SetPos(-startIdx, spawnType.RandomizePos, el)
+                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
+                        tile.add(el);
                     }
                 }
             }
         })
+    }
+    SetPos(base, random, el) {
+        el.position.x = base + random * (Math.random() - 0.5);
+        el.position.z = random * (Math.random() - 0.5);
     }
     ReturnSpawnedObjectsToPool(tile) {
         for (let j = tile.children.length - 1; j >= 0; j--) {
