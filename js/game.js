@@ -76,7 +76,6 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 	avatar = glb.scene;
 
 	glb.scene.scale.set(.01, .01, .01);
-	glb.scene.rotation.y = -3.14;
 	avatar = glb.scene;
 
 	// set up mixer
@@ -121,7 +120,8 @@ function setupForScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
 			avatar.position.set(200, 0, 0)
-			camera.position.set(200, 1.4, 4.6)
+			avatar.rotation.y = 0;
+			camera.position.set(200, 1., 2.6)
 			score.innerHTML = "outfit select"
 			startButton.hidden = false;
 			break;
@@ -129,6 +129,7 @@ function setupForScene(scene) {
 		case SCENE.GAMEPLAY: {
 			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
+			avatar.rotation.y = Math.PI;
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
 			score.innerHTML = "score: " + Math.floor(currentScore);
@@ -138,7 +139,8 @@ function setupForScene(scene) {
 		case SCENE.GAMEOVER: {
 			score.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
-			camera.position.set(300, 1.4, 4.6)
+			avatar.rotation.y = -Math.PI/4;
+			camera.position.set(300, 1.4, 2.6)
 			break;
 		}
 	}
