@@ -71,13 +71,13 @@ class EnvController {
                     let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
                     if (!occupiedLanes.includes(startIdx)) {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
-                        el.rotation.z = spawnType.Rotation + (startIdx > 0 ? 0 : Math.PI);
+                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(startIdx)
                         tile.add(el);
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
-                        el.rotation.z = spawnType.Rotation + (startIdx > 0 ? 0 : Math.PI);
+                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
                         tile.add(el);

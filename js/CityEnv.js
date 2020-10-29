@@ -55,7 +55,7 @@ let CitySpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "TallBuilding",
         Rotation: Math.PI / 2,
-        RandomizeRot: 1,
+        RandomizeRot: 0,
         RandomizePos: 1,
         SideOffset: 16
     },
@@ -67,7 +67,7 @@ let CitySpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "ShortBuilding",
         Rotation: Math.PI / 2,
-        RandomizeRot: 1,
+        RandomizeRot: 0,
         RandomizePos: 1,
         SideOffset: 16
     },

@@ -52,8 +52,8 @@ let ConstructionSpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Sign2",
-        Rotation: -Math.PI,
-        RandomizeRot: 1,
+        Rotation: -Math.PI/2,
+        RandomizeRot: Math.PI/2,
         RandomizePos: 3,
         SideOffset: 12
     },
