@@ -310,7 +310,9 @@ function movePlayer(dir) {
 			jump_time = 0
 			current_animation = animations.JUMP;
 			boy_actions[animations.JUMP].reset()
-			boy_actions[animations.JUMP].time = 0.4;
+			boy_actions[animations.JUMP].setDuration(2.7)
+			boy_actions[animations.JUMP].time = 0.3;
+
 			return;
 		case 'DOWN':
 			// slide
@@ -358,6 +360,7 @@ function playerMovementUpdate(dt) {
 		}
 		let jumpVal = Math.sin(Math.PI * jump_time);
 		avatar.position.y = -1 + movementParams.jumpHeight * jumpVal;
+
 	}
 }
 function animationUpdate(dt) {
