@@ -189,7 +189,6 @@ function updateForScene(scene) {
 //Keep track of FPS
 var stats = new Stats();
 stats.showPanel(0);
-console.log(stats.domElement)
 document.getElementById('stats').appendChild(stats.domElement);
 
 /**
@@ -213,14 +212,14 @@ let lanes = {
 	RIGHT: 'RIGHT'
 }
 let lane_positions = {
-	'RIGHT': 0.1 + 2.5,
-	'MIDDLE': 0.1,
-	'LEFT': 0.1 - 2.5
+	'RIGHT': 2.5,
+	'MIDDLE': 0.0,
+	'LEFT': - 2.5
 }
 let camera_positions = {
-	'RIGHT': .1 + 1.5,
-	'MIDDLE': .1,
-	'LEFT': .1 - 1.5
+	'RIGHT': 1.5,
+	'MIDDLE': 0.0,
+	'LEFT': -1.5
 }
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
@@ -335,6 +334,8 @@ function movePlayer(dir) {
 			break;
 	}
 
+	stopAllTweens();
+
 	// ANIMATE
 	avatar_tween = new TWEEN(avatar.position);
 	avatar_tween.to({ x: lane_positions[current_lane] }, 380);
@@ -346,8 +347,9 @@ function movePlayer(dir) {
 }
 
 function stopAllTweens() {
-	if (avatar_tween)
+	if (avatar_tween){
 		avatar_tween.stop();
+	}
 	if (camera_tween)
 		camera_tween.stop();
 }

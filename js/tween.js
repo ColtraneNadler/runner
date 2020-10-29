@@ -29,7 +29,7 @@ class TWEEN {
 
 		this.finals = opts;
 
-		for(let prop in opts) {
+		for (let prop in opts) {
 			// assign increments for each prop
 			let diff = opts[prop] - this.ref[prop];
 			this.diffs[prop] = diff;
@@ -42,28 +42,27 @@ class TWEEN {
 	}
 
 	run() {
-		let updated = true;
-		for(let j in this.finals) {
-			if(this.diffs[j] > 0 && this.ref[j] >= this.finals[j])
-				this.ref[j] = this.finals[j]
-			else if(this.diffs[j] < 0 && this.ref[j] <= this.finals[j])
-				this.ref[j] = this.finals[j]
-			else if(this.finals[j] > 0 && this.ref[j] < this.finals[j])
-				updated = false;
-			else if(this.finals[j] < 0 && this.ref[j] > this.finals[j])
-				updated = false;
+		if (!this.stopped) {
+			let updated = true;
+			for (let j in this.finals) {
+				if (this.diffs[j] > 0 && this.ref[j] >= this.finals[j])
+					this.ref[j] = this.finals[j]
+				else if (this.diffs[j] < 0 && this.ref[j] <= this.finals[j])
+					this.ref[j] = this.finals[j]
+				else if (this.diffs[j] > 0 && this.ref[j] < this.finals[j])
+					updated = false;
+				else if (this.diffs[j] < 0 && this.ref[j] > this.finals[j])
+					updated = false;
+			}
+
+			if (updated && Date.now() - this.START_TIME > this.TIME)
+				this.stopped = true;
+			if (!this.stopped)
+				setTimeout(this.run.bind(this), this.STEP);
+			// number of steps
+			for (let prop in this.diffs)
+				this.ref[prop] += this.diffs[prop] / this.STEPS;
 		}
-
-		if(updated && Date.now() - this.START_TIME > this.TIME)
-			return this.stopped = true;
-
-		if(!this.stopped)
-			setTimeout(this.run.bind(this), this.STEP);
-
-		// number of steps
-		for(let prop in this.diffs)
-			this.ref[prop] += this.diffs[prop] / this.STEPS;
-
 	}
 
 	stop() {
