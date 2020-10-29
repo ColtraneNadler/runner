@@ -226,7 +226,7 @@ let movementParams = {
 	forwardSpeed: 100,
 	turnSpeed: 100,
 	blendSpeed: 3.0,
-	jumpHeight: 2,
+	jumpHeight: 1.7,
 	jumpSpeed: 0.7,
 }
 
@@ -310,7 +310,7 @@ function movePlayer(dir) {
 			jump_time = 0
 			current_animation = animations.JUMP;
 			boy_actions[animations.JUMP].reset()
-			boy_actions[animations.JUMP].time = 0.1;
+			boy_actions[animations.JUMP].time = 0.4;
 			return;
 		case 'DOWN':
 			// slide
@@ -319,7 +319,8 @@ function movePlayer(dir) {
 			if (current_lane === lanes.LEFT || jumping == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
-			boy_actions[animations.TURN_LEFT].reset()
+			boy_actions[animations.TURN_LEFT].reset() 
+			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
 			if (current_lane === lanes.RIGHT || jumping == true) return;
@@ -327,6 +328,7 @@ function movePlayer(dir) {
 
 			current_animation = animations.TURN_RIGHT;
 			boy_actions[animations.TURN_RIGHT].reset()
+			boy_actions[animations.TURN_RIGHT].time = 0.2;
 			break;
 	}
 
