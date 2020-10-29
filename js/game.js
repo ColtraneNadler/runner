@@ -7,9 +7,7 @@ let wrapper = document.getElementById('wrapper');
  */
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-scene.fog = new THREE.FogExp2('#cce6ff', .02);
 renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });//renderer with transparent backdrop
-renderer.setClearColor(0xcce6ff, 1);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -47,11 +45,16 @@ let loader = new THREE.GLTFLoader();
 let jumping = false
 	, jump_time = 0;
 
-let envController = new EnvController();
 /**
  * LOAD SCENE
  */
-loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
+// loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
+// 	let envController = new EnvController(InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, 13.2, 10);
+// 	envController.Init(glb);
+// }, console.log, console.log);
+
+let envController = new EnvController(InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, 13.2, 10);
+loader.load('/assets/Enviroment2Packaged.glb', function (glb) {
 	envController.Init(glb);
 }, console.log, console.log);
 
