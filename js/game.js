@@ -169,7 +169,7 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 
 			playerMovementUpdate(dt);
-			envController.EnvUpdate(3.0 * dt);
+			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;
 			score.innerHTML = "score: " + Math.floor(currentScore);
 			if (envController.CollisionCheck()) {
@@ -226,10 +226,10 @@ let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;
 
 let movementParams = {
-	forwardSpeed: 400,
-	turnSpeed: 150,
+	forwardSpeed: 100,
+	turnSpeed: 100,
 	blendSpeed: 3.0,
-	jumpHeight: 2,
+	jumpHeight: 1.7,
 	jumpSpeed: 0.7,
 }
 
@@ -313,33 +313,35 @@ function movePlayer(dir) {
 			jump_time = 0
 			current_animation = animations.JUMP;
 			boy_actions[animations.JUMP].reset()
-			boy_actions[animations.JUMP].time = 0.1;
+			boy_actions[animations.JUMP].time = 0.4;
 			return;
 		case 'DOWN':
 			// slide
 			break;
 		case 'LEFT':
-			if (current_lane === lanes.LEFT) return;
+			if (current_lane === lanes.LEFT || jumping == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
-			boy_actions[animations.TURN_LEFT].reset()
+			boy_actions[animations.TURN_LEFT].reset() 
+			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
-			if (current_lane === lanes.RIGHT) return;
+			if (current_lane === lanes.RIGHT || jumping == true) return;
 			current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
 
 			current_animation = animations.TURN_RIGHT;
 			boy_actions[animations.TURN_RIGHT].reset()
+			boy_actions[animations.TURN_RIGHT].time = 0.2;
 			break;
 	}
 
 	// ANIMATE
 	avatar_tween = new TWEEN(avatar.position);
-	avatar_tween.to({ x: lane_positions[current_lane] }, 240);
+	avatar_tween.to({ x: lane_positions[current_lane] }, 380);
 	avatar_tween.start();
 
 	camera_tween = new TWEEN(camera.position);
-	camera_tween.to({ x: camera_positions[current_lane] }, 240);
+	camera_tween.to({ x: camera_positions[current_lane] }, 380);
 	camera_tween.start();
 }
 
@@ -365,7 +367,7 @@ function animationUpdate(dt) {
 	if (boy_actions.length < 1) return;
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.2) {
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75) {
 		current_animation = animations.PUSH;
 	}
 	// blend in / out target and other animations
