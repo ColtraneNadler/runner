@@ -48,15 +48,15 @@ let jumping = false
 /**
  * LOAD SCENE
  */
-// loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
-// 	let envController = new EnvController(InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, 13.2, 10);
-// 	envController.Init(glb);
-// }, console.log, console.log);
-
-let envController = new EnvController(InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, 13.2, 10);
-loader.load('/assets/Enviroment2Packaged.glb', function (glb) {
+let envController = new EnvController(InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, 13.2, 10);
+loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
 	envController.Init(glb);
 }, console.log, console.log);
+
+// let envController = new EnvController(InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, 13.2, 10);
+// loader.load('/assets/Enviroment2Packaged.glb', function (glb) {
+// 	envController.Init(glb);
+// }, console.log, console.log);
 
 /**
  * LOAD AVATAR AND ANIMATIONS
@@ -132,6 +132,7 @@ function setupForScene(scene) {
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
 			score.innerHTML = "score: " + Math.floor(currentScore);
+			current_lane = lanes.MIDDLE;
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -167,7 +168,6 @@ function updateForScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			//TODO: sync w/ framerate
-
 			playerMovementUpdate(dt);
 			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;

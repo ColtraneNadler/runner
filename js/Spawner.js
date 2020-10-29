@@ -3,7 +3,7 @@ class EnvController {
         this.groundTiles = []
         this.tileWidth = tileWidth;
         this.numTiles = numTiles;
-        this.currentTile = 0;
+        this.currentTile = numTiles - 1;
         this.initialEmptyTileCount = 2;
         this.SpawnTypes = spawnTypes;
 
@@ -39,8 +39,8 @@ class EnvController {
         return returnType;
     }
     InitTilesWithSpawnedObjects() {
-        for (let i = this.initialEmptyTileCount; i < this.numTiles; i++) {
-            let idx = (this.currentTile + i) % this.numTiles;
+        for (let i = this.initialEmptyTileCount; i < this.numTiles - this.initialEmptyTileCount; i++) {
+            let idx = (this.currentTile + i + 1) % this.numTiles;
             let tile = this.groundTiles[idx];
             this.AddSpawnedObjectsToTile(tile, idx);
         }
