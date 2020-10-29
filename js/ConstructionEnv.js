@@ -54,7 +54,8 @@ let ConstructionSpawnTypes = {
         Name: "Sign2",
         Rotation: -Math.PI,
         RandomizeRot: 1,
-        RandomizePos: 3
+        RandomizePos: 3,
+        SideOffset: 12
     },
 }
 

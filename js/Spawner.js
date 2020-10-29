@@ -54,7 +54,6 @@ class EnvController {
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
                 el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-                tile.add(el);
                 //pick a random lane 
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
@@ -64,6 +63,7 @@ class EnvController {
                             this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
+                            tile.add(el);
                             break;
                         }
                     }
@@ -74,12 +74,14 @@ class EnvController {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
                         el.rotation.z = spawnType.Rotation + (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(startIdx)
+                        tile.add(el);
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
                         el.rotation.z = spawnType.Rotation + (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
+                        tile.add(el);
                     }
                 }
             }
