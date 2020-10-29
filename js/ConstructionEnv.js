@@ -13,7 +13,7 @@ let ConstructionSpawnTypes = {
     },
     Cone_1: {
         CollideWith: true,
-        Frequency: 0.4,
+        Frequency: 0.8,
         MinSpacing: 0,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
