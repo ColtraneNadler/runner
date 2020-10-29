@@ -1,6 +1,9 @@
-let score = document.getElementById('score')
-let startButton = document.getElementById('startGame')
-let wrapper = document.getElementById('wrapper');
+const sceneTitle = document.getElementById('sceneTitle')
+const outfitScreen = document.getElementById('outfitScreen')
+const startButton = document.getElementById('startGameButton')
+const wrapper = document.getElementById('wrapper');
+const prevOutfitBtn = document.getElementById('prevOutfitBtn');
+const nextOutfitBtn = document.getElementById('nextOutfitBtn');
 
 /**
  * SETUP THREE.JS SCENE
@@ -22,8 +25,6 @@ camera.rotation.x = -.14;
 camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
-
-window.camera = camera;
 
 let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
 hemiLight.position.set(0, 20, 0);
@@ -48,19 +49,25 @@ let jumping = false
 /**
  * LOAD SCENE
  */
-let envController = new EnvController(InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, 13.2, 10);
-loader.load('/assets/Enviroment1BigRoad.glb', function (glb) {
-	envController.Init(glb);
-}, console.log, console.log);
 
-// let envController = new EnvController(InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, 13.2, 10);
-// loader.load('/assets/Enviroment2Packaged.glb', function (glb) {
-// 	envController.Init(glb);
-// }, console.log, console.log);
+let envs = [
+	['/assets/Enviroment1BigRoad.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
+	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes]
+]
+let randomSceneIdx = Math.floor(2 * Math.random());
+let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2, 10);
+loader.load(envs[randomSceneIdx][0], function (glb) {
+	envController.Init(glb);
+}, null, console.log);
 
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
+
+// TEMP FOR TEST
+const outfits = ['outfit1', 'outfit2', 'outfit3'];
+let currentOutfit = 0;
+
 let avatar, boy_clips, boy_mixer;
 let boy_actions = []
 const animations = {
@@ -101,6 +108,31 @@ loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
 });
 
 /**
+ * UI EVENTS
+ */
+startButton.addEventListener("click", () => {
+	clearScene(SCENE.OUTFIT);
+	currentScene = SCENE.GAMEPLAY;
+	setupForScene(currentScene);
+});
+
+prevOutfitBtn.addEventListener("click", () => {
+	if (currentOutfit === 0) {
+		currentOutfit = outfits.length - 1;
+	} else {
+		currentOutfit--;
+	}
+});
+
+nextOutfitBtn.addEventListener("click", () => {
+	if (currentOutfit === outfits.length - 1) {
+		currentOutfit = 0;
+	} else {
+		currentOutfit++;
+	}
+});
+
+/**
  * GAME STATE
  */
 SCENE = {
@@ -110,11 +142,6 @@ SCENE = {
 }
 let currentScene = SCENE.OUTFIT;
 let currentScore = 0;
-startButton.addEventListener("click", () => {
-	clearScene(SCENE.OUTFIT);
-	currentScene = SCENE.GAMEPLAY;
-	setupForScene(currentScene);
-})
 
 function setupForScene(scene) {
 	switch (scene) {
@@ -122,8 +149,8 @@ function setupForScene(scene) {
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
-			score.innerHTML = "outfit select"
-			startButton.hidden = false;
+			sceneTitle.innerHTML = "outfit select"
+			outfitScreen.hidden = false;
 			break;
 		}
 		case SCENE.GAMEPLAY: {
@@ -132,14 +159,14 @@ function setupForScene(scene) {
 			avatar.rotation.y = Math.PI;
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
-			score.innerHTML = "score: " + Math.floor(currentScore);
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			current_lane = lanes.MIDDLE;
 			break;
 		}
 		case SCENE.GAMEOVER: {
-			score.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
-			avatar.rotation.y = -Math.PI/4;
+			avatar.rotation.y = -Math.PI / 4;
 			camera.position.set(300, 1.4, 2.6)
 			break;
 		}
@@ -148,7 +175,7 @@ function setupForScene(scene) {
 function clearScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
-			startButton.hidden = true;
+			outfitScreen.hidden = true;
 			break;
 		}
 		case SCENE.GAMEPLAY: {
@@ -173,7 +200,7 @@ function updateForScene(scene) {
 			playerMovementUpdate(dt);
 			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;
-			score.innerHTML = "score: " + Math.floor(currentScore);
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			if (envController.CollisionCheck()) {
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
@@ -323,7 +350,7 @@ function movePlayer(dir) {
 			if (current_lane === lanes.LEFT || jumping == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
-			boy_actions[animations.TURN_LEFT].reset() 
+			boy_actions[animations.TURN_LEFT].reset()
 			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
@@ -349,7 +376,7 @@ function movePlayer(dir) {
 }
 
 function stopAllTweens() {
-	if (avatar_tween){
+	if (avatar_tween) {
 		avatar_tween.stop();
 	}
 	if (camera_tween)
