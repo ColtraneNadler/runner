@@ -25,7 +25,6 @@ class EnvController {
             scene.add(tile2);
         }
         this.staticInitFunc(this);
-        this.InitTilesWithSpawnedObjects();
         console.log('the world', gltfModel.scene.children);
     }
     GetSpawnType(name) {
