@@ -1,3 +1,5 @@
+// 200 and 300X
+
 const sceneTitle = document.getElementById('sceneTitle')
 const outfitScreen = document.getElementById('outfitScreen')
 const startButton = document.getElementById('startGameButton')
@@ -78,11 +80,11 @@ const animations = {
 	TURN_RIGHT: 4,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC1.gltf', function (glb) {
+loader.load('/assets/bSkater_CompleteSet_RC2.glb', function (glb) {
 	scene.add(glb.scene);
 	avatar = glb.scene;
 
-	glb.scene.scale.set(.01, .01, .01);
+	// glb.scene.scale.set(.01, .01, .01);
 	avatar = glb.scene;
 
 	// set up mixer
