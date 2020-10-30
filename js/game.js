@@ -420,14 +420,17 @@ function playerMovementUpdate(dt) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
-		let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
-		//TODO:: get these params from the collision check ( 0.5 & -0.3)
-		//this is set up to only work with the grind pipe
-		if (c[0] && c[1] < 0.5) {
-			landed = true;
-			current_animation = animations.TURN_RIGHT;
-			boy_actions[animations.TURN_RIGHT].reset()
-			boy_actions[animations.TURN_RIGHT].time = 0.2;
+		if(!landed)
+		{
+			let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
+			//TODO:: get these params from the collision check ( 0.5 & -0.3)
+			//this is set up to only work with the grind pipe
+			if (c[0] && c[1] < 0.5) {
+				landed = true;
+				current_animation = animations.TURN_RIGHT;
+				boy_actions[animations.TURN_RIGHT].reset()
+				boy_actions[animations.TURN_RIGHT].time = 0.2;
+			}
 		}
 		if (jump_time >= 1) {
 			jumping = false;
