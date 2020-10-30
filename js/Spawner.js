@@ -133,15 +133,15 @@ class EnvController {
                 }
             })
         }
-        this.raycaster.set(new THREE.Vector3(0, 0.5, -0.05).add(avatar.position), new THREE.Vector3(0, 0, -1))
+        this.raycaster.set(new THREE.Vector3(0, 0.5, 0).add(avatar.position), new THREE.Vector3(0, 0, -1))
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
             this.tRay.copy(this.raycaster.ray).applyMatrix4(this.inverseMatrix);
-            let intersect = this.tRay.intersectsBox(obj.geometry.boundingBox, this.intersectionPoint);
+            let intersect = this.tRay.intersectBox(obj.geometry.boundingBox, this.intersectionPoint);
             if (intersect) {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100
-                if (dist < 1.5) {
+                if (dist < 0.1) {
                     return true;
                 }
             }
