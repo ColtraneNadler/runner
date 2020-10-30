@@ -119,7 +119,7 @@ class EnvController {
             this.ReturnSpawnedObjectsToPool(tile);
         }
     }
-    CollisionCheck(jumpCollision) {
+    CollisionCheck(jumpCollision, dir) {
         // do a raycast from player to spawned objects nearby
         // get spawned objects in the nearby tiles
         let nearbyObjectsToCollide = []
@@ -133,7 +133,6 @@ class EnvController {
                 }
             })
         }
-        let dir = jumpCollision ? new THREE.Vector3(0,-1,0) : new THREE.Vector3(0,0,-1);
         this.raycaster.set(new THREE.Vector3(0, 0.5, 0).add(avatar.position), dir)
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];

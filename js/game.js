@@ -70,9 +70,9 @@ let currentOutfit = 0;
 
 function setUpForCurrentOutfit() {
 	let geo = avatar.getObjectByName("geo");
-	for(let i = 0; i < outfits.length; i++){
+	for (let i = 0; i < outfits.length; i++) {
 		outfits[i].forEach((idx) => {
-			geo.children[idx].visible = (i==currentOutfit);
+			geo.children[idx].visible = (i == currentOutfit);
 		})
 	}
 }
@@ -88,19 +88,19 @@ const animations = {
 }
 let current_animation = animations.Push;
 loader.load('/assets/bSkater_CompleteSet_RC2.glb', function (glb) {
-	
+
 	scene.add(glb.scene);
 	avatar = glb.scene;
 
 	// set up outfits, get all array indices 
 	let geo = avatar.getObjectByName("geo");
-	geo.children.forEach((child,idx) => {
-		if(child.name.startsWith("o1")){
+	geo.children.forEach((child, idx) => {
+		if (child.name.startsWith("o1")) {
 			outfits[0].push(idx);
-		} else if(child.name.startsWith("o2")){
+		} else if (child.name.startsWith("o2")) {
 			outfits[1].push(idx);
 		}
-		else if(child.name.startsWith("o3")){
+		else if (child.name.startsWith("o3")) {
 			child.visible = false;
 		}
 	})
@@ -225,7 +225,7 @@ function updateForScene(scene) {
 			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			let col = envController.CollisionCheck()
+			let col = envController.CollisionCheck(false, new THREE.Vector3(0,0,-1));
 			if (col[0] && col[1] < 0.1) {
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
@@ -359,7 +359,7 @@ function movePlayer(dir) {
 	if (currentScene != SCENE.GAMEPLAY) return;
 	switch (dir) {
 		case 'UP':
-			if (jumping)
+			if (jumping || landed)
 				return;
 
 			jumping = true;
@@ -368,20 +368,22 @@ function movePlayer(dir) {
 			boy_actions[animations.JUMP].reset()
 			boy_actions[animations.JUMP].setDuration(2.7)
 			boy_actions[animations.JUMP].time = 0.3;
-
+			if (avatar_land_tween) {
+				avatar_land_tween.stop()
+			}
 			return;
 		case 'DOWN':
 			// slide
 			break;
 		case 'LEFT':
-			if (current_lane === lanes.LEFT || jumping == true) return;
+			if (current_lane === lanes.LEFT || jumping == true || landed == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
 			boy_actions[animations.TURN_LEFT].reset()
 			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
-			if (current_lane === lanes.RIGHT || jumping == true) return;
+			if (current_lane === lanes.RIGHT || jumping == true || landed == true) return;
 			current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
 
 			current_animation = animations.TURN_RIGHT;
@@ -411,21 +413,21 @@ function stopAllTweens() {
 }
 
 let landed = false;
+let avatar_land_tween;
 
 function playerMovementUpdate(dt) {
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
-		let c = envController.CollisionCheck(true);
+		let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
 		//TODO:: get these params from the collision check ( 0.5 & -0.3)
 		//this is set up to only work with the grind pipe
-		//TODO:: smooth the landing
-
-		if(c[0] && c[1] < 0.5)
-		{
-			landed = true;	
-			current_animation = animations.PUSH;
+		if (c[0] && c[1] < 0.5) {
+			landed = true;
+			current_animation = animations.TURN_RIGHT;
+			boy_actions[animations.TURN_RIGHT].reset()
+			boy_actions[animations.TURN_RIGHT].time = 0.2;
 		}
 		if (jump_time >= 1) {
 			jumping = false;
@@ -435,13 +437,15 @@ function playerMovementUpdate(dt) {
 		avatar.position.y = landed ? -0.3 : -1 + movementParams.jumpHeight * jumpVal;
 	}
 
-	if(landed && !jumping)
-	{
-		let c = envController.CollisionCheck(true);
-		if(!c[0])
-		{
-			avatar.position.y = -1;
+	//stopped jumping and waiting to land back to the ground
+	if (landed && !jumping) {
+		let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
+		if (!c[0]) {
+			avatar_land_tween = new TWEEN(avatar.position);
+			avatar_land_tween.to({ y: -1 }, 100);
+			avatar_land_tween.start();
 			landed = false
+			current_animation = animations.PUSH;
 		}
 	}
 }
