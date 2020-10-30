@@ -83,7 +83,7 @@ let current_animation = animations.Push;
 loader.load('/assets/bSkater_CompleteSet_RC2.glb', function (glb) {
 	scene.add(glb.scene);
 	avatar = glb.scene;
-
+	console.log(glb)
 	// glb.scene.scale.set(.01, .01, .01);
 	avatar = glb.scene;
 
