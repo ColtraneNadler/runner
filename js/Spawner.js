@@ -119,7 +119,7 @@ class EnvController {
             this.ReturnSpawnedObjectsToPool(tile);
         }
     }
-    CollisionCheck() {
+    CollisionCheck(jumpCollision) {
         // do a raycast from player to spawned objects nearby
         // get spawned objects in the nearby tiles
         let nearbyObjectsToCollide = []
@@ -128,12 +128,13 @@ class EnvController {
             let tile = this.groundTiles[idx];
             tile.children.forEach((child) => {
                 let spawnType = this.GetSpawnType(child.name);
-                if (spawnType && spawnType.CollideWith) {
+                if (spawnType && spawnType.CollideWith && (jumpCollision ? spawnType.Grindable : true)) {
                     nearbyObjectsToCollide.push(child);
                 }
             })
         }
-        this.raycaster.set(new THREE.Vector3(0, 0.5, 0).add(avatar.position), new THREE.Vector3(0, 0, -1))
+        let dir = jumpCollision ? new THREE.Vector3(0,-1,0) : new THREE.Vector3(0,0,-1);
+        this.raycaster.set(new THREE.Vector3(0, 0.5, 0).add(avatar.position), dir)
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
@@ -141,12 +142,10 @@ class EnvController {
             let intersect = this.tRay.intersectBox(obj.geometry.boundingBox, this.intersectionPoint);
             if (intersect) {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100
-                if (dist < 0.1) {
-                    return true;
-                }
+                return [true, dist];
             }
         }
-        return false;
+        return [false, 0];
     }
 }
 

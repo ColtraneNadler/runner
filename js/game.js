@@ -1,5 +1,3 @@
-// 200 and 300X
-
 const sceneTitle = document.getElementById('sceneTitle')
 const outfitScreen = document.getElementById('outfitScreen')
 const startButton = document.getElementById('startGameButton')
@@ -57,7 +55,7 @@ let envs = [
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes]
 ]
 let randomSceneIdx = Math.floor(2 * Math.random());
-let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2, 10);
+let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2157202, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
 	envController.Init(glb);
 }, null, console.log);
@@ -81,6 +79,7 @@ const animations = {
 }
 let current_animation = animations.Push;
 loader.load('/assets/bSkater_CompleteSet_RC2.glb', function (glb) {
+	
 	scene.add(glb.scene);
 	avatar = glb.scene;
 
@@ -203,7 +202,8 @@ function updateForScene(scene) {
 			envController.EnvUpdate(4.0 * dt);
 			currentScore += dt;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			if (envController.CollisionCheck()) {
+			let col = envController.CollisionCheck()
+			if (col[0] && col[1] < 0.1) {
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
 				setupForScene(currentScene);
@@ -387,16 +387,39 @@ function stopAllTweens() {
 		camera_tween.stop();
 }
 
+let landed = false;
+
 function playerMovementUpdate(dt) {
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
+		//while jumping, check if there is a collider underneath 
+		// if you are close enough to it, land
+		let c = envController.CollisionCheck(true);
+		//TODO:: get these params from the collision check ( 0.5 & -0.3)
+		//this is set up to only work with the grind pipe
+		//TODO:: smooth the landing
+
+		if(c[0] && c[1] < 0.5)
+		{
+			landed = true;	
+			current_animation = animations.PUSH;
+		}
 		if (jump_time >= 1) {
 			jumping = false;
 			jump_time = 1;
 		}
 		let jumpVal = Math.sin(Math.PI * jump_time);
-		avatar.position.y = -1 + movementParams.jumpHeight * jumpVal;
+		avatar.position.y = landed ? -0.3 : -1 + movementParams.jumpHeight * jumpVal;
+	}
 
+	if(landed && !jumping)
+	{
+		let c = envController.CollisionCheck(true);
+		if(!c[0])
+		{
+			avatar.position.y = -1;
+			landed = false
+		}
 	}
 }
 function animationUpdate(dt) {

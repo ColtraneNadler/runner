@@ -2,6 +2,7 @@
 let ConstructionSpawnTypes = {
     GrindPipe: {
         CollideWith: true,
+        Grindable: true,
         Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
         MinSpacing: 1, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
