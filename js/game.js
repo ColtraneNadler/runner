@@ -65,8 +65,17 @@ loader.load(envs[randomSceneIdx][0], function (glb) {
  */
 
 // TEMP FOR TEST
-const outfits = ['outfit1', 'outfit2', 'outfit3'];
+const outfits = [[], []];
 let currentOutfit = 0;
+
+function setUpForCurrentOutfit() {
+	let geo = avatar.getObjectByName("geo");
+	for(let i = 0; i < outfits.length; i++){
+		outfits[i].forEach((idx) => {
+			geo.children[idx].visible = (i==currentOutfit);
+		})
+	}
+}
 
 let avatar, boy_clips, boy_mixer;
 let boy_actions = []
@@ -82,9 +91,21 @@ loader.load('/assets/bSkater_CompleteSet_RC2.glb', function (glb) {
 	
 	scene.add(glb.scene);
 	avatar = glb.scene;
-	console.log(glb)
-	// glb.scene.scale.set(.01, .01, .01);
-	avatar = glb.scene;
+
+	// set up outfits, get all array indices 
+	let geo = avatar.getObjectByName("geo");
+	geo.children.forEach((child,idx) => {
+		if(child.name.startsWith("o1")){
+			outfits[0].push(idx);
+		} else if(child.name.startsWith("o2")){
+			outfits[1].push(idx);
+		}
+		else if(child.name.startsWith("o3")){
+			child.visible = false;
+		}
+	})
+
+	setUpForCurrentOutfit();
 
 	// set up mixer
 	boy_clips = glb.animations;
@@ -123,6 +144,7 @@ prevOutfitBtn.addEventListener("click", () => {
 	} else {
 		currentOutfit--;
 	}
+	setUpForCurrentOutfit();
 });
 
 nextOutfitBtn.addEventListener("click", () => {
@@ -131,6 +153,7 @@ nextOutfitBtn.addEventListener("click", () => {
 	} else {
 		currentOutfit++;
 	}
+	setUpForCurrentOutfit();
 });
 
 /**
