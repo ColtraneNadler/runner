@@ -115,9 +115,10 @@ const animations = {
 	PUSH: 2,
 	TURN_LEFT: 3,
 	TURN_RIGHT: 4,
+	FALL: 5,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC3.glb', function (glb) {
+loader.load('/assets/bSkater_CompleteSet_RC4.glb', function (glb) {
 	
 	scene.add(glb.scene);
 	avatar = glb.scene;
@@ -243,8 +244,18 @@ function clearScene(scene) {
 	}
 }
 
+// Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
+var EnvSpeed = 4.0;
+
 function updateForScene(scene) {
 	let dt = 0.025
+		if (current_animation == animations.FALL) {
+		EnvSpeed = 0	
+		}
+		else {
+			EnvSpeed = 4.0;
+		}
+
 	switch (scene) {
 		case SCENE.OUTFIT: {
 			break;
@@ -252,14 +263,28 @@ function updateForScene(scene) {
 		case SCENE.GAMEPLAY: {
 			//TODO: sync w/ framerate
 			playerMovementUpdate(dt);
-			envController.EnvUpdate(4.0 * dt);
+
+			envController.EnvUpdate(EnvSpeed * dt);
 			currentScore += dt;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			let col = envController.CollisionCheck(false, new THREE.Vector3(0,0,-1));
 			if (col[0] && col[1] < 0.1) {
+			
+			// Sorry about this sort kinda but not really working mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
+			current_animation = animations.FALL;
+			boy_actions[animations.FALL].reset()
+			boy_actions[animations.FALL].setDuration(3)
+			boy_actions[animations.FALL].time = 0.7;
+			boy_actions[animations.FALL].setLoop(THREE.LoopOnce);
+			boy_actions[animations.FALL].clampWhenFinished = true;
+			
+			setTimeout( function() { 
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
 				setupForScene(currentScene);
+				console.log("yussss");
+				}, 1000 );
+					
 			}
 			break;
 		}
