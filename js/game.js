@@ -20,6 +20,36 @@ let cube = new THREE.Mesh(geo, mat);
 
 // var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+// skybox
+
+function createPathStrings(filename) {
+	const basePath = "/assets/cartoonSkybox/";
+	const baseFilename = basePath + filename;
+	const fileType = ".bmp";
+	const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
+	const pathStings = sides.map(side => {
+		return baseFilename + "_" + side + fileType;
+	});
+  
+	return pathStings;
+  }
+
+let skyboxImage = "cartoon";
+function createMaterialArray(filename) {
+	const skyboxImagepaths = createPathStrings(filename);
+	const materialArray = skyboxImagepaths.map(image => {
+	  let texture = new THREE.TextureLoader().load(image);
+  
+	  return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+	});
+	return materialArray;
+  }
+
+const materialArray = createMaterialArray(skyboxImage);
+let  skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
+let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+scene.add(skybox);
+
 // camera.rotation.y = 1.6;
 camera.rotation.x = -.14;
 camera.position.y = 1.4;
@@ -450,7 +480,7 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.start();
 			landed = false
 			current_animation = animations.PUSH;
-			
+
 			// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 			//So I'm trying to reset the duration back to 1 when not grinding
 			boy_actions[animations.TURN_RIGHT].setDuration(1)
@@ -478,5 +508,8 @@ function animationUpdate(dt) {
 		}
 	}
 	boy_mixer.update(dt)
+
+	skybox.rotation.x += 0.0001;
+	skybox.rotation.y += 0.0001;
 }
 

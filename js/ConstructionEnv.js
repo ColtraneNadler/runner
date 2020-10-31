@@ -88,7 +88,8 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
     }
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#cce6ff', .02);
+    scene.fog = new THREE.FogExp2('#cce6ff', .002);
+    // scene.fog.near = 100;
     renderer.setClearColor(0xcce6ff, 1);
 
     return tileableWorld;
