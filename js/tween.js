@@ -54,14 +54,14 @@ class TWEEN {
 				else if (this.diffs[j] < 0 && this.ref[j] > this.finals[j])
 					updated = false;
 			}
-
 			if (updated && Date.now() - this.START_TIME > this.TIME)
 				this.stopped = true;
-			if (!this.stopped)
+			if (!this.stopped) {
 				setTimeout(this.run.bind(this), this.STEP);
-			// number of steps
-			for (let prop in this.diffs)
-				this.ref[prop] += this.diffs[prop] / this.STEPS;
+				// number of steps
+				for (let prop in this.diffs)
+					this.ref[prop] += this.diffs[prop] / this.STEPS;
+			}
 		}
 	}
 
