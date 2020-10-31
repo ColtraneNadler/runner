@@ -429,6 +429,7 @@ function playerMovementUpdate(dt) {
 				landed = true;
 				current_animation = animations.TURN_RIGHT;
 				boy_actions[animations.TURN_RIGHT].reset()
+				boy_actions[animations.TURN_RIGHT].setDuration(2.5)
 				boy_actions[animations.TURN_RIGHT].time = 0.2;
 			}
 		}
@@ -449,7 +450,13 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.start();
 			landed = false
 			current_animation = animations.PUSH;
+			
+			// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
+			//So I'm trying to reset the duration back to 1 when not grinding
+			boy_actions[animations.TURN_RIGHT].setDuration(1)
 		}
+	
+		
 	}
 }
 function animationUpdate(dt) {
