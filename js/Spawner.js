@@ -66,9 +66,7 @@ class EnvController {
 
             // debug bounding box visualization
             let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
-            bbox.update();
-            // boxCollection = [];
-            // boxCollection.push(bbox);
+            // bbox.update();
             scene.add( bbox );
         }
         this.staticInitFunc(this);
@@ -161,7 +159,7 @@ class EnvController {
     }
     EnvUpdate(dt) {
 
-        this.drawRaycastLine(this.raycaster);
+        // this.drawRaycastLine(this.raycaster);
 
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
