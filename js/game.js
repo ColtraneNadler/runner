@@ -111,14 +111,16 @@ let avatar, boy_clips, boy_mixer;
 let boy_actions = []
 const animations = {
 	NONE: -1,
+	OLLIE: 0,
 	JUMP: 1,
 	PUSH: 2,
 	TURN_LEFT: 3,
 	TURN_RIGHT: 4,
 	FALL: 5,
+	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC4.glb', function (glb) {
+loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 	
 	scene.add(glb.scene);
 	avatar = glb.scene;
@@ -153,7 +155,11 @@ loader.load('/assets/bSkater_CompleteSet_RC4.glb', function (glb) {
 	});
 	boy_actions[animations.PUSH].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.PUSH].clampWhenFinished = false;
-	current_animation = animations.PUSH;
+	boy_actions[animations.IDLE].setLoop(THREE.LoopRepeat);
+	boy_actions[animations.IDLE].clampWhenFinished = false;
+	boy_actions[animations.FALL].setLoop(THREE.LoopOnce);
+	boy_actions[animations.FALL].clampWhenFinished = false;
+	// current_animation = animations.PUSH;
 
 	setupForScene(currentScene);
 }, undefined, err => {
@@ -201,6 +207,7 @@ let currentScore = 0;
 function setupForScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
+			current_animation = animations.IDLE;
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
@@ -209,6 +216,7 @@ function setupForScene(scene) {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
+			current_animation = animations.PUSH;
 			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
 			avatar.rotation.y = Math.PI;
@@ -219,6 +227,7 @@ function setupForScene(scene) {
 			break;
 		}
 		case SCENE.GAMEOVER: {
+			current_animation = animations.IDLE;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = -Math.PI / 4;
@@ -270,7 +279,7 @@ function updateForScene(scene) {
 			let col = envController.CollisionCheck(false, new THREE.Vector3(0,0,-1));
 			if (col[0] && col[1] < 0.1) {
 			
-			// Sorry about this sort kinda but not really working mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
+			// Sorry about this mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
 			current_animation = animations.FALL;
 			boy_actions[animations.FALL].reset()
 			boy_actions[animations.FALL].setDuration(3)
@@ -282,7 +291,6 @@ function updateForScene(scene) {
 				clearScene(currentScene);
 				currentScene = SCENE.GAMEOVER;
 				setupForScene(currentScene);
-				console.log("yussss");
 				}, 1000 );
 					
 			}
@@ -410,6 +418,9 @@ function handleTouchMove(evt) {
  * MovePlayer
  * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
  */
+
+ var jumpFlipFlop = true;
+
 function movePlayer(dir) {
 	if (currentScene != SCENE.GAMEPLAY) return;
 	switch (dir) {
@@ -419,10 +430,24 @@ function movePlayer(dir) {
 
 			jumping = true;
 			jump_time = 0
-			current_animation = animations.JUMP;
-			boy_actions[animations.JUMP].reset()
-			boy_actions[animations.JUMP].setDuration(2.7)
-			boy_actions[animations.JUMP].time = 0.3;
+
+			// I created a flip flop so we can alternate my two jumping animations
+			if (jumpFlipFlop == true)
+			{
+				current_animation = animations.JUMP;
+				boy_actions[animations.JUMP].reset()
+				boy_actions[animations.JUMP].setDuration(2.7)
+				boy_actions[animations.JUMP].time = 0.3;
+				jumpFlipFlop = false;
+			}
+			else {
+				current_animation = animations.OLLIE;
+				boy_actions[animations.OLLIE].reset()
+				boy_actions[animations.OLLIE].setDuration(3)
+				boy_actions[animations.OLLIE].time = 0.5;
+				jumpFlipFlop = true;
+			}
+
 			if (avatar_land_tween) {
 				avatar_land_tween.stop()
 			}
@@ -518,9 +543,16 @@ function animationUpdate(dt) {
 	if (boy_actions.length < 1) return;
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75) {
+	
+
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation == animations.FALL){
+		current_animation = animations.IDLE;
+	}
+	else if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation != animations.FALL) {
+	
 		current_animation = animations.PUSH;
 	}
+
 	// blend in / out target and other animations
 	for (let i = 0; i < boy_actions.length; i++) {
 		let cWeight = boy_actions[i].getEffectiveWeight()
