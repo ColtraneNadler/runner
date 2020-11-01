@@ -230,7 +230,7 @@ function setupForScene(scene) {
 			current_animation = animations.IDLE;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
-			avatar.rotation.y = -Math.PI / 4;
+			avatar.rotation.y = 0;
 			camera.position.set(300, 1.4, 2.6)
 			break;
 		}

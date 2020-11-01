@@ -15,14 +15,59 @@ class EnvController {
         this.inverseMatrix = new THREE.Matrix4();
         this.tRay = new THREE.Ray();
         this.intersectionPoint = new THREE.Vector3();
+
     }
+
+    drawRaycastLine(raycaster) {
+        let material = new THREE.LineBasicMaterial({
+          color: 0xff0000,
+          linewidth: 10
+        });
+        let geometry = new THREE.Geometry();
+        let startVec = new THREE.Vector3(
+          raycaster.ray.origin.x,
+          raycaster.ray.origin.y,
+          raycaster.ray.origin.z);
+    
+        let endVec = new THREE.Vector3(
+          raycaster.ray.direction.x,
+          raycaster.ray.direction.y,
+          raycaster.ray.direction.z);
+        
+        // could be any number
+        endVec.multiplyScalar(5000);
+        
+        // get the point in the middle
+        let midVec = new THREE.Vector3();
+        midVec.lerpVectors(startVec, endVec, 0.5);
+    
+        geometry.vertices.push(startVec);
+        geometry.vertices.push(midVec);
+        geometry.vertices.push(endVec);
+    
+        // console.log('vec start', startVec);
+        // console.log('vec mid', midVec);
+        // console.log('vec end', endVec);
+    
+        let line = new THREE.Line(geometry, material);
+        scene.add(line);
+        // scene.remove(line);
+      }
+
     Init(gltfModel) {
         let tileableWorld = this.initFunc(this, gltfModel);
         for (let i = 0; i < this.numTiles; i++) {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
             this.groundTiles.push(tile2);
+            
             scene.add(tile2);
+
+
+            // debug bounding box visualization
+            let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
+            bbox.update();
+            scene.add( bbox );
         }
         this.staticInitFunc(this);
         console.log('the world', gltfModel.scene.children);
@@ -62,7 +107,14 @@ class EnvController {
                             this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
-                            tile.add(el);
+                           
+                            let bbox = new THREE.BoxHelper( el, 0xffff00 );
+                            
+
+                            tile.add(el, bbox);
+                           
+                            
+  
                             break;
                         }
                     }
@@ -73,14 +125,20 @@ class EnvController {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
                         el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(startIdx)
-                        tile.add(el);
+
+                        let bbox = new THREE.BoxHelper( el, 0xffff00 );
+
+                        tile.add(el, bbox);
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
                         el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
-                        tile.add(el);
+
+                        let bbox = new THREE.BoxHelper( el, 0xffff00 );
+
+                        tile.add(el, bbox);
                     }
                 }
             }
@@ -100,6 +158,9 @@ class EnvController {
         }
     }
     EnvUpdate(dt) {
+
+        this.drawRaycastLine(this.raycaster);
+
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
             tile.position.z += dt;
@@ -133,7 +194,8 @@ class EnvController {
                 }
             })
         }
-        this.raycaster.set(new THREE.Vector3(0, 0.5, 0).add(avatar.position), dir)
+        this.raycaster.set(new THREE.Vector3(0, 0.1, -0.5).add(avatar.position), dir)
+        
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
