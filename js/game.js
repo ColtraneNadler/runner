@@ -23,9 +23,9 @@ let cube = new THREE.Mesh(geo, mat);
 // skybox
 
 function createPathStrings(filename) {
-	const basePath = "/assets/cartoonSkybox/";
+	const basePath = "/assets/cSkybox_small/";
 	const baseFilename = basePath + filename;
-	const fileType = ".bmp";
+	const fileType = ".jpg";
 	const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
 	const pathStings = sides.map(side => {
 		return baseFilename + "_" + side + fileType;
@@ -566,7 +566,7 @@ function animationUpdate(dt) {
 	}
 	boy_mixer.update(dt)
 
-	skybox.rotation.x += 0.0001;
+	// skybox.rotation.x += 0.0001;
 	skybox.rotation.y += 0.0001;
 }
 
