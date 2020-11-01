@@ -18,6 +18,7 @@ let geo = new THREE.BoxGeometry();
 let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 let cube = new THREE.Mesh(geo, mat);
 
+let gameover = false;
 // var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 // skybox
@@ -244,6 +245,7 @@ function clearScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			envController.Reset();
+			gameover = false;
 			stopAllTweens();
 			break;
 		}
@@ -261,7 +263,7 @@ function updateForScene(scene) {
 		if (current_animation == animations.FALL) {
 		EnvSpeed = 0	
 		}
-		else {
+		else if (gameover == false) {
 			EnvSpeed = 4.0;
 		}
 
@@ -286,6 +288,7 @@ function updateForScene(scene) {
 			boy_actions[animations.FALL].time = 0.7;
 			boy_actions[animations.FALL].setLoop(THREE.LoopOnce);
 			boy_actions[animations.FALL].clampWhenFinished = true;
+			gameover = true;
 			
 			setTimeout( function() { 
 				clearScene(currentScene);

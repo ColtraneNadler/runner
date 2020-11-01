@@ -67,6 +67,8 @@ class EnvController {
             // debug bounding box visualization
             let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
             bbox.update();
+            // boxCollection = [];
+            // boxCollection.push(bbox);
             scene.add( bbox );
         }
         this.staticInitFunc(this);
@@ -179,6 +181,7 @@ class EnvController {
             let tile = this.groundTiles[idx];
             this.ReturnSpawnedObjectsToPool(tile);
         }
+        
     }
     CollisionCheck(jumpCollision, dir) {
         // do a raycast from player to spawned objects nearby
