@@ -65,9 +65,9 @@ class EnvController {
 
 
             // debug bounding box visualization
-            let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
+            // let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
             // bbox.update();
-            scene.add( bbox );
+            // scene.add( bbox );
         }
         this.staticInitFunc(this);
         console.log('the world', gltfModel.scene.children);
@@ -108,10 +108,10 @@ class EnvController {
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
                            
-                            let bbox = new THREE.BoxHelper( el, 0xffff00 );
+                            // let bbox = new THREE.BoxHelper( el, 0xffff00 );
                             
 
-                            tile.add(el, bbox);
+                            tile.add(el);
                            
                             
   
@@ -126,9 +126,9 @@ class EnvController {
                         el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push(startIdx)
 
-                        let bbox = new THREE.BoxHelper( el, 0xffff00 );
+                        // let bbox = new THREE.BoxHelper( el, 0xffff00 );
 
-                        tile.add(el, bbox);
+                        tile.add(el);
                         spawnType.LastIdx = tIdx;
                     } else if (!occupiedLanes.includes(-startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
@@ -136,9 +136,9 @@ class EnvController {
                         occupiedLanes.push(-startIdx)
                         spawnType.LastIdx = tIdx;
 
-                        let bbox = new THREE.BoxHelper( el, 0xffff00 );
+                        // let bbox = new THREE.BoxHelper( el, 0xffff00 );
 
-                        tile.add(el, bbox);
+                        tile.add(el);
                     }
                 }
             }

@@ -54,7 +54,7 @@ let CitySpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "TallBuilding",
-        Rotation: Math.PI / 2,
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 1,
         SideOffset: 16
@@ -66,7 +66,7 @@ let CitySpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "ShortBuilding",
-        Rotation: Math.PI / 2,
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 1,
         SideOffset: 16
@@ -78,10 +78,23 @@ let highWaySign;
 
 function InitCityEnv(baseSpawner, gltfModel) {
     let tileableWorld = new THREE.Object3D();
+    
     //backwards iterating since the nodes may get removed
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
+        node.traverse((o) => {
+            if (o.isMesh) {
+            // o.material.emissive = new THREE.Color( 0x00ffff );
+            o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
+            o.material.emissiveIntensity = 1;
+            o.material.metalness = 0;
+            o.material.roughness = 0.4;
+            o.material.wireframe = false;
+            }
+          });
+
+
         if (node.name.toLowerCase() === 'highway')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'palmtree') {
@@ -101,14 +114,18 @@ function InitCityEnv(baseSpawner, gltfModel) {
 
     //add a plane geometry 
     let groundGeo = new THREE.PlaneGeometry(100, 100)
-    let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#000000") }));
+    let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
     planeMesh.rotation.x = -Math.PI / 2;
     planeMesh.position.y = -1;
     scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#6c00af', .02);
-    renderer.setClearColor(0x6c00af, 1);
+    // scene.fog = new THREE.FogExp2('#6c00af', .02);
+    // renderer.setClearColor(0x6c00af, 1);
+
+    scene.fog = new THREE.FogExp2('#6c00af', .002);
+    // scene.fog.near = 100;
+    renderer.setClearColor(0xcce6ff, 1);
 
     return tileableWorld;
 }

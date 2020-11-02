@@ -10,13 +10,52 @@ const nextOutfitBtn = document.getElementById('nextOutfitBtn');
  */
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });//renderer with transparent backdrop
+renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });//renderer with transparent backdrop
+renderer.physicallyCorrectLights = true;
+// renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+// renderer.toneMapping = THREE.LinearToneMapping;
+// renderer.setClearColor(0x000000,0.0);
+
 document.body.appendChild(renderer.domElement);
 
-let geo = new THREE.BoxGeometry();
-let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-let cube = new THREE.Mesh(geo, mat);
+// bloom
+// var composer;
+// var bloomStrength = 0.3;
+// var bloomRadius = 0.1;
+// var bloomThreshold = 0.9;
+
+
+// 	renderScene = new THREE.RenderPass(scene, camera);
+
+//     var effectFXAA = new THREE.ShaderPass(THREE.FXAAShader);
+// 		effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
+
+//     var copyShader = new THREE.ShaderPass(THREE.CopyShader);
+// 		copyShader.renderToScreen = true;
+    
+// 	var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
+
+// 		composer = new THREE.EffectComposer(renderer);
+
+//     composer.setSize(window.innerWidth, window.innerHeight);
+//     composer.addPass(renderScene);
+//     composer.addPass(effectFXAA);
+//   	composer.addPass(effectFXAA);
+
+//     composer.addPass(bloomPass);
+//     composer.addPass(copyShader);
+
+
+// end of bloom
+
+
+// let geo = new THREE.BoxGeometry();
+// let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+// let cube = new THREE.Mesh(geo, mat);
+
+
 
 let gameover = false;
 // var controls = new THREE.OrbitControls( camera, renderer.domElement );
@@ -57,20 +96,26 @@ camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
 
-let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
+let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 30);
 hemiLight.position.set(0, 20, 0);
+hemiLight.layers.set(0);
 scene.add(hemiLight);
 
-let dirLight = new THREE.DirectionalLight(0xffffff);
-dirLight.position.set(3, 10, 10);
-dirLight.castShadow = true;
-dirLight.shadow.camera.top = 2;
-dirLight.shadow.camera.bottom = - 2;
-dirLight.shadow.camera.left = - 2;
-dirLight.shadow.camera.right = 2;
-dirLight.shadow.camera.near = 0.1;
-dirLight.shadow.camera.far = 40;
-scene.add(dirLight);
+let hemiLight2 = new THREE.HemisphereLight(0xffffff, 0x444444, 5);
+hemiLight2.position.set(0, 20, 0);
+hemiLight2.layers.set(1);
+scene.add(hemiLight2);
+
+// let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+// dirLight.position.set(3, 10, 10);
+// dirLight.castShadow = true;
+// dirLight.shadow.camera.top = 2;
+// dirLight.shadow.camera.bottom = - 2;
+// dirLight.shadow.camera.left = - 2;
+// dirLight.shadow.camera.right = 2;
+// dirLight.shadow.camera.near = 0.1;
+// dirLight.shadow.camera.far = 40;
+// scene.add(dirLight);
 
 let loader = new THREE.GLTFLoader();
 
@@ -88,6 +133,16 @@ let envs = [
 let randomSceneIdx = Math.floor(2 * Math.random());
 let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2157202, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
+	
+	
+	// let models = glb.scene;
+	// models.traverse( ( child ) => {
+	// 	if ( child instanceof THREE.Mesh ) {
+	// 		child.layers.set(1);
+	// 	}
+	// 	})	
+	
+	
 	envController.Init(glb);
 }, null, console.log);
 
@@ -123,12 +178,20 @@ const animations = {
 let current_animation = animations.Push;
 loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 	
+	let models = glb.scene;
+	models.traverse( ( child ) => {
+		if ( child instanceof THREE.Mesh ) {
+			child.layers.set(1);
+		}
+		})
+
 	scene.add(glb.scene);
 	avatar = glb.scene;
 
 	// set up outfits, get all array indices 
 	let geo = avatar.getObjectByName("geo");
 	geo.children.forEach((child, idx) => {
+	
 		if (child.name.startsWith("o1")) {
 			outfits[0].push(idx);
 		} else if (child.name.startsWith("o2")) {
@@ -317,9 +380,18 @@ document.getElementById('stats').appendChild(stats.domElement);
 function render() {
 	requestAnimationFrame(render);
 	stats.begin();
+	// renderer.autoClear = true;
+	renderer.autoClear = true;
+	camera.layers.set(0);
 	renderer.render(scene, camera);
+	renderer.autoClear = false;
+	camera.layers.set(1);
+	renderer.render(scene, camera);
+
+
 	updateForScene(currentScene)
 	stats.end();
+	// composer.render();
 }
 render();
 
