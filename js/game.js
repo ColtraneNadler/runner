@@ -208,9 +208,6 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 	boy_actions[animations.PUSH].clampWhenFinished = false;
 	boy_actions[animations.IDLE].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.IDLE].clampWhenFinished = false;
-	boy_actions[animations.FALL].clampWhenFinished = false;
-	// current_animation = animations.PUSH;
-
 	setupForScene(currentScene);
 }, undefined, err => {
 	console.error('Error loading avatar glb', err);
@@ -271,8 +268,8 @@ function getCubeMapTexture () {
 function setupForScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
-			
 			current_animation = animations.IDLE;
+			HardResetAnimsToIdle();
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
@@ -293,6 +290,7 @@ function setupForScene(scene) {
 		}
 		case SCENE.GAMEOVER: {
 			current_animation = animations.IDLE;
+			HardResetAnimsToIdle();
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = 0;
@@ -337,7 +335,6 @@ function updateForScene(scene) {
 			let col = envController.CollisionCheck(false, new THREE.Vector3(0, 0, -1));
 			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
 
-				// Sorry about this mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
 				current_animation = animations.FALL;
 				boy_actions[animations.FALL].reset()
 				boy_actions[animations.FALL].setDuration(3)
@@ -347,7 +344,7 @@ function updateForScene(scene) {
 					clearScene(currentScene);
 					currentScene = SCENE.GAMEOVER;
 					setupForScene(currentScene);
-				}, 1000);
+				}, 1500);
 
 			}
 			break;
@@ -595,7 +592,6 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.start();
 			landed = false
 			current_animation = animations.PUSH;
-
 			// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 			//So I'm trying to reset the duration back to 1 when not grinding
 			boy_actions[animations.TURN_RIGHT].setDuration(1)
@@ -609,12 +605,7 @@ function animationUpdate(dt) {
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
 
-
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation == animations.FALL) {
-		current_animation = animations.IDLE;
-	}
-	else if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation != animations.FALL) {
-
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation != animations.FALL) {
 		current_animation = animations.PUSH;
 	}
 
@@ -630,6 +621,16 @@ function animationUpdate(dt) {
 		}
 	}
 	boy_mixer.update(dt)
+}
 
+function HardResetAnimsToIdle()
+{
+	for (let i = 0; i < boy_actions.length; i++) {
+		if (i == animations.IDLE) {
+			boy_actions[i].setEffectiveWeight(1.0)
+		} else {
+			boy_actions[i].setEffectiveWeight(0.0)
+		}
+	}
 }
 
