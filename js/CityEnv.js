@@ -121,8 +121,8 @@ function InitCityEnv(baseSpawner, gltfModel) {
     scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#6c00af', .02);
-    baseSpawner.initSkybox(new THREE.Color('#6c00af'));
+    scene.fog = new THREE.FogExp2('#984ec7', .02);
+    baseSpawner.initSkybox(new THREE.Color('#984ec7'));
     return tileableWorld;
 }
 
