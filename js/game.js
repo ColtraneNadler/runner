@@ -144,7 +144,7 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
+loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 
 	let models = glb.scene;
 	models.traverse((child) => {
