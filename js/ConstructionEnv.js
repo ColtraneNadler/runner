@@ -68,6 +68,9 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
+        
+        node.layers.set(1);
+
         if (node.name.toLowerCase() === 'ground')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'ground2')

@@ -134,15 +134,6 @@ let randomSceneIdx = Math.floor(2 * Math.random());
 let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2157202, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
 	
-	
-	// let models = glb.scene;
-	// models.traverse( ( child ) => {
-	// 	if ( child instanceof THREE.Mesh ) {
-	// 		child.layers.set(1);
-	// 	}
-	// 	})	
-	
-	
 	envController.Init(glb);
 }, null, console.log);
 
