@@ -557,6 +557,7 @@ function stopAllTweens() {
 }
 
 let landed = false;
+let landHeight = 0;
 let avatar_land_tween;
 
 function playerMovementUpdate(dt) {
@@ -574,6 +575,7 @@ function playerMovementUpdate(dt) {
 				boy_actions[animations.TURN_RIGHT].reset()
 				boy_actions[animations.TURN_RIGHT].setDuration(2.5)
 				boy_actions[animations.TURN_RIGHT].time = 0.2;
+				landHeight = avatar.position.y - c[1] + 0.1;
 			}
 		}
 		if (jump_time >= 1) {
@@ -581,7 +583,7 @@ function playerMovementUpdate(dt) {
 			jump_time = 1;
 		}
 		let jumpVal = Math.sin(Math.PI * jump_time);
-		avatar.position.y = landed ? -0.3 : -1 + movementParams.jumpHeight * jumpVal;
+		avatar.position.y = landed ? landHeight : -1 + movementParams.jumpHeight * jumpVal;
 	}
 
 	//stopped jumping and waiting to land back to the ground
