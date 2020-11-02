@@ -24,7 +24,8 @@ let CitySpawnTypes = {
         SideOffset: 16
     },
     Bench: {
-        CollideWith: false,
+        CollideWith: true,
+        Grindable: true,
         Frequency: 0.7,
         MinSpacing: 1,
         LastIdx: 0,
@@ -33,11 +34,11 @@ let CitySpawnTypes = {
         Rotation: Math.PI / 2,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 10
+        SideOffset: 0
     },
     Trash: {
-        CollideWith: false,
-        Frequency: 0.7,
+        CollideWith: true,
+        Frequency: 0.5,
         MinSpacing: 1,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
@@ -45,7 +46,7 @@ let CitySpawnTypes = {
         Rotation: Math.PI / 2,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 10
+        SideOffset: 0
     },
     TallBuilding: {
         CollideWith: false,
