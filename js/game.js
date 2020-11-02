@@ -293,7 +293,8 @@ function setupForScene(scene) {
 		case SCENE.GAMEOVER: {
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
-			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>press space to continue</br>";
+			let key = isTouchDevice ? "touch" : "press space";
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>" + key + " to continue</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(300, 1.4, 2.6)
@@ -330,8 +331,8 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 			gameTime += dt;
 			playerMovementUpdate(dt);
-			//envspeed moves up 1 every 20 seconds, from 3 to 6
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,3);
+			//envspeed moves up 1 every 20 seconds, from 3 to 7
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,4);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
@@ -432,10 +433,6 @@ window.addEventListener('keydown', e => {
 				clearScene(currentScene)
 				currentScene = SCENE.OUTFIT
 				setupForScene(currentScene)
-			} else if (currentScene == SCENE.GAMEPLAY) {
-				clearScene(currentScene)
-				currentScene = SCENE.GAMEOVER
-				setupForScene(currentScene)
 			}
 	}
 })
@@ -443,6 +440,18 @@ window.addEventListener('keydown', e => {
 /**
  * TOUCH CONTROLS
  */
+function is_touch_device4() {
+    if ("ontouchstart" in window)
+        return true;
+
+    if (window.DocumentTouch && document instanceof DocumentTouch)
+        return true;
+
+
+    return window.matchMedia( "(pointer: coarse)" ).matches;
+}
+let isTouchDevice = is_touch_device4(); 
+
 document.addEventListener('touchstart', handleTouchStart, false);
 document.addEventListener('touchmove', handleTouchMove, false);
 var xDown = null;
@@ -451,6 +460,11 @@ var yDown = null;
 function handleTouchStart(evt) {
 	xDown = evt.touches[0].clientX;
 	yDown = evt.touches[0].clientY;
+	if (currentScene == SCENE.GAMEOVER) {
+		clearScene(currentScene)
+		currentScene = SCENE.OUTFIT
+		setupForScene(currentScene)
+	}
 };
 
 
