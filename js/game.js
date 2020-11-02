@@ -332,7 +332,6 @@ function updateForScene(scene) {
 			playerMovementUpdate(dt);
 			//envspeed moves up 1 every 20 seconds, from 3 to 8
 			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,5);
-			console.log(envSpeed)
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
