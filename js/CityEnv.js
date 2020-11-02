@@ -87,7 +87,7 @@ function InitCityEnv(baseSpawner, gltfModel) {
         node.traverse((o) => {
             if (o.isMesh) {
             // o.material.emissive = new THREE.Color( 0x00ffff );
-            o.material.encoding = THREE.sRGBEncoding;
+            // o.material.encoding = THREE.sRGBEncoding;
             // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
             o.material.emissiveIntensity = 1;
             

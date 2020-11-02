@@ -68,6 +68,18 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
+
+        node.traverse((o) => {
+            if (o.isMesh) {
+            // o.material.emissive = new THREE.Color( 0x00ffff );
+            // o.material.encoding = THREE.sRGBEncoding;
+            // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
+            o.material.emissiveIntensity = 1;
+            o.material.metalness = 1;
+            o.material.roughness = 0.9;
+            o.material.wireframe = false;
+            }
+          });
         
         node.layers.set(1);
 
