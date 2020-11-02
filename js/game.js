@@ -121,7 +121,7 @@ let envs = [
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes]
 ]
 let randomSceneIdx = Math.floor(2 * Math.random());
-let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2157202, 10);
+let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
 	envController.Init(glb);
 }, null, console.log);
@@ -330,8 +330,8 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 			gameTime += dt;
 			playerMovementUpdate(dt);
-			//envspeed moves up 1 every 20 seconds, from 3 to 8
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,5);
+			//envspeed moves up 1 every 20 seconds, from 3 to 6
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,3);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
