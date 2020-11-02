@@ -234,6 +234,7 @@ class EnvController {
         const materialArray = this.createMaterialArray("cartoon", color);
         let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
         let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+        skybox.position.set(200,0,0);
         scene.add(skybox);
     }
 }

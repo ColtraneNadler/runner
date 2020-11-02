@@ -91,7 +91,7 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
     }
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#cce6ff', .02);
+    // scene.fog = new THREE.FogExp2('#cce6ff', .02);
     baseSpawner.initSkybox(new THREE.Color('#cce6ff'));
 
     return tileableWorld;

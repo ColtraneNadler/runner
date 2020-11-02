@@ -87,9 +87,11 @@ function InitCityEnv(baseSpawner, gltfModel) {
         node.traverse((o) => {
             if (o.isMesh) {
             // o.material.emissive = new THREE.Color( 0x00ffff );
-            o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
+            o.material.encoding = THREE.sRGBEncoding;
+            // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
             o.material.emissiveIntensity = 1;
-            o.material.metalness = 0;
+            
+            o.material.metalness = 1;
             o.material.roughness = 0.4;
             o.material.wireframe = false;
             }
@@ -121,7 +123,9 @@ function InitCityEnv(baseSpawner, gltfModel) {
     scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#984ec7', .02);
+    // scene.fog = new THREE.FogExp2('#984ec7', 0.2);
+    // scene.fog.near = 50;
+    // scene.fog.far = -400;
     baseSpawner.initSkybox(new THREE.Color('#984ec7'));
     return tileableWorld;
 }

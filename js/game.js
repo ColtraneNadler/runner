@@ -12,11 +12,14 @@ let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });//renderer with transparent backdrop
 renderer.physicallyCorrectLights = true;
-// renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// renderer.toneMapping = THREE.LinearToneMapping;
+renderer.toneMapping = THREE.NoToneMapping
 // renderer.setClearColor(0x000000,0.0);
+
+let pmremGenerator = new THREE.PMREMGenerator( renderer );
+pmremGenerator.compileEquirectangularShader();
 
 document.body.appendChild(renderer.domElement);
 
@@ -62,17 +65,17 @@ camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
 
-let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 30);
+let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 hemiLight.position.set(0, 20, 0);
 hemiLight.layers.set(0);
 scene.add(hemiLight);
 
-let hemiLight2 = new THREE.HemisphereLight(0xffffff, 0x444444, 5);
+let hemiLight2 = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 hemiLight2.position.set(0, 20, 0);
 hemiLight2.layers.set(1);
 scene.add(hemiLight2);
 
-let dirLight = new THREE.DirectionalLight(0xffffff, 10);
+let dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.position.set(3, 10, 10);
 dirLight.castShadow = true;
 dirLight.shadow.camera.top = 2;
@@ -83,7 +86,7 @@ dirLight.shadow.camera.near = 0.1;
 dirLight.shadow.camera.far = 40;
 scene.add(dirLight);
 
-let dirLight2 = new THREE.DirectionalLight(0xffffff, 2);
+let dirLight2 = new THREE.DirectionalLight(0xffffff, 1);
 dirLight2.position.set(3, 10, 10);
 dirLight2.castShadow = true;
 dirLight2.shadow.camera.top = 2;
@@ -94,6 +97,11 @@ dirLight2.shadow.camera.near = 0.1;
 dirLight2.shadow.camera.far = 40;
 dirLight2.layers.set(1);
 scene.add(dirLight2);
+
+// const ambientLight  = new THREE.AmbientLight(0xFFFFFF, 1);
+// ambientLight.position = (200, 10, 0);
+// ambientLight.layers.set(1);
+// scene.add(ambientLight);
 
 let loader = new THREE.GLTFLoader();
 
@@ -150,9 +158,10 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
 			child.layers.set(1);
+			child.material.encoding = THREE.sRGBEncoding;
+			// child.material.emissiveMap.encoding = THREE.sRGBEncoding;
 			child.material.roughness = 0.35;
 			child.material.metalness = 0;
-			// child.material.emissive = new THREE.Color( 0x00ffff );
 			child.material.side = THREE.DoubleSide;
 		}
 	})
@@ -241,9 +250,24 @@ SCENE = {
 let currentScene = SCENE.OUTFIT;
 let currentScore = 0;
 
+getCubeMapTexture();
+
+function getCubeMapTexture () {
+      let OurRGBELoader = new THREE.RGBELoader()
+		.setDataType( THREE.UnsignedByteType )
+		.load( '/assets/environment/venice_sunset_1k.hdr', texture => {
+			
+          const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
+          pmremGenerator.dispose();
+		//   resolve( { envMap } );
+		  scene.environment = envMap;
+		});
+  }
+
 function setupForScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
+			
 			current_animation = animations.IDLE;
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
@@ -302,7 +326,7 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 			playerMovementUpdate(dt);
 
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 4.0;
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 6.0;
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += dt;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
@@ -382,8 +406,8 @@ let movementParams = {
 	forwardSpeed: 100,
 	turnSpeed: 100,
 	blendSpeed: 3.0,
-	jumpHeight: 1.7,
-	jumpSpeed: 0.7,
+	jumpHeight: 2,
+	jumpSpeed: 0.65,
 }
 
 /**
