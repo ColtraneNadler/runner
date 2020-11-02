@@ -34,7 +34,7 @@ document.body.appendChild(renderer.domElement);
 
 //     var copyShader = new THREE.ShaderPass(THREE.CopyShader);
 // 		copyShader.renderToScreen = true;
-    
+
 // 	var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
 
 // 		composer = new THREE.EffectComposer(renderer);
@@ -55,40 +55,6 @@ document.body.appendChild(renderer.domElement);
 // let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 // let cube = new THREE.Mesh(geo, mat);
 
-
-
-let gameover = false;
-// var controls = new THREE.OrbitControls( camera, renderer.domElement );
-
-// skybox
-
-function createPathStrings(filename) {
-	const basePath = "/assets/cSkybox_small/";
-	const baseFilename = basePath + filename;
-	const fileType = ".jpg";
-	const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
-	const pathStings = sides.map(side => {
-		return baseFilename + "_" + side + fileType;
-	});
-  
-	return pathStings;
-  }
-
-let skyboxImage = "cartoon";
-function createMaterialArray(filename) {
-	const skyboxImagepaths = createPathStrings(filename);
-	const materialArray = skyboxImagepaths.map(image => {
-	  let texture = new THREE.TextureLoader().load(image);
-  
-	  return new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
-	});
-	return materialArray;
-  }
-
-const materialArray = createMaterialArray(skyboxImage);
-let  skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
-let skybox = new THREE.Mesh(skyboxGeo, materialArray);
-scene.add(skybox);
 
 // camera.rotation.y = 1.6;
 camera.rotation.x = -.14;
@@ -133,16 +99,6 @@ let envs = [
 let randomSceneIdx = Math.floor(2 * Math.random());
 let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2157202, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
-	
-	
-	// let models = glb.scene;
-	// models.traverse( ( child ) => {
-	// 	if ( child instanceof THREE.Mesh ) {
-	// 		child.layers.set(1);
-	// 	}
-	// 	})	
-	
-	
 	envController.Init(glb);
 }, null, console.log);
 
@@ -177,13 +133,13 @@ const animations = {
 }
 let current_animation = animations.Push;
 loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
-	
+
 	let models = glb.scene;
-	models.traverse( ( child ) => {
-		if ( child instanceof THREE.Mesh ) {
+	models.traverse((child) => {
+		if (child instanceof THREE.Mesh) {
 			child.layers.set(1);
 		}
-		})
+	})
 
 	scene.add(glb.scene);
 	avatar = glb.scene;
@@ -191,7 +147,7 @@ loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 	// set up outfits, get all array indices 
 	let geo = avatar.getObjectByName("geo");
 	geo.children.forEach((child, idx) => {
-	
+
 		if (child.name.startsWith("o1")) {
 			outfits[0].push(idx);
 		} else if (child.name.startsWith("o2")) {
@@ -221,7 +177,6 @@ loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 	boy_actions[animations.PUSH].clampWhenFinished = false;
 	boy_actions[animations.IDLE].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.IDLE].clampWhenFinished = false;
-	boy_actions[animations.FALL].setLoop(THREE.LoopOnce);
 	boy_actions[animations.FALL].clampWhenFinished = false;
 	// current_animation = animations.PUSH;
 
@@ -308,7 +263,6 @@ function clearScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			envController.Reset();
-			gameover = false;
 			stopAllTweens();
 			break;
 		}
@@ -319,16 +273,8 @@ function clearScene(scene) {
 }
 
 // Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
-var EnvSpeed = 4.0;
-
 function updateForScene(scene) {
 	let dt = 0.025
-		if (current_animation == animations.FALL) {
-		EnvSpeed = 0	
-		}
-		else if (gameover == false) {
-			EnvSpeed = 4.0;
-		}
 
 	switch (scene) {
 		case SCENE.OUTFIT: {
@@ -338,27 +284,25 @@ function updateForScene(scene) {
 			//TODO: sync w/ framerate
 			playerMovementUpdate(dt);
 
-			envController.EnvUpdate(EnvSpeed * dt);
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 4.0;
+			envController.EnvUpdate(envSpeed * dt);
 			currentScore += dt;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			let col = envController.CollisionCheck(false, new THREE.Vector3(0,0,-1));
-			if (col[0] && col[1] < 0.1) {
-			
-			// Sorry about this mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
-			current_animation = animations.FALL;
-			boy_actions[animations.FALL].reset()
-			boy_actions[animations.FALL].setDuration(3)
-			boy_actions[animations.FALL].time = 0.7;
-			boy_actions[animations.FALL].setLoop(THREE.LoopOnce);
-			boy_actions[animations.FALL].clampWhenFinished = true;
-			gameover = true;
-			
-			setTimeout( function() { 
-				clearScene(currentScene);
-				currentScene = SCENE.GAMEOVER;
-				setupForScene(currentScene);
-				}, 1000 );
-					
+			let col = envController.CollisionCheck(false, new THREE.Vector3(0, 0, -1));
+			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
+
+				// Sorry about this mess Sneha!! I know / assume it is absurd i'm setting a timer on tick : )
+				current_animation = animations.FALL;
+				boy_actions[animations.FALL].reset()
+				boy_actions[animations.FALL].setDuration(3)
+				boy_actions[animations.FALL].time = 0.7;
+
+				setTimeout(function () {
+					clearScene(currentScene);
+					currentScene = SCENE.GAMEOVER;
+					setupForScene(currentScene);
+				}, 1000);
+
 			}
 			break;
 		}
@@ -494,10 +438,10 @@ function handleTouchMove(evt) {
  * @param dir - ENUM (LEFT, RIGHT, UP, DOWN)
  */
 
- var jumpFlipFlop = true;
+var jumpFlipFlop = true;
 
 function movePlayer(dir) {
-	if (currentScene != SCENE.GAMEPLAY) return;
+	if (currentScene != SCENE.GAMEPLAY || (current_animation == animations.FALL)) return;
 	switch (dir) {
 		case 'UP':
 			if (jumping || landed)
@@ -507,8 +451,7 @@ function movePlayer(dir) {
 			jump_time = 0
 
 			// I created a flip flop so we can alternate my two jumping animations
-			if (jumpFlipFlop == true)
-			{
+			if (jumpFlipFlop == true) {
 				current_animation = animations.JUMP;
 				boy_actions[animations.JUMP].reset()
 				boy_actions[animations.JUMP].setDuration(2.7)
@@ -575,9 +518,8 @@ function playerMovementUpdate(dt) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
-		if(!landed)
-		{
-			let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
+		if (!landed) {
+			let c = envController.CollisionCheck(true, new THREE.Vector3(0, -1, 0));
 			//TODO:: get these params from the collision check ( 0.5 & -0.3)
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
@@ -598,7 +540,7 @@ function playerMovementUpdate(dt) {
 
 	//stopped jumping and waiting to land back to the ground
 	if (landed && !jumping) {
-		let c = envController.CollisionCheck(true, new THREE.Vector3(0,-1,0));
+		let c = envController.CollisionCheck(true, new THREE.Vector3(0, -1, 0));
 		if (!c[0]) {
 			avatar_land_tween = new TWEEN(avatar.position);
 			avatar_land_tween.to({ y: -1 }, 100);
@@ -610,21 +552,21 @@ function playerMovementUpdate(dt) {
 			//So I'm trying to reset the duration back to 1 when not grinding
 			boy_actions[animations.TURN_RIGHT].setDuration(1)
 		}
-	
-		
+
+
 	}
 }
 function animationUpdate(dt) {
 	if (boy_actions.length < 1) return;
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
-	
 
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation == animations.FALL){
+
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation == animations.FALL) {
 		current_animation = animations.IDLE;
 	}
 	else if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation != animations.FALL) {
-	
+
 		current_animation = animations.PUSH;
 	}
 
@@ -641,7 +583,5 @@ function animationUpdate(dt) {
 	}
 	boy_mixer.update(dt)
 
-	// skybox.rotation.x += 0.0001;
-	skybox.rotation.y += 0.0001;
 }
 

@@ -15,44 +15,43 @@ class EnvController {
         this.inverseMatrix = new THREE.Matrix4();
         this.tRay = new THREE.Ray();
         this.intersectionPoint = new THREE.Vector3();
-
     }
 
     drawRaycastLine(raycaster) {
         let material = new THREE.LineBasicMaterial({
-          color: 0xff0000,
-          linewidth: 10
+            color: 0xff0000,
+            linewidth: 10
         });
         let geometry = new THREE.Geometry();
         let startVec = new THREE.Vector3(
-          raycaster.ray.origin.x,
-          raycaster.ray.origin.y,
-          raycaster.ray.origin.z);
-    
+            raycaster.ray.origin.x,
+            raycaster.ray.origin.y,
+            raycaster.ray.origin.z);
+
         let endVec = new THREE.Vector3(
-          raycaster.ray.direction.x,
-          raycaster.ray.direction.y,
-          raycaster.ray.direction.z);
-        
+            raycaster.ray.direction.x,
+            raycaster.ray.direction.y,
+            raycaster.ray.direction.z);
+
         // could be any number
         endVec.multiplyScalar(5000);
-        
+
         // get the point in the middle
         let midVec = new THREE.Vector3();
         midVec.lerpVectors(startVec, endVec, 0.5);
-    
+
         geometry.vertices.push(startVec);
         geometry.vertices.push(midVec);
         geometry.vertices.push(endVec);
-    
+
         // console.log('vec start', startVec);
         // console.log('vec mid', midVec);
         // console.log('vec end', endVec);
-    
+
         let line = new THREE.Line(geometry, material);
         scene.add(line);
         // scene.remove(line);
-      }
+    }
 
     Init(gltfModel) {
         let tileableWorld = this.initFunc(this, gltfModel);
@@ -60,7 +59,7 @@ class EnvController {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
             this.groundTiles.push(tile2);
-            
+
             scene.add(tile2);
 
 
@@ -107,14 +106,14 @@ class EnvController {
                             this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
                             occupiedLanes.push(idx)
                             spawnType.LastIdx = tIdx;
-                           
+
                             // let bbox = new THREE.BoxHelper( el, 0xffff00 );
-                            
+
 
                             tile.add(el);
-                           
-                            
-  
+
+
+
                             break;
                         }
                     }
@@ -160,7 +159,7 @@ class EnvController {
     EnvUpdate(dt) {
 
         // this.drawRaycastLine(this.raycaster);
-
+        // skybox.rotation.y += 0.0001;
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
             tile.position.z += dt;
@@ -179,7 +178,7 @@ class EnvController {
             let tile = this.groundTiles[idx];
             this.ReturnSpawnedObjectsToPool(tile);
         }
-        
+
     }
     CollisionCheck(jumpCollision, dir) {
         // do a raycast from player to spawned objects nearby
@@ -196,7 +195,7 @@ class EnvController {
             })
         }
         this.raycaster.set(new THREE.Vector3(0, 0.1, -0.5).add(avatar.position), dir)
-        
+
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
@@ -208,6 +207,34 @@ class EnvController {
             }
         }
         return [false, 0];
+    }
+    // skybox
+    createPathStrings(filename) {
+        const basePath = "/assets/cSkybox_small/";
+        const baseFilename = basePath + filename;
+        const fileType = ".jpg";
+        const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
+        const pathStings = sides.map(side => {
+            return baseFilename + "_" + side + fileType;
+        });
+
+        return pathStings;
+    }
+
+    createMaterialArray(filename, tintColor) {
+        const skyboxImagepaths = this.createPathStrings(filename);
+        const materialArray = skyboxImagepaths.map(image => {
+            let texture = new THREE.TextureLoader().load(image);
+            return new THREE.MeshBasicMaterial({ color: tintColor, map: texture, side: THREE.BackSide, fog: false });
+        });
+        return materialArray;
+    }
+
+    initSkybox(color) {
+        const materialArray = this.createMaterialArray("cartoon", color);
+        let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
+        let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+        scene.add(skybox);
     }
 }
 
