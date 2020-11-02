@@ -250,6 +250,7 @@ SCENE = {
 }
 let currentScene = SCENE.OUTFIT;
 let currentScore = 0;
+let gameTime = 0;
 
 getCubeMapTexture();
 
@@ -286,6 +287,7 @@ function setupForScene(scene) {
 			currentScore = 0;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			current_lane = lanes.MIDDLE;
+			gameTime = 0;
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -326,15 +328,16 @@ function updateForScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			//TODO: sync w/ framerate
+			gameTime += dt;
 			playerMovementUpdate(dt);
-
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 6.0;
+			//envspeed moves up 1 every 20 seconds, from 3 to 8
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,5);
+			console.log(envSpeed)
 			envController.EnvUpdate(envSpeed * dt);
-			currentScore += dt;
+			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			let col = envController.CollisionCheck(false, new THREE.Vector3(0, 0, -1));
 			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
-
 				current_animation = animations.FALL;
 				boy_actions[animations.FALL].reset()
 				boy_actions[animations.FALL].setDuration(3)
