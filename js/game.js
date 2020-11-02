@@ -106,16 +106,28 @@ hemiLight2.position.set(0, 20, 0);
 hemiLight2.layers.set(1);
 scene.add(hemiLight2);
 
-// let dirLight = new THREE.DirectionalLight(0xffffff, 1);
-// dirLight.position.set(3, 10, 10);
-// dirLight.castShadow = true;
-// dirLight.shadow.camera.top = 2;
-// dirLight.shadow.camera.bottom = - 2;
-// dirLight.shadow.camera.left = - 2;
-// dirLight.shadow.camera.right = 2;
-// dirLight.shadow.camera.near = 0.1;
-// dirLight.shadow.camera.far = 40;
-// scene.add(dirLight);
+let dirLight = new THREE.DirectionalLight(0xffffff, 10);
+dirLight.position.set(3, 10, 10);
+dirLight.castShadow = true;
+dirLight.shadow.camera.top = 2;
+dirLight.shadow.camera.bottom = - 2;
+dirLight.shadow.camera.left = - 2;
+dirLight.shadow.camera.right = 2;
+dirLight.shadow.camera.near = 0.1;
+dirLight.shadow.camera.far = 40;
+scene.add(dirLight);
+
+let dirLight2 = new THREE.DirectionalLight(0xffffff, 2);
+dirLight2.position.set(3, 10, 10);
+dirLight2.castShadow = true;
+dirLight2.shadow.camera.top = 2;
+dirLight2.shadow.camera.bottom = - 2;
+dirLight2.shadow.camera.left = - 2;
+dirLight2.shadow.camera.right = 2;
+dirLight2.shadow.camera.near = 0.1;
+dirLight2.shadow.camera.far = 40;
+dirLight2.layers.set(1);
+scene.add(dirLight2);
 
 let loader = new THREE.GLTFLoader();
 
@@ -173,6 +185,10 @@ loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 	models.traverse( ( child ) => {
 		if ( child instanceof THREE.Mesh ) {
 			child.layers.set(1);
+			child.material.roughness = 0.35;
+			child.material.metalness = 0;
+			// child.material.emissive = new THREE.Color( 0x00ffff );
+			child.material.side = THREE.DoubleSide;
 		}
 		})
 
@@ -181,6 +197,7 @@ loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 
 	// set up outfits, get all array indices 
 	let geo = avatar.getObjectByName("geo");
+	console.log('the world', geo.children);
 	geo.children.forEach((child, idx) => {
 	
 		if (child.name.startsWith("o1")) {
@@ -191,6 +208,7 @@ loader.load('/assets/bSkater_CompleteSet_RC5.gltf', function (glb) {
 		else if (child.name.startsWith("o3")) {
 			child.visible = false;
 		}
+		
 	})
 
 	setUpForCurrentOutfit();
