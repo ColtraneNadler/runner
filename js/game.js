@@ -14,8 +14,10 @@ renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });//renderer
 renderer.physicallyCorrectLights = true;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
+// renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// renderer.toneMappingExposure = 1;
+const composer = new THREE.EffectComposer( renderer );
 
-renderer.toneMapping = THREE.NoToneMapping
 // renderer.setClearColor(0x000000,0.0);
 
 let pmremGenerator = new THREE.PMREMGenerator( renderer );
@@ -55,6 +57,7 @@ document.body.appendChild(renderer.domElement);
 
 
 // let geo = new THREE.BoxGeometry();
+
 // let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 // let cube = new THREE.Mesh(geo, mat);
 
@@ -377,7 +380,7 @@ function render() {
 
 	updateForScene(currentScene)
 	stats.end();
-	// composer.render();
+	composer.render();
 }
 render();
 
