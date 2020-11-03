@@ -101,7 +101,7 @@ class EnvController {
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
                 el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-                //pick a random lane 
+                //pick a random lane
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
@@ -116,7 +116,7 @@ class EnvController {
                         }
                     }
                 } else {
-                    //pick a side : 
+                    //pick a side :
                     let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
                     if (!this.ArrayIncludesIdx(occupiedLanes, startIdx)) {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
@@ -157,7 +157,7 @@ class EnvController {
         }
     }
     InitializeCoinPool() {
-        //add coins to pool 
+        //add coins to pool
         let coinSpawn = this.GetSpawnType("Coin");
         let coinNode = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.1, 8, 50), new THREE.MeshStandardMaterial({ color: new THREE.Color("#FFED3A") }));
         coinNode.material.metalness = 1;
@@ -201,7 +201,7 @@ class EnvController {
         })
     }
     Reset() {
-        //remove objects from the beginning of array 
+        //remove objects from the beginning of array
         for (let i = 0; i < this.numTiles; i++) {
             let idx = (this.currentTile + i) % this.numTiles;
             let tile = this.groundTiles[idx];
@@ -256,7 +256,8 @@ class EnvController {
             if (intersect) {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100;
                 if (collisionType=="Coin") {
-                    if (dist < 0.05) {
+                    if (dist < 0.1) {
+                        // return coin to object pool
                         this.GetSpawnType(obj.name).Obj.add(obj);
                         return [true, 0];
                     }
@@ -297,4 +298,3 @@ class EnvController {
         scene.add(skybox);
     }
 }
-
