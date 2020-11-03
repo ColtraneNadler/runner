@@ -6,6 +6,7 @@ class EnvController {
         this.currentTile = -1;
         this.initialEmptyTileCount = 2;
         this.SpawnTypes = spawnTypes;
+        this.allCoinObjs = []
 
         this.initFunc = initFunc;
         this.staticInitFunc = staticInitFunc;
@@ -164,7 +165,10 @@ class EnvController {
         coinNode.name = "Coin";
         coinNode.geometry.computeBoundingBox();
         for (let i = 0; i < Math.round(this.numTiles * coinSpawn.Frequency); i++) {
-            coinSpawn.Obj.add(coinNode.clone())
+            let coinClone = coinNode.clone();
+            coinClone.rotation.y = Math.random() * 2 * Math.PI;
+            coinSpawn.Obj.add(coinClone);
+            this.allCoinObjs.push(coinClone);
         }
     }
     SetPos(base, random, el) {
@@ -192,12 +196,9 @@ class EnvController {
                 this.currentTile = i;
             }
         }
-        
-        // let coinSpawn = this.SpawnTypes["Coin"];
-        // for (let i = 0; i < coinSpawn.Obj.children.length; i++) {
-        //     let coin = coinSpawn.Obj.children[0];
-        //     coin.rotation.y += 1;
-        // }
+        this.allCoinObjs.forEach(coin => {
+            coin.rotation.y += 0.1*dt;
+        })
     }
     Reset() {
         //remove objects from the beginning of array 
