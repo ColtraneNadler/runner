@@ -58,6 +58,18 @@ let ConstructionSpawnTypes = {
         RandomizePos: 3,
         SideOffset: 12
     },
+    Coin: {
+        CollideWith: true,
+        Frequency: 2,
+        MinSpacing: 0,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Coin",
+        Rotation: Math.PI / 2,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 0
+    }
 }
 
 let pole;

@@ -59,16 +59,14 @@ class EnvController {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
             this.groundTiles.push(tile2);
-
             scene.add(tile2);
-
-
             // debug bounding box visualization
             // let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
             // bbox.update();
             // scene.add( bbox );
         }
         this.staticInitFunc(this);
+        this.InitializeCoinPool();
         console.log('the world', gltfModel.scene.children);
     }
     GetSpawnType(name) {
@@ -81,6 +79,9 @@ class EnvController {
         })
         return returnType;
     }
+    ArrayIncludesIdx(arr, val) {
+        return arr.filter(e => e.idx === val).length > 0
+    }
     InitTilesWithSpawnedObjects() {
         for (let i = this.initialEmptyTileCount; i < this.numTiles; i++) {
             let idx = (this.currentTile + i + 1) % this.numTiles;
@@ -90,7 +91,9 @@ class EnvController {
     }
     AddSpawnedObjectsToTile(tile, tIdx) {
         let occupiedLanes = []
+        let occupiedLaneHeights = {}
         Object.keys(this.SpawnTypes).forEach((key) => {
+            if (key == "Coin") return;
             let spawnType = this.SpawnTypes[key];
             let el = spawnType.Obj.children[0];
             let distToLast = tIdx - spawnType.LastIdx;
@@ -102,46 +105,65 @@ class EnvController {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
                         let idx = (startIdx + i) % 3;
-                        if (!occupiedLanes.includes(idx)) {
+                        if (!this.ArrayIncludesIdx(occupiedLanes, idx)) {
                             this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
-                            occupiedLanes.push(idx)
+                            occupiedLanes.push({ "idx": idx, "height": el.geometry.boundingBox.max.z - el.geometry.boundingBox.min.z })
                             spawnType.LastIdx = tIdx;
-
                             // let bbox = new THREE.BoxHelper( el, 0xffff00 );
-
-
                             tile.add(el);
-
-
-
                             break;
                         }
                     }
                 } else {
                     //pick a side : 
                     let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
-                    if (!occupiedLanes.includes(startIdx)) {
+                    if (!this.ArrayIncludesIdx(occupiedLanes, startIdx)) {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
                         el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
-                        occupiedLanes.push(startIdx)
-
+                        occupiedLanes.push({ "idx": startIdx })
                         // let bbox = new THREE.BoxHelper( el, 0xffff00 );
-
                         tile.add(el);
                         spawnType.LastIdx = tIdx;
-                    } else if (!occupiedLanes.includes(-startIdx)) {
+                    } else if (!this.ArrayIncludesIdx(occupiedLanes, -startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
                         el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
-                        occupiedLanes.push(-startIdx)
+                        occupiedLanes.push({ "idx": -startIdx })
                         spawnType.LastIdx = tIdx;
-
                         // let bbox = new THREE.BoxHelper( el, 0xffff00 );
-
                         tile.add(el);
                     }
                 }
             }
         })
+        // add coins to tile later
+        let numCoins = Math.floor(2 * Math.random());
+        let occupiedCoinLanes = [];
+        let coinSpawn = this.SpawnTypes["Coin"];
+        for (let i = 0; i < numCoins; i++) {
+            let lanePos = Math.floor(3 * Math.random());
+            let el = coinSpawn.Obj.children[0];
+            let p = occupiedLanes.filter(e => e.idx === lanePos);
+            if (el && !occupiedCoinLanes.includes[lanePos]) {
+                occupiedCoinLanes.push(lanePos);
+                if (p.length > 0) {
+                    el.position.y = p[0].height * 0.01;
+                } else {
+                    el.position.y = Math.random();
+                }
+                this.SetPos(Object.entries(lane_positions)[lanePos][1], coinSpawn.RandomizePos, el)
+                tile.add(el)
+            }
+        }
+    }
+    InitializeCoinPool() {
+        //add coins to pool 
+        let coinSpawn = this.GetSpawnType("Coin");
+        let coinNode = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
+        coinNode.name = "Coin";
+        coinNode.geometry.computeBoundingBox();
+        for (let i = 0; i < Math.round(this.numTiles * coinSpawn.Frequency); i++) {
+            coinSpawn.Obj.add(coinNode.clone())
+        }
     }
     SetPos(base, random, el) {
         el.position.x = base + random * (Math.random() - 0.5);
@@ -157,8 +179,6 @@ class EnvController {
         }
     }
     EnvUpdate(dt) {
-
-        // this.drawRaycastLine(this.raycaster);
         // skybox.rotation.y += 0.0001;
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
@@ -180,7 +200,7 @@ class EnvController {
         }
 
     }
-    CollisionCheck(jumpCollision, dir) {
+    CollisionCheck(collisionType, dir) {
         // do a raycast from player to spawned objects nearby
         // get spawned objects in the nearby tiles
         let nearbyObjectsToCollide = []
@@ -189,21 +209,51 @@ class EnvController {
             let tile = this.groundTiles[idx];
             tile.children.forEach((child) => {
                 let spawnType = this.GetSpawnType(child.name);
-                if (spawnType && spawnType.CollideWith && (jumpCollision ? spawnType.Grindable : true)) {
-                    nearbyObjectsToCollide.push(child);
+                if (spawnType && spawnType.CollideWith) {
+                    let addObj = false;
+
+                    switch (collisionType) {
+                        case "Coin": {
+                            if (child.name == "Coin") {
+                                addObj = true;
+                            }
+                            break;
+                        }
+                        case "Jump": {
+                            if (spawnType.Grindable) {
+                                addObj = true;
+                            }
+                            break;
+                        }
+                        case "Obstacle": {
+                            if (child.name !== "Coin") {
+                                addObj = true;
+                            }
+                            break;
+                        }
+                    }
+                    if (addObj) {
+                        nearbyObjectsToCollide.push(child);
+                    }
                 }
             })
         }
-        this.raycaster.set(new THREE.Vector3(0, 0.1, -0.5).add(avatar.position), dir)
-
+        this.raycaster.set(new THREE.Vector3(0, 0.1, -0.2).add(avatar.position), dir)
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
             this.tRay.copy(this.raycaster.ray).applyMatrix4(this.inverseMatrix);
             let intersect = this.tRay.intersectBox(obj.geometry.boundingBox, this.intersectionPoint);
             if (intersect) {
-                let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100
-                return [true, dist];
+                let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100;
+                if (collisionType=="Coin") {
+                    if (dist < 0.01) {
+                        this.GetSpawnType(obj.name).Obj.add(obj);
+                        return [true, 0];
+                    }
+                } else {
+                    return [true, dist]
+                }
             }
         }
         return [false, 0];
@@ -234,7 +284,7 @@ class EnvController {
         const materialArray = this.createMaterialArray("cartoon", color);
         let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
         let skybox = new THREE.Mesh(skyboxGeo, materialArray);
-        skybox.position.set(200,0,0);
+        skybox.position.set(200, 0, 0);
         scene.add(skybox);
     }
 }

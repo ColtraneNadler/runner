@@ -72,6 +72,18 @@ let CitySpawnTypes = {
         RandomizePos: 1,
         SideOffset: 16
     },
+    Coin: {
+        CollideWith: true,
+        Frequency: 2,
+        MinSpacing: 0,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Coin",
+        Rotation: Math.PI / 2,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 0
+    },
 }
 
 let tree;
@@ -79,24 +91,23 @@ let highWaySign;
 
 function InitCityEnv(baseSpawner, gltfModel) {
     let tileableWorld = new THREE.Object3D();
-    
+
     //backwards iterating since the nodes may get removed
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
         node.traverse((o) => {
             if (o.isMesh) {
-            // o.material.emissive = new THREE.Color( 0x00ffff );
-            // o.material.encoding = THREE.sRGBEncoding;
-            // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
-            o.material.emissiveIntensity = 1;
-            
-            o.material.metalness = 1;
-            o.material.roughness = 0.4;
-            o.material.wireframe = false;
-            }
-          });
+                // o.material.emissive = new THREE.Color( 0x00ffff );
+                // o.material.encoding = THREE.sRGBEncoding;
+                // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
+                o.material.emissiveIntensity = 1;
 
+                o.material.metalness = 1;
+                o.material.roughness = 0.4;
+                o.material.wireframe = false;
+            }
+        });
 
         if (node.name.toLowerCase() === 'highway')
             tileableWorld.add(node)

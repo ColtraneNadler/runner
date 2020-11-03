@@ -336,7 +336,7 @@ function updateForScene(scene) {
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			let col = envController.CollisionCheck(false, new THREE.Vector3(0, 0, -1));
+			let col = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1));
 			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
 				current_animation = animations.FALL;
 				boy_actions[animations.FALL].reset()
@@ -349,6 +349,12 @@ function updateForScene(scene) {
 					setupForScene(currentScene);
 				}, 1500);
 
+			}
+			// coin collision check
+			col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
+			if(col[0])
+			{
+				currentScore += 5;
 			}
 			break;
 		}
@@ -579,7 +585,7 @@ function playerMovementUpdate(dt) {
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
 		if (!landed) {
-			let c = envController.CollisionCheck(true, new THREE.Vector3(0, -1, 0));
+			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
 			//TODO:: get these params from the collision check ( 0.5 & -0.3)
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
@@ -601,7 +607,7 @@ function playerMovementUpdate(dt) {
 
 	//stopped jumping and waiting to land back to the ground
 	if (landed && !jumping) {
-		let c = envController.CollisionCheck(true, new THREE.Vector3(0, -1, 0));
+		let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
 		if (!c[0]) {
 			avatar_land_tween = new TWEEN(avatar.position);
 			avatar_land_tween.to({ y: -1 }, 100);
