@@ -3,6 +3,7 @@
 	padding: 0;
 	margin: 0;
 	border: 0;
+	color: black;
 }
 
 body {
@@ -32,8 +33,8 @@ body {
 button {
 	font-size: 14px;
 	padding: 2rem 10rem;
-	color: #fff;
-	border: 6px solid #fff;
+	color: black;
+	border: 6px solid pink;
 	background: none;
 	max-width: 100%;
 	font-family: 'Press Start 2P', cursive!important;
@@ -43,7 +44,7 @@ button {
 
 button:hover {
 	color: #333;
-	background: #fff;
+	background: pink
 }
 
 #startGameButton {
@@ -53,6 +54,7 @@ button:hover {
 	position: fixed;
 	width: 100vw;
 	text-align: center;
+	color: black;
 }
 
 #sceneTitle {
@@ -63,7 +65,7 @@ button:hover {
 	position: fixed;
 	width: 100vw;
 	text-align: center;
-	color: #fff
+	color:black
 }
 
 .ui {
