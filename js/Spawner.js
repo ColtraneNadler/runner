@@ -159,7 +159,7 @@ class EnvController {
     InitializeCoinPool() {
         //add coins to pool 
         let coinSpawn = this.GetSpawnType("Coin");
-        let coinNode = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.1, 8, 50), new THREE.MeshStandardMaterial({ color: new THREE.Color("#9803fc") }));
+        let coinNode = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.1, 8, 50), new THREE.MeshStandardMaterial({ color: new THREE.Color("#FFED3A") }));
         coinNode.material.metalness = 1;
         coinNode.material.roughness = 0.2;
         coinNode.name = "Coin";
