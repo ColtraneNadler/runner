@@ -149,7 +149,7 @@ class EnvController {
                 if (p.length > 0) {
                     el.position.y = p[0].height * 0.01;
                 } else {
-                    el.position.y = Math.random();
+                    el.position.y = 0.75 + 0.5*Math.random();
                 }
                 this.SetPos(Object.entries(lane_positions)[lanePos][1], coinSpawn.RandomizePos, el)
                 tile.add(el)
