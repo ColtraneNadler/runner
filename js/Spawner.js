@@ -257,6 +257,7 @@ class EnvController {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100;
                 if (collisionType=="Coin") {
                     if (dist < 0.1) {
+                        // return coin to object pool
                         this.GetSpawnType(obj.name).Obj.add(obj);
                         return [true, 0];
                     }
