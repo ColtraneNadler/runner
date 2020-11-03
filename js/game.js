@@ -11,6 +11,13 @@ const nextOutfitBtn = document.getElementById('nextOutfitBtn');
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });//renderer with transparent backdrop
+// renderer.shadowMap.enabled = true;
+// renderer.shadowMapSoft = true;
+// renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// renderer.shadowMapBias = 0.0039;
+// renderer.shadowMapDarkness = 0.5;
+// renderer.shadowMapWidth = 1024;
+// renderer.shadowMapHeight = 1024;
 renderer.physicallyCorrectLights = true;
 renderer.gammaFactor = 2.2;
 renderer.outputEncoding = THREE.sRGBEncoding;
@@ -26,85 +33,45 @@ pmremGenerator.compileEquirectangularShader();
 
 document.body.appendChild(renderer.domElement);
 
-// bloom
-// var composer;
-// var bloomStrength = 0.3;
-// var bloomRadius = 0.1;
-// var bloomThreshold = 0.9;
-
-
-// 	renderScene = new THREE.RenderPass(scene, camera);
-
-//     var effectFXAA = new THREE.ShaderPass(THREE.FXAAShader);
-// 		effectFXAA.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight );
-
-//     var copyShader = new THREE.ShaderPass(THREE.CopyShader);
-// 		copyShader.renderToScreen = true;
-
-// 	var bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), bloomStrength, bloomRadius, bloomThreshold);
-
-// 		composer = new THREE.EffectComposer(renderer);
-
-//     composer.setSize(window.innerWidth, window.innerHeight);
-//     composer.addPass(renderScene);
-//     composer.addPass(effectFXAA);
-//   	composer.addPass(effectFXAA);
-
-//     composer.addPass(bloomPass);
-//     composer.addPass(copyShader);
-
-
-// end of bloom
-
-
-// let geo = new THREE.BoxGeometry();
-
-// let mat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// let cube = new THREE.Mesh(geo, mat);
-
-
-// camera.rotation.y = 1.6;
 camera.rotation.x = -.14;
 camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
 
-let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-hemiLight.position.set(0, 20, 0);
-hemiLight.layers.set(0);
-scene.add(hemiLight);
+// let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2);
+// hemiLight.position.set(0, 50, -100);
 
-let hemiLight2 = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-hemiLight2.position.set(0, 20, 0);
-hemiLight2.layers.set(1);
-scene.add(hemiLight2);
+// scene.add(hemiLight);
 
-let dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(3, 10, 10);
-dirLight.castShadow = true;
-dirLight.shadow.camera.top = 2;
-dirLight.shadow.camera.bottom = - 2;
-dirLight.shadow.camera.left = - 2;
-dirLight.shadow.camera.right = 2;
-dirLight.shadow.camera.near = 0.1;
-dirLight.shadow.camera.far = 40;
+let dirLight = new THREE.DirectionalLight(0xffffff, 0,5);
+
+
+// coltrane's og settings
+// dirLight.position.set(3, 10, 10);
+// dirLight.castShadow = true;
+// dirLight.shadow.camera.top = 2;
+// dirLight.shadow.camera.bottom = - 2;
+// dirLight.shadow.camera.left = - 2;
+// dirLight.shadow.camera.right = 2;
+// dirLight.shadow.camera.near = 0.1;
+// dirLight.shadow.camera.far = 40;
+
+// let d = 15;
+dirLight.position.set(15, 30, -100);
+// dirLight.shadow.camera.top = d;
+// dirLight.shadow.camera.bottom = - d;
+// dirLight.shadow.camera.left = - d;
+// dirLight.shadow.camera.right = d;
+// dirLight.shadow.camera.near = 0.1;
+// dirLight.shadow.camera.far = 400;
+// dirLight.shadow.mapSize.width = 4096;  
+// dirLight.shadow.mapSize.height = 4096; 
 scene.add(dirLight);
 
-let dirLight2 = new THREE.DirectionalLight(0xffffff, 1);
-dirLight2.position.set(3, 10, 10);
-dirLight2.castShadow = true;
-dirLight2.shadow.camera.top = 2;
-dirLight2.shadow.camera.bottom = - 2;
-dirLight2.shadow.camera.left = - 2;
-dirLight2.shadow.camera.right = 2;
-dirLight2.shadow.camera.near = 0.1;
-dirLight2.shadow.camera.far = 40;
-dirLight2.layers.set(1);
-scene.add(dirLight2);
+// scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
 
-// const ambientLight  = new THREE.AmbientLight(0xFFFFFF, 1);
+// let ambientLight  = new THREE.AmbientLight(0xFFFFFF, 1);
 // ambientLight.position = (200, 10, 0);
-// ambientLight.layers.set(1);
 // scene.add(ambientLight);
 
 let loader = new THREE.GLTFLoader();
@@ -161,12 +128,14 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 	let models = glb.scene;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
-			child.layers.set(1);
+			// child.layers.set(1);
 			child.material.encoding = THREE.sRGBEncoding;
 			// child.material.emissiveMap.encoding = THREE.sRGBEncoding;
 			child.material.roughness = 0.35;
 			child.material.metalness = 0;
 			child.material.side = THREE.DoubleSide;
+			child.receiveShadow = true;
+			child.castShadow = true
 		}
 	})
 
@@ -376,18 +345,19 @@ document.getElementById('stats').appendChild(stats.domElement);
 function render() {
 	requestAnimationFrame(render);
 	stats.begin();
-	// renderer.autoClear = true;
-	renderer.autoClear = true;
-	camera.layers.set(0);
-	renderer.render(scene, camera);
-	renderer.autoClear = false;
-	camera.layers.set(1);
-	renderer.render(scene, camera);
 
+// Used with light select layers
+	// renderer.autoClear = true;
+	// camera.layers.set(0);
+	// renderer.render(scene, camera);
+	// renderer.autoClear = false;
+	// camera.layers.set(1);
+
+	renderer.render(scene, camera);
 
 	updateForScene(currentScene)
 	stats.end();
-	composer.render();
+	// composer.render();
 }
 render();
 

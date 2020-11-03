@@ -86,14 +86,14 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             // o.material.emissive = new THREE.Color( 0x00ffff );
             // o.material.encoding = THREE.sRGBEncoding;
             // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
-            o.material.emissiveIntensity = 1;
+            // o.material.emissiveIntensity = 1;
             o.material.metalness = 1;
             o.material.roughness = 0.9;
-            o.material.wireframe = false;
+            // o.material.wireframe = false;
             }
           });
         
-        node.layers.set(1);
+        // node.layers.set(1);
 
         if (node.name.toLowerCase() === 'ground')
             tileableWorld.add(node)

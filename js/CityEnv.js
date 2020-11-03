@@ -31,7 +31,7 @@ let CitySpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Bench",
-        Rotation: Math.PI / 2,
+        Rotation: -Math.PI / 2 ,
         RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 0
@@ -101,11 +101,13 @@ function InitCityEnv(baseSpawner, gltfModel) {
                 // o.material.emissive = new THREE.Color( 0x00ffff );
                 // o.material.encoding = THREE.sRGBEncoding;
                 // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
-                o.material.emissiveIntensity = 1;
+                o.material.emissiveIntensity = 10;
+                o.receiveShadow = true;
+                o.castShadow = true
 
                 o.material.metalness = 1;
                 o.material.roughness = 0.4;
-                o.material.wireframe = false;
+                // o.material.wireframe = false;
             }
         });
 
