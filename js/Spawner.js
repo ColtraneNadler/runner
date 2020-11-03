@@ -197,7 +197,7 @@ class EnvController {
             }
         }
         this.allCoinObjs.forEach(coin => {
-            coin.rotation.y += (Math.random() *0.2)*dt;
+            coin.rotation.y += (Math.random() *0.2)*0.1;
         })
     }
     Reset() {
