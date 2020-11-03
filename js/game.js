@@ -43,8 +43,8 @@ camera.position.z = 4.6;
 
 // scene.add(hemiLight);
 
-let dirLight = new THREE.DirectionalLight(0xffffff, 0,5);
-
+let dirLight = new THREE.DirectionalLight(0xffffff, 0.05);
+dirLight.position.set(15, 30, -100);
 
 // coltrane's og settings
 // dirLight.position.set(3, 10, 10);
@@ -57,7 +57,6 @@ let dirLight = new THREE.DirectionalLight(0xffffff, 0,5);
 // dirLight.shadow.camera.far = 40;
 
 // let d = 15;
-dirLight.position.set(15, 30, -100);
 // dirLight.shadow.camera.top = d;
 // dirLight.shadow.camera.bottom = - d;
 // dirLight.shadow.camera.left = - d;
