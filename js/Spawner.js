@@ -158,7 +158,9 @@ class EnvController {
     InitializeCoinPool() {
         //add coins to pool 
         let coinSpawn = this.GetSpawnType("Coin");
-        let coinNode = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
+        let coinNode = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.1, 8, 50), new THREE.MeshStandardMaterial({ color: new THREE.Color("#9803fc") }));
+        coinNode.material.metalness = 1;
+        coinNode.material.roughness = 0.2;
         coinNode.name = "Coin";
         coinNode.geometry.computeBoundingBox();
         for (let i = 0; i < Math.round(this.numTiles * coinSpawn.Frequency); i++) {
@@ -190,6 +192,12 @@ class EnvController {
                 this.currentTile = i;
             }
         }
+        
+        // let coinSpawn = this.SpawnTypes["Coin"];
+        // for (let i = 0; i < coinSpawn.Obj.children.length; i++) {
+        //     let coin = coinSpawn.Obj.children[0];
+        //     coin.rotation.y += 1;
+        // }
     }
     Reset() {
         //remove objects from the beginning of array 
