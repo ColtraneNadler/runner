@@ -375,9 +375,9 @@ let lane_positions = {
 	'LEFT': - 2.5
 }
 let camera_positions = {
-	'RIGHT': 1.5,
+	'RIGHT': 2,
 	'MIDDLE': 0.0,
-	'LEFT': -1.5
+	'LEFT': -2
 }
 let current_lane = lanes.MIDDLE;
 let avatar_tween, camera_tween;

@@ -24,13 +24,13 @@ let ConstructionSpawnTypes = {
         RandomizePos: 0
     },
     Crane: {
-        CollideWith: false,
+        CollideWith: true,
         Frequency: 1,
-        MinSpacing: 5,
+        MinSpacing: 3,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Crane",
-        Rotation: Math.PI / 2,
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 8
@@ -47,28 +47,40 @@ let ConstructionSpawnTypes = {
         RandomizePos: 1
     },
     Sign2: {
-        CollideWith: false,
-        Frequency: 0.9,
+        CollideWith: true,
+        Frequency: 0.7,
         MinSpacing: 0,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Sign2",
-        Rotation: -Math.PI/2,
+        Rotation: Math.PI,
         RandomizeRot: Math.PI/2,
         RandomizePos: 3,
-        SideOffset: 12
+        SideOffset: 0
     },
     Rock: {
         CollideWith: false,
         Frequency: 1,
-        MinSpacing: 5,
+        MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Rocks22",
         Rotation:  -Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 12
+        SideOffset: 18
+    },
+    Pole: {
+            CollideWith: false,
+            Frequency: 1,
+            MinSpacing: 2,
+            LastIdx: 0,
+            Obj: new THREE.Object3D(),
+            Name: "Pole1",
+            Rotation:  -Math.PI,
+            RandomizeRot: 0,
+            RandomizePos: 0,
+            SideOffset: 8
     },
     Coin: {
         CollideWith: true,
@@ -84,7 +96,6 @@ let ConstructionSpawnTypes = {
     }
 }
 
-let pole;
 
 function InitConstructionEnv(baseSpawner, gltfModel) {
     let tileableWorld = new THREE.Object3D();
@@ -100,7 +111,7 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
             // o.material.emissiveIntensity = 1;
             o.material.metalness = 1;
-            o.material.roughness = 0.9;
+            o.material.roughness = 0.7;
             // o.material.wireframe = false;
             }
           });
@@ -113,9 +124,9 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'siderailing')
             tileableWorld.add(node)
-        if (node.name.toLowerCase() === 'pole1') {
-            pole = node;
-        }
+        // if (node.name.toLowerCase() === 'pole1') {
+        //     pole = node;
+        // }
 
         let mbSpawnType = baseSpawner.GetSpawnType(node.name)
         if (mbSpawnType) {
