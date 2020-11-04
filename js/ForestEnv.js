@@ -11,67 +11,140 @@ let ForestSpawnTypes = {
         RandomizeRot: 0,
         RandomizePos: 0
     },
-    tree1: {
-        CollideWith: true,
+    Tree1: {
+        CollideWith: false,
         Frequency: 1,
         MinSpacing: 5,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
-        Name: "s_0397",
+        Name: "Tree`",
         Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 16
+        SideOffset: 13
     },
-    log: {
-        CollideWith: true,
+    Tree2: {
+        CollideWith: false,
         Grindable: true,
         Frequency: 0.7,
         MinSpacing: 1,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
-        Name: "s_0577",
+        Name: "Tree2",
         Rotation: -Math.PI / 2 ,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 16
+    },
+    Tree3: {
+        CollideWith: false,
+        Frequency: 0.5,
+        MinSpacing: 1,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Tree3",
+        Rotation: Math.PI / 2,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 12
+    },
+    Tree4: {
+        CollideWith: true,
+        Frequency: 0.7,
+        MinSpacing: 3,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Tree4",
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 0
     },
-    // tree4: {
-    //     CollideWith: true,
-    //     Frequency: 0.5,
-    //     MinSpacing: 1,
-    //     LastIdx: 0,
-    //     Obj: new THREE.Object3D(),
-    //     Name: "3tree1_obj",
-    //     Rotation: Math.PI / 2,
-    //     RandomizeRot: 0,
-    //     RandomizePos: 0,
-    //     SideOffset: 0
-    // },
-    // Enviroment3Car: {
-    //     CollideWith: true,
-    //     Frequency: 0.7,
-    //     MinSpacing: 3,
-    //     LastIdx: 0,
-    //     Obj: new THREE.Object3D(),
-    //     Name: "Enviroment3Car",
-    //     Rotation: 0,
-    //     RandomizeRot: 0,
-    //     RandomizePos: 1,
-    //     SideOffset: 16
-    // },
-    // sign1: {
-    //     CollideWith: false,
-    //     Frequency: 0.5,
-    //     MinSpacing: 2,
-    //     LastIdx: 0,
-    //     Obj: new THREE.Object3D(),
-    //     Name: "3sign1_obj",
-    //     Rotation: 0,
-    //     RandomizeRot: 0,
-    //     RandomizePos: 1,
-    //     SideOffset: 16
-    // },
+    Sign: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Sign",
+        Rotation: Math.PI,
+        RandomizeRot: 0,
+        RandomizePos: 1,
+        SideOffset: 0
+    },
+    GrindLog: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "GrindLog",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 0
+    },
+    HjayBail: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "HjayBail",
+        Rotation: Math.PI / 2,
+        RandomizeRot: 0,
+        RandomizePos: 1,
+        SideOffset: 0
+    },
+    Grass: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Grass",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 1,
+        SideOffset: 0
+    },
+    Branch: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Branch",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 1,
+        SideOffset: 0
+    },
+    MailBox: {
+        CollideWith: true,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "MailBox",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 1,
+        SideOffset: 0
+    },
+    CornBushes: {
+        CollideWith: false,
+        Frequency: 0.5,
+        MinSpacing: 2,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "CornBushes",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 16
+    },
+    
     Coin: {
         CollideWith: true,
         Frequency: 2,
@@ -136,20 +209,20 @@ function InitForestEnv(baseSpawner, gltfModel) {
     // scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#e5ffc7', 0.02);
+    scene.fog = new THREE.FogExp2('#304e78', 0.02);
     scene.fog.far = 200;
-    baseSpawner.initSkybox(new THREE.Color('#e5ffc7'));
+    baseSpawner.initSkybox(new THREE.Color('#304e78'));
     return tileableWorld;
 }
 
 function SetUpStaticForestEnv(baseSpawner) {
     for (let i = 0; i < baseSpawner.numTiles; i++) {
         let tile = baseSpawner.groundTiles[i];
-        //add poles to both sides 
-        // let leftcornbush = cornbush.clone();
-        // leftcornbush.position.x = -8;
-        // leftcornbush.rotation.z = Math.PI;
-        // tile.add(leftcornbush);
+        // add poles to both sides 
+        let leftcornbush = cornbush.clone();
+        leftcornbush.position.x = -8;
+        leftcornbush.rotation.z = Math.PI;
+        tile.add(leftcornbush);
         let rightcornbush = cornbush.clone();
         rightcornbush.position.x = 8;
         tile.add(rightcornbush);
