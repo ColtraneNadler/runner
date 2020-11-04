@@ -146,14 +146,14 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
 }
 
 function SetUpStaticConstructionEnv(baseSpawner) {
-    for (let i = 0; i < baseSpawner.numTiles; i++) {
-        let tile = baseSpawner.groundTiles[i];
-        //add poles to both sides 
-        let leftPole = pole.clone();
-        leftPole.position.x = -8;
-        tile.add(leftPole);
-        let rightPole = pole.clone();
-        rightPole.position.x = 8;
-        tile.add(rightPole);
-    }
+    // for (let i = 0; i < baseSpawner.numTiles; i++) {
+    //     let tile = baseSpawner.groundTiles[i];
+    //     //add poles to both sides 
+    //     let leftPole = pole.clone();
+    //     leftPole.position.x = -8;
+    //     tile.add(leftPole);
+    //     let rightPole = pole.clone();
+    //     rightPole.position.x = 8;
+    //     tile.add(rightPole);
+    // }
 }
