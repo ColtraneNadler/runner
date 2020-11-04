@@ -58,6 +58,18 @@ let ConstructionSpawnTypes = {
         RandomizePos: 3,
         SideOffset: 12
     },
+    Rock: {
+        CollideWith: false,
+        Frequency: 1,
+        MinSpacing: 5,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "Rocks22",
+        Rotation:  -Math.PI,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 12
+    },
     Coin: {
         CollideWith: true,
         Frequency: 2,
@@ -99,7 +111,7 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'ground2')
             tileableWorld.add(node)
-        if (node.name.toLowerCase() === 'sideground')
+        if (node.name.toLowerCase() === 'siderailing')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'pole1') {
             pole = node;

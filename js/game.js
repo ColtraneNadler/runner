@@ -83,13 +83,14 @@ let jumping = false
  */
 
 let envs = [
-	['/assets/Enviroment1BigRoad.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
+	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes]
 ]
 let randomSceneIdx = Math.floor(2 * Math.random());
 let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
 	envController.Init(glb);
+	
 }, null, console.log);
 
 /**
