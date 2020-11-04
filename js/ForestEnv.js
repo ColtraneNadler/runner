@@ -44,21 +44,21 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Tree3",
         Rotation: Math.PI / 2,
-        RandomizeRot: 0,
+        RandomizeRot: 1,
         RandomizePos: 0,
         SideOffset: 12
     },
     Tree4: {
-        CollideWith: true,
+        CollideWith: false,
         Frequency: 0.7,
-        MinSpacing: 3,
+        MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Tree4",
         Rotation: 0,
-        RandomizeRot: 0,
+        RandomizeRot: 1,
         RandomizePos: 0,
-        SideOffset: 0
+        SideOffset: 10
     },
     Sign: {
         CollideWith: true,
@@ -132,18 +132,18 @@ let ForestSpawnTypes = {
         RandomizePos: 1,
         SideOffset: 0
     },
-    CornBushes: {
-        CollideWith: false,
-        Frequency: 0.5,
-        MinSpacing: 2,
-        LastIdx: 0,
-        Obj: new THREE.Object3D(),
-        Name: "CornBushes",
-        Rotation: 0,
-        RandomizeRot: 0,
-        RandomizePos: 0,
-        SideOffset: 16
-    },
+    // CornBushes: {
+    //     CollideWith: false,
+    //     Frequency: 0.5,
+    //     MinSpacing: 2,
+    //     LastIdx: 0,
+    //     Obj: new THREE.Object3D(),
+    //     Name: "CornBushes",
+    //     Rotation: 0,
+    //     RandomizeRot: 0,
+    //     RandomizePos: 0,
+    //     SideOffset: 16
+    // },
     
     Coin: {
         CollideWith: true,
@@ -190,6 +190,9 @@ function InitForestEnv(baseSpawner, gltfModel) {
         if (node.name.toLowerCase() === 'cornbushes') {
             cornbush = node;
         }
+        if (node.name.toLowerCase() === 'fence') {
+            fence = node;
+        }
         
 
         let mbSpawnType = baseSpawner.GetSpawnType(node.name)
@@ -218,17 +221,28 @@ function InitForestEnv(baseSpawner, gltfModel) {
 function SetUpStaticForestEnv(baseSpawner) {
     for (let i = 0; i < baseSpawner.numTiles; i++) {
         let tile = baseSpawner.groundTiles[i];
-        // add poles to both sides 
+        // add cornbushes to both sides 
         let leftcornbush = cornbush.clone();
-        leftcornbush.position.x = -8;
+        leftcornbush.position.x = -25;
+        leftcornbush.position.y = 0.4;
         leftcornbush.rotation.z = Math.PI;
         tile.add(leftcornbush);
         let rightcornbush = cornbush.clone();
-        rightcornbush.position.x = 8;
+        rightcornbush.position.x = 25;
+        rightcornbush.position.y = 0.4;
         tile.add(rightcornbush);
-        if (i % 4 == 0) {
-            cornbushClone = cornbush.clone();
-            tile.add(cornbushClone);
-        }
+        // add fence
+        let leftfence = fence.clone();
+        leftfence.position.x = -6.7;
+        leftfence.rotation.z = Math.PI;
+        tile.add(leftfence);
+        let rightfence = fence.clone();
+        rightfence.position.x = 6.7;
+        tile.add(rightfence);
+
+        // if (i % 4 == 0) {
+        //     cornbushClone = cornbush.clone();
+        //     tile.add(cornbushClone);
+        // }
     }
 }
