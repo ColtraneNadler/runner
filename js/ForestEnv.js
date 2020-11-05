@@ -169,6 +169,15 @@ function InitForestEnv(baseSpawner, gltfModel) {
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
+
+        if (node.name.toLowerCase() === 'tree2') {
+            node.scale.set(0.08,0.08,0.08);
+        }
+
+        if (node.name.toLowerCase() === 'tree3') {
+            node.scale.set(0.04,0.04,0.04);
+        }
+
         node.traverse((o) => {
             if (o.isMesh && o.name == "Ground") {
                 // o.material.emissive = new THREE.Color( 0x00ffff );
@@ -197,10 +206,7 @@ function InitForestEnv(baseSpawner, gltfModel) {
                 o.material.metalness = 0;
                 o.material.roughness = 1;
             }
-            // else if (o.isMesh && (o.name == "Tree2" || o.name == "Tree3")) {
-            //     o.scale.set(5,5,5);
 
-            // }
         });
 
         if (node.name.toLowerCase() === 'ground') 
@@ -224,14 +230,26 @@ function InitForestEnv(baseSpawner, gltfModel) {
         }
     }
 
-    //add a plane geometry 
-    // let groundGeo = new THREE.PlaneGeometry(100, 100)
-    // let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
-    // planeMesh.rotation.x = -Math.PI / 2;
-    // planeMesh.position.y = -1;
-    // scene.add(planeMesh);
+    let loader = new THREE.GLTFLoader();
+    loader.load(
+        '/assets/moon/moon.gltf',
+        function ( glb ) {
 
-    //TODO global scope.. that's messy
+            let models = glb.scene;
+            models.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                    // child.material.roughness = 0.3;
+                    // child.material.metalness = 1;             
+                }
+            });
+
+            glb.scene.scale.set(15,15,15);
+            glb.scene.position.set(15,20,-80);
+            glb.scene.rotation.set(0,-Math.PI / 2,0);
+            // scene.add(glb.scene);
+            baseSpawner.rootObj.add(glb.scene);
+        })  ;
+
     baseSpawner.initSkybox(new THREE.Color('#304e78'));
         return tileableWorld;
 }
