@@ -87,18 +87,17 @@ let envs = [
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
 	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
-// let randomSceneIdx = Math.floor(3 * Math.random());
-// let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2466, 10);
-// loader.load(envs[randomSceneIdx][0], function (glb) {
-// 	envController.Init(glb);
-// }, null, console.log);
-
+let initialized;
 // load all envs in
 envs.forEach((env) => {
 	let envController = new EnvController(env[1], env[2], env[3], env[4], 13.2466, 10);
 	loader.load(env[0], function (glb) {
 		envController.Init(glb);
 		env.push(envController);
+		if(!initialized){
+			envController.SetVisibility(true);
+			initialized = true;
+		}
 	}, null, console.log);
 })
 
