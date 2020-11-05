@@ -27,7 +27,7 @@ let ForestSpawnTypes = {
         CollideWith: false,
         Grindable: true,
         Frequency: 0.7,
-        MinSpacing: 1,
+        MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Tree2",
@@ -229,29 +229,59 @@ function InitForestEnv(baseSpawner, gltfModel) {
             }
         }
     }
+   
 
+    
+    
+    // const pointLightHelper =  new THREE.PointLightHelper( plight, 4 );
+    // scene.add( pointLightHelper );
+    let moon = new THREE.Object3D();
     let loader = new THREE.GLTFLoader();
     loader.load(
-        '/assets/moon/moon.gltf',
+        '/assets/moon/moon_v2.gltf',
         function ( glb ) {
 
             let models = glb.scene;
             models.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
                     // child.material.roughness = 0.3;
-                    // child.material.metalness = 1;             
+                    // child.material.metalness = 1;  
+                    // child.material.emissiveIntensity = 100;
+                    
                 }
             });
+            moon = glb.scene;
+            moon.name = 'moon';
+            moon.scale.set(15,15,15);
+            moon.position.set(0,20,-80);
+            moon.rotation.set(0,-Math.PI / 2,0);
+            // baseSpawner.rootObj.add(moon);
 
-            glb.scene.scale.set(15,15,15);
-            glb.scene.position.set(15,20,-80);
-            glb.scene.rotation.set(0,-Math.PI / 2,0);
-            // scene.add(glb.scene);
-            baseSpawner.rootObj.add(glb.scene);
+            let plight = new THREE.SpotLight( 0xffffff , 3000);
+            // plight.angle = Math.PI;
+            plight.position.set( 0,20,-75 );
+            plight.target = moon;
+            // scene.add(plight.target);
+            // scene.add( plight );
+
+            baseSpawner.rootObj.add(plight.target)
+            baseSpawner.rootObj.add(plight);
+        
+            // let helper = new THREE.SpotLightHelper( plight);
+            //  scene.add(helper);
+            
         })  ;
 
     baseSpawner.initSkybox(new THREE.Color('#304e78'));
-        return tileableWorld;
+
+
+
+    // const light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    // light.position.set(15,20,-80);
+    // light.intensity = 2;
+    // baseSpawner.rootObj.add( light );
+
+    return tileableWorld;
 }
 
 function SetUpStaticForestEnv(baseSpawner) {

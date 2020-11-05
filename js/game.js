@@ -43,6 +43,18 @@ camera.position.z = 4.6;
 
 // scene.add(hemiLight);
 
+// let plight = new THREE.SpotLight( 0xffffff , 5, 5000);
+// plight.position.set(0,0,1);
+// plight.target.set =
+// // plight.rotation.set(Math.PI / 2, Math.PI / 2,0);
+// // plight.target.position.set(0,20,110);
+// // scene.add(plight.target);
+// scene.add( plight );
+
+
+// let helper = new THREE.SpotLightHelper( plight);
+// scene.add(helper);
+
 let dirLight = new THREE.DirectionalLight(0xffffff, 0.05);
 dirLight.position.set(15, 30, -100);
 
@@ -279,7 +291,7 @@ function setupForScene(scene) {
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			let key = isTouchDevice ? "touch" : "press space";
-			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>" + key + " to continue</br>";
+			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>" + key + " to skate a new location</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(300, 1.4, 2.6)

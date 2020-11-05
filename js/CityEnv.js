@@ -95,19 +95,29 @@ function InitCityEnv(baseSpawner, gltfModel) {
     //backwards iterating since the nodes may get removed
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
+
+
+        // if (node.name.toLowerCase() === 'tallbuilding') {
+        //     node.scale.set(0.013,0.013,0.013);
+        // }
+    
+        // if (node.name.toLowerCase() === 'shortbuilding') {
+        //     node.scale.set(0.013,0.013,0.013);
+        // }
+
+        // if (node.name.toLowerCase() === 'movietheater') {
+        //     node.scale.set(0.013,0.013,0.013);
+        // }
+
         node.position.y = -1;
         node.traverse((o) => {
             if (o.isMesh) {
-                // o.material.emissive = new THREE.Color( 0x00ffff );
-                // o.material.encoding = THREE.sRGBEncoding;
-                // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
                 o.material.emissiveIntensity = 10;
                 o.receiveShadow = true;
                 o.castShadow = true
 
                 o.material.metalness = 1;
                 o.material.roughness = 0.4;
-                // o.material.wireframe = false;
             }
         });
 
@@ -115,6 +125,7 @@ function InitCityEnv(baseSpawner, gltfModel) {
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'palmtree') {
             tree = node;
+            // tree.scale.set(0.012,0.012,0.012);
         }
         if (node.name.toLowerCase() === 'highwaysign') {
             highWaySign = node;
