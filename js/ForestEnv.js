@@ -117,7 +117,7 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Branch",
         Rotation: Math.PI,
-        RandomizeRot: 3,
+        RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 0
     },
