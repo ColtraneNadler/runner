@@ -85,7 +85,7 @@ let jumping = false
 let envs = [
 	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes],
-	['/assets/Enviroment3MainforIan.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes]
+	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes]
 ]
 let randomSceneIdx = Math.floor(3 * Math.random());
 let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2466, 10);
