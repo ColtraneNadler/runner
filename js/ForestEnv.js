@@ -105,7 +105,7 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Grass",
         Rotation: 0,
-        RandomizeRot: 0,
+        RandomizeRot: 3,
         RandomizePos: 1,
         SideOffset: 0
     },
@@ -170,7 +170,7 @@ function InitForestEnv(baseSpawner, gltfModel) {
         let node = gltfModel.scene.children[i];
         node.position.y = -1;
         node.traverse((o) => {
-            if (o.isMesh) {
+            if (o.isMesh && o.name == "Ground") {
                 // o.material.emissive = new THREE.Color( 0x00ffff );
                 // o.material.encoding = THREE.sRGBEncoding;
                 // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
@@ -179,9 +179,28 @@ function InitForestEnv(baseSpawner, gltfModel) {
                 o.castShadow = false
 
                 o.material.metalness = 0;
-                o.material.roughness = 0.9;
+                o.material.roughness = 0.4;
                 // o.material.wireframe = false;
             }
+            else if (o.isMesh && o.name == "Enviroment3Car") {
+                o.material.metalness = 1;
+                o.material.roughness = 0.3;
+
+            }
+            else if (o.isMesh && o.name == "SideRailing") {
+            
+                o.material.metalness = 0;
+                o.material.roughness = 0.5;
+            }
+            else if (o.isMesh) {
+            
+                o.material.metalness = 0;
+                o.material.roughness = 1;
+            }
+            // else if (o.isMesh && (o.name == "Tree2" || o.name == "Tree3")) {
+            //     o.scale.set(5,5,5);
+
+            // }
         });
 
         if (node.name.toLowerCase() === 'ground') 
