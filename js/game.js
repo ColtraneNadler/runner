@@ -88,7 +88,7 @@ let envs = [
 	['/assets/Enviroment3MainforIan.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes]
 ]
 let randomSceneIdx = Math.floor(3 * Math.random());
-let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13, 10);
+let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2466, 10);
 loader.load(envs[randomSceneIdx][0], function (glb) {
 	envController.Init(glb);
 	

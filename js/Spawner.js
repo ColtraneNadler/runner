@@ -149,7 +149,7 @@ class EnvController {
                 if (p.length > 0) {
                     el.position.y = p[0].height * 0.01;
                 } else {
-                    el.position.y = 0.75 + 0.5*Math.random();
+                    el.position.y = 0.75 + 0.5 * Math.random();
                 }
                 this.SetPos(Object.entries(lane_positions)[lanePos][1], coinSpawn.RandomizePos, el)
                 tile.add(el)
@@ -188,16 +188,17 @@ class EnvController {
         // skybox.rotation.y += 0.0001;
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
-            tile.position.z += dt;
             if (tile.position.z > this.tileWidth) {
-                tile.position.z = -(this.numTiles - 1) * this.tileWidth;
+                let prevTile = ( i + this.numTiles - 1 ) % this.numTiles;
+                tile.position.z = this.groundTiles[prevTile].position.z - this.tileWidth;
                 this.ReturnSpawnedObjectsToPool(tile);
                 this.AddSpawnedObjectsToTile(tile, i);
                 this.currentTile = i;
             }
+            tile.position.z += dt;
         }
         this.allCoinObjs.forEach(coin => {
-            coin.rotation.y += (Math.random() *0.2)*0.1;
+            coin.rotation.y += (Math.random() * 0.2) * 0.1;
         })
     }
     Reset() {
@@ -255,7 +256,7 @@ class EnvController {
             let intersect = this.tRay.intersectBox(obj.geometry.boundingBox, this.intersectionPoint);
             if (intersect) {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100;
-                if (collisionType=="Coin") {
+                if (collisionType == "Coin") {
                     if (dist < 0.05) {
                         // return coin to object pool
                         this.GetSpawnType(obj.name).Obj.add(obj);

@@ -74,6 +74,7 @@ let ForestSpawnTypes = {
     },
     GrindLog: {
         CollideWith: true,
+        Grindable: true,
         Frequency: 0.5,
         MinSpacing: 2,
         LastIdx: 0,
