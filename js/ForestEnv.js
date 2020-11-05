@@ -3,7 +3,7 @@ let ForestSpawnTypes = {
     Enviroment3Car: {
         CollideWith: true,
         Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
-        MinSpacing: 6, //min spacing of 1 means that there must be atleast 1 tile between element
+        MinSpacing: 5, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Enviroment3Car",
@@ -13,8 +13,8 @@ let ForestSpawnTypes = {
     },
     Tree1: {
         CollideWith: false,
-        Frequency: 1,
-        MinSpacing: 5,
+        Frequency: 0.9,
+        MinSpacing: 3,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Tree`",
@@ -38,7 +38,7 @@ let ForestSpawnTypes = {
     },
     Tree3: {
         CollideWith: false,
-        Frequency: 0.5,
+        Frequency: 0.7,
         MinSpacing: 1,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
@@ -50,7 +50,7 @@ let ForestSpawnTypes = {
     },
     Tree4: {
         CollideWith: false,
-        Frequency: 0.7,
+        Frequency: 0.8,
         MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
@@ -68,8 +68,8 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Sign",
         Rotation: Math.PI,
-        RandomizeRot: 0,
-        RandomizePos: 1,
+        RandomizeRot: 2,
+        RandomizePos: 0,
         SideOffset: 0
     },
     GrindLog: {
@@ -116,9 +116,9 @@ let ForestSpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Branch",
-        Rotation: 0,
-        RandomizeRot: 0,
-        RandomizePos: 1,
+        Rotation: Math.PI,
+        RandomizeRot: 3,
+        RandomizePos: 0,
         SideOffset: 0
     },
     MailBox: {
@@ -129,7 +129,7 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "MailBox",
         Rotation: 0,
-        RandomizeRot: 0,
+        RandomizeRot: 1,
         RandomizePos: 1,
         SideOffset: 0
     },
@@ -174,12 +174,12 @@ function InitForestEnv(baseSpawner, gltfModel) {
                 // o.material.emissive = new THREE.Color( 0x00ffff );
                 // o.material.encoding = THREE.sRGBEncoding;
                 // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
-                o.material.emissiveIntensity = 10;
-                o.receiveShadow = true;
-                o.castShadow = true
+                // o.material.emissiveIntensity = 1;
+                o.receiveShadow = false;
+                o.castShadow = false
 
-                o.material.metalness = 1;
-                o.material.roughness = 0.4;
+                o.material.metalness = 0;
+                o.material.roughness = 0.9;
                 // o.material.wireframe = false;
             }
         });
@@ -223,12 +223,12 @@ function SetUpStaticForestEnv(baseSpawner) {
         // add cornbushes to both sides 
         let leftcornbush = cornbush.clone();
         leftcornbush.position.x = -25;
-        leftcornbush.position.y = 0.4;
+        leftcornbush.position.y = 0.1;
         leftcornbush.rotation.z = Math.PI;
         tile.add(leftcornbush);
         let rightcornbush = cornbush.clone();
         rightcornbush.position.x = 25;
-        rightcornbush.position.y = 0.4;
+        rightcornbush.position.y = 0.1;
         tile.add(rightcornbush);
         // add fence
         let leftfence = fence.clone();
