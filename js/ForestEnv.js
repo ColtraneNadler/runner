@@ -68,8 +68,8 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Sign",
         Rotation: Math.PI,
-        RandomizeRot: 0,
-        RandomizePos: 1,
+        RandomizeRot: 2,
+        RandomizePos: 0,
         SideOffset: 0
     },
     GrindLog: {
@@ -117,7 +117,7 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "Branch",
         Rotation: Math.PI,
-        RandomizeRot: 1,
+        RandomizeRot: 3,
         RandomizePos: 0,
         SideOffset: 0
     },
@@ -129,7 +129,7 @@ let ForestSpawnTypes = {
         Obj: new THREE.Object3D(),
         Name: "MailBox",
         Rotation: 0,
-        RandomizeRot: 0,
+        RandomizeRot: 1,
         RandomizePos: 1,
         SideOffset: 0
     },
@@ -225,12 +225,12 @@ function SetUpStaticForestEnv(baseSpawner) {
         // add cornbushes to both sides 
         let leftcornbush = cornbush.clone();
         leftcornbush.position.x = -25;
-        leftcornbush.position.y = 0.4;
+        leftcornbush.position.y = 0.1;
         leftcornbush.rotation.z = Math.PI;
         tile.add(leftcornbush);
         let rightcornbush = cornbush.clone();
         rightcornbush.position.x = 25;
-        rightcornbush.position.y = 0.4;
+        rightcornbush.position.y = 0.1;
         tile.add(rightcornbush);
         // add fence
         let leftfence = fence.clone();
