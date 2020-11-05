@@ -136,13 +136,14 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             }
         }
     }
+    baseSpawner.initSkybox(new THREE.Color('#f7fcff'));
+    
+    return tileableWorld;
+}
 
-    //TODO global scope.. that's messy
+function SetUpConstructionEnvProps(baseSpawner) {
     scene.fog = new THREE.FogExp2('#f7fcff', .02);
     scene.fog.far = 200;
-    baseSpawner.initSkybox(new THREE.Color('#f7fcff'));
-
-    return tileableWorld;
 }
 
 function SetUpStaticConstructionEnv(baseSpawner) {
