@@ -213,7 +213,7 @@ function InitForestEnv(baseSpawner, gltfModel) {
     // scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#304e78', 0.02);
+    scene.fog = new THREE.FogExp2('#7896b6', 0.02);
     scene.fog.far = 200;
     baseSpawner.initSkybox(new THREE.Color('#304e78'));
     return tileableWorld;
