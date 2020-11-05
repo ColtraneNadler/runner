@@ -232,10 +232,8 @@ function InitForestEnv(baseSpawner, gltfModel) {
     // scene.add(planeMesh);
 
     //TODO global scope.. that's messy
-    scene.fog = new THREE.FogExp2('#7896b6', 0.02);
-    scene.fog.far = 200;
     baseSpawner.initSkybox(new THREE.Color('#304e78'));
-    return tileableWorld;
+        return tileableWorld;
 }
 
 function SetUpStaticForestEnv(baseSpawner) {
@@ -265,4 +263,9 @@ function SetUpStaticForestEnv(baseSpawner) {
         //     tile.add(cornbushClone);
         // }
     }
+}
+
+function SetUpForestEnvProps(baseSpawner) {
+    scene.fog = new THREE.FogExp2('#7896b6', 0.02);
+    scene.fog.far = 200;
 }

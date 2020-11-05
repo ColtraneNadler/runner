@@ -133,13 +133,15 @@ function InitCityEnv(baseSpawner, gltfModel) {
     let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
     planeMesh.rotation.x = -Math.PI / 2;
     planeMesh.position.y = -1;
-    scene.add(planeMesh);
+    baseSpawner.rootObj.add(planeMesh);
+    baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
 
-    //TODO global scope.. that's messy
+    return tileableWorld;
+}
+
+function SetUpCityEnvProps(baseSpawner) {
     scene.fog = new THREE.FogExp2('#f0d3fd', 0.02);
     scene.fog.far = 200;
-    baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
-    return tileableWorld;
 }
 
 function SetUpStaticCityEnv(baseSpawner) {

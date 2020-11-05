@@ -24,11 +24,11 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 // renderer.toneMapping = THREE.ACESFilmicToneMapping;
 // renderer.toneMappingExposure = 1;
-const composer = new THREE.EffectComposer( renderer );
+const composer = new THREE.EffectComposer(renderer);
 
 // renderer.setClearColor(0x000000,0.0);
 
-let pmremGenerator = new THREE.PMREMGenerator( renderer );
+let pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 
 document.body.appendChild(renderer.domElement);
@@ -83,16 +83,23 @@ let jumping = false
  */
 
 let envs = [
-	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes],
-	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes],
-	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes]
+	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
+	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
+	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
-let randomSceneIdx = Math.floor(3 * Math.random());
-let envController = new EnvController(envs[randomSceneIdx][1], envs[randomSceneIdx][2], envs[randomSceneIdx][3], 13.2466, 10);
-loader.load(envs[randomSceneIdx][0], function (glb) {
-	envController.Init(glb);
-	
-}, null, console.log);
+let initialized;
+// load all envs in
+envs.forEach((env) => {
+	let envController = new EnvController(env[1], env[2], env[3], env[4], 13.2466, 10);
+	loader.load(env[0], function (glb) {
+		envController.Init(glb);
+		env.push(envController);
+		if(!initialized){
+			envController.SetVisibility(true);
+			initialized = true;
+		}
+	}, null, console.log);
+})
 
 /**
  * LOAD AVATAR AND ANIMATIONS
@@ -156,7 +163,7 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 		else if (child.name.startsWith("o3")) {
 			child.visible = false;
 		}
-		
+
 	})
 
 	setUpForCurrentOutfit();
@@ -186,7 +193,15 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 /**
  * UI EVENTS
  */
+let envController;
+let envIdx = 0;
 startButton.addEventListener("click", () => {
+	if(envController){
+		envController.SetVisibility(false);
+	}
+	envIdx = (envIdx + 1) % 3;
+	envController = envs[envIdx][5]
+	envController.SetVisibility(true);
 	clearScene(SCENE.OUTFIT);
 	currentScene = SCENE.GAMEPLAY;
 	setupForScene(currentScene);
@@ -224,17 +239,17 @@ let gameTime = 0;
 
 getCubeMapTexture();
 
-function getCubeMapTexture () {
-      let OurRGBELoader = new THREE.RGBELoader()
-		.setDataType( THREE.UnsignedByteType )
-		.load( '/assets/environment/venice_sunset_1k.hdr', texture => {
-			
-          const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
-          pmremGenerator.dispose();
-		//   resolve( { envMap } );
-		  scene.environment = envMap;
+function getCubeMapTexture() {
+	let OurRGBELoader = new THREE.RGBELoader()
+		.setDataType(THREE.UnsignedByteType)
+		.load('/assets/environment/venice_sunset_1k.hdr', texture => {
+
+			const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+			pmremGenerator.dispose();
+			//   resolve( { envMap } );
+			scene.environment = envMap;
 		});
-  }
+}
 
 function setupForScene(scene) {
 	switch (scene) {
@@ -302,7 +317,7 @@ function updateForScene(scene) {
 			gameTime += dt;
 			playerMovementUpdate(dt);
 			//envspeed moves up 1 every 20 seconds, from 3 to 7
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime/20,4);
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime / 20, 4);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
@@ -322,8 +337,7 @@ function updateForScene(scene) {
 			}
 			// coin collision check
 			col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
-			if(col[0])
-			{
+			if (col[0]) {
 				currentScore += 5;
 			}
 			break;
@@ -347,7 +361,7 @@ function render() {
 	requestAnimationFrame(render);
 	stats.begin();
 
-// Used with light select layers
+	// Used with light select layers
 	// renderer.autoClear = true;
 	// camera.layers.set(0);
 	// renderer.render(scene, camera);
@@ -418,16 +432,16 @@ window.addEventListener('keydown', e => {
  * TOUCH CONTROLS
  */
 function is_touch_device4() {
-    if ("ontouchstart" in window)
-        return true;
+	if ("ontouchstart" in window)
+		return true;
 
-    if (window.DocumentTouch && document instanceof DocumentTouch)
-        return true;
+	if (window.DocumentTouch && document instanceof DocumentTouch)
+		return true;
 
 
-    return window.matchMedia( "(pointer: coarse)" ).matches;
+	return window.matchMedia("(pointer: coarse)").matches;
 }
-let isTouchDevice = is_touch_device4(); 
+let isTouchDevice = is_touch_device4();
 
 document.addEventListener('touchstart', handleTouchStart, false);
 document.addEventListener('touchmove', handleTouchMove, false);
@@ -561,8 +575,7 @@ function playerMovementUpdate(dt) {
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
-				if(current_animation !== animations.FALL)
-				{
+				if (current_animation !== animations.FALL) {
 					current_animation = animations.TURN_RIGHT;
 					boy_actions[animations.TURN_RIGHT].reset()
 					boy_actions[animations.TURN_RIGHT].setDuration(2.5)
@@ -587,8 +600,7 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.to({ y: -1 }, 100);
 			avatar_land_tween.start();
 			landed = false
-			if(current_animation !== animations.FALL)
-			{
+			if (current_animation !== animations.FALL) {
 				current_animation = animations.PUSH;
 				// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 				//So I'm trying to reset the duration back to 1 when not grinding
@@ -622,8 +634,7 @@ function animationUpdate(dt) {
 	boy_mixer.update(dt)
 }
 
-function HardResetAnimsToIdle()
-{
+function HardResetAnimsToIdle() {
 	for (let i = 0; i < boy_actions.length; i++) {
 		if (i == animations.IDLE) {
 			boy_actions[i].setEffectiveWeight(1.0)

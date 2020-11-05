@@ -1,5 +1,6 @@
 class EnvController {
-    constructor(initFunc, staticInitFunc, spawnTypes, tileWidth, numTiles) {
+    constructor(initFunc, staticInitFunc, spawnTypes, envPropFunc, tileWidth, numTiles) {
+        this.rootObj = new THREE.Object3D()
         this.groundTiles = []
         this.tileWidth = tileWidth;
         this.numTiles = numTiles;
@@ -10,12 +11,15 @@ class EnvController {
 
         this.initFunc = initFunc;
         this.staticInitFunc = staticInitFunc;
+        this.envPropFunc = envPropFunc;
 
         this.raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, 0, -1));
         //Ray helpers
         this.inverseMatrix = new THREE.Matrix4();
         this.tRay = new THREE.Ray();
         this.intersectionPoint = new THREE.Vector3();
+
+        this.initSkybox(new THREE.Color('#dfa6fb'));
     }
 
     drawRaycastLine(raycaster) {
@@ -50,7 +54,7 @@ class EnvController {
         // console.log('vec end', endVec);
 
         let line = new THREE.Line(geometry, material);
-        scene.add(line);
+        this.rootObj.add(line);
         // scene.remove(line);
     }
 
@@ -60,15 +64,23 @@ class EnvController {
             let tile2 = tileableWorld.clone()
             tile2.position.z = -this.tileWidth * i;
             this.groundTiles.push(tile2);
-            scene.add(tile2);
+            this.rootObj.add(tile2);
             // debug bounding box visualization
             // let bbox = new THREE.BoxHelper( tile2, 0xffff00 );
             // bbox.update();
-            // scene.add( bbox );
+            // this.rootObj.add( bbox );
         }
         this.staticInitFunc(this);
         this.InitializeCoinPool();
         console.log('the world', gltfModel.scene.children);
+        scene.add(this.rootObj);
+        this.rootObj.visible = false;
+    }
+    SetVisibility(visibility) {
+        this.rootObj.visible = visibility;
+        if(visibility){
+            this.envPropFunc(this);
+        }
     }
     GetSpawnType(name) {
         let returnType = null;
@@ -296,6 +308,7 @@ class EnvController {
         let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
         let skybox = new THREE.Mesh(skyboxGeo, materialArray);
         skybox.position.set(200, 0, 0);
-        scene.add(skybox);
+        this.rootObj.add(skybox);
+        this.skybox = skybox;
     }
 }
