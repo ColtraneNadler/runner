@@ -145,7 +145,7 @@ function InitCityEnv(baseSpawner, gltfModel) {
     planeMesh.rotation.x = -Math.PI / 2;
     planeMesh.position.y = -1;
     baseSpawner.rootObj.add(planeMesh);
-    baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
+    // baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
 
     return tileableWorld;
 }
@@ -153,6 +153,9 @@ function InitCityEnv(baseSpawner, gltfModel) {
 function SetUpCityEnvProps(baseSpawner) {
     scene.fog = new THREE.FogExp2('#f0d3fd', 0.02);
     scene.fog.far = 200;
+    materialArray.forEach(mat => {
+        mat.color = new THREE.Color('#dfa6fb');
+    });
 }
 
 function SetUpStaticCityEnv(baseSpawner) {

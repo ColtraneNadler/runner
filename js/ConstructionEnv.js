@@ -136,7 +136,7 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             }
         }
     }
-    baseSpawner.initSkybox(new THREE.Color('#f7fcff'));
+    // baseSpawner.initSkybox(new THREE.Color('#f7fcff'));
     
     return tileableWorld;
 }
@@ -144,6 +144,9 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
 function SetUpConstructionEnvProps(baseSpawner) {
     scene.fog = new THREE.FogExp2('#f7fcff', .02);
     scene.fog.far = 200;
+    materialArray.forEach(mat => {
+        mat.color = new THREE.Color('#f7fcff');
+    });
 }
 
 function SetUpStaticConstructionEnv(baseSpawner) {

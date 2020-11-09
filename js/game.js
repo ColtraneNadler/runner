@@ -103,13 +103,10 @@ let envs = [
 let initialized = []
 // load all envs in
 envs.forEach((env) => {
-	let envController = new EnvController(env[1], env[2], env[3], env[4], 13.2466, 10);
+	let cEnvController = new EnvController(env[1], env[2], env[3], env[4], 13.2466, 10);
 	loader.load(env[0], function (glb) {
-		envController.Init(glb);
-		env.push(envController);
-		if(initialized.length == 0){
-			envController.SetVisibility(true);
-		}
+		cEnvController.Init(glb);
+		env.push(cEnvController);
 		initialized.push(1)
 		if(initialized.length == envs.length){
 			loadingScreen.hidden = true;
@@ -118,6 +115,39 @@ envs.forEach((env) => {
 	}, null, console.log);
 })
 
+
+// skybox 
+
+function createPathStrings(filename) {
+	const basePath = "/assets/cSkybox_small/";
+	const baseFilename = basePath + filename;
+	const fileType = ".jpg";
+	const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
+	const pathStings = sides.map(side => {
+		return baseFilename + "_" + side + fileType;
+	});
+
+	return pathStings;
+}
+
+function createMaterialArray(filename, tintColor) {
+	const skyboxImagepaths = createPathStrings(filename);
+	const materialArray = skyboxImagepaths.map(image => {
+		let texture = new THREE.TextureLoader().load(image);
+		return new THREE.MeshBasicMaterial({ color: tintColor, map: texture, side: THREE.BackSide, fog: false });
+	});
+	return materialArray;
+}
+
+function initSkybox(color) {
+	materialArray = createMaterialArray("cartoon", color);
+	let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
+	let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+	skybox.position.set(200, 0, 0);
+	scene.add(skybox);
+}
+let materialArray = []
+initSkybox(new THREE.Color());
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
@@ -218,7 +248,9 @@ startButton.addEventListener("click", () => {
 	}
 	envIdx = (envIdx + 1) % 3;
 	envController = envs[envIdx][5]
-	envController.SetVisibility(true);
+	setTimeout(()=> {
+		envController.SetVisibility(true);
+	},1)
 	clearScene(SCENE.OUTFIT);
 	currentScene = SCENE.GAMEPLAY;
 	setupForScene(currentScene);

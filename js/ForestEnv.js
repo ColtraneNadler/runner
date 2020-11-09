@@ -272,7 +272,7 @@ function InitForestEnv(baseSpawner, gltfModel) {
             
         })  ;
 
-    baseSpawner.initSkybox(new THREE.Color('#304e78'));
+    // baseSpawner.initSkybox(new THREE.Color('#304e78'));
 
 
 
@@ -316,4 +316,7 @@ function SetUpStaticForestEnv(baseSpawner) {
 function SetUpForestEnvProps(baseSpawner) {
     scene.fog = new THREE.FogExp2('#7896b6', 0.02);
     scene.fog.far = 200;
+    materialArray.forEach(mat => {
+        mat.color = new THREE.Color('#304e78');
+    });
 }

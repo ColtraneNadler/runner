@@ -18,8 +18,6 @@ class EnvController {
         this.inverseMatrix = new THREE.Matrix4();
         this.tRay = new THREE.Ray();
         this.intersectionPoint = new THREE.Vector3();
-
-        this.initSkybox(new THREE.Color('#dfa6fb'));
     }
 
     drawRaycastLine(raycaster) {
@@ -78,9 +76,32 @@ class EnvController {
     }
     SetVisibility(visibility) {
         this.rootObj.visible = visibility;
-        if(visibility){
+        if(visibility){ 
             this.envPropFunc(this);
+        } else {
+            const cleanMaterial = material => {
+                material.dispose()
+                // dispose textures
+                for (const key of Object.keys(material)) {
+                    const value = material[key]
+                    if (value && typeof value === 'object' && 'minFilter' in value) {
+                        value.dispose()
+                    }
+                }
+            }
+            this.rootObj.traverse(object => {
+                if (!object.isMesh) return
+                object.geometry.dispose()
+                if (object.material.isMaterial) {
+                    cleanMaterial(object.material)
+                } else {
+                    for (const material of object.material) cleanMaterial(material)
+                }
+            })
+            
+      
         }
+
     }
     GetSpawnType(name) {
         let returnType = null;
@@ -280,35 +301,5 @@ class EnvController {
             }
         }
         return [false, 0];
-    }
-    // skybox
-    createPathStrings(filename) {
-        const basePath = "/assets/cSkybox_small/";
-        const baseFilename = basePath + filename;
-        const fileType = ".jpg";
-        const sides = ["ft", "bk", "up", "dn", "lf", "rt"];
-        const pathStings = sides.map(side => {
-            return baseFilename + "_" + side + fileType;
-        });
-
-        return pathStings;
-    }
-
-    createMaterialArray(filename, tintColor) {
-        const skyboxImagepaths = this.createPathStrings(filename);
-        const materialArray = skyboxImagepaths.map(image => {
-            let texture = new THREE.TextureLoader().load(image);
-            return new THREE.MeshBasicMaterial({ color: tintColor, map: texture, side: THREE.BackSide, fog: false });
-        });
-        return materialArray;
-    }
-
-    initSkybox(color) {
-        const materialArray = this.createMaterialArray("cartoon", color);
-        let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
-        let skybox = new THREE.Mesh(skyboxGeo, materialArray);
-        skybox.position.set(200, 0, 0);
-        this.rootObj.add(skybox);
-        this.skybox = skybox;
     }
 }
