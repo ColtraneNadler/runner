@@ -573,14 +573,14 @@ function movePlayer(dir) {
 			// slide
 			break;
 		case 'LEFT':
-			if (current_lane === lanes.LEFT || jumping == true || landed == true) return;
+			if (current_lane === lanes.LEFT || landed == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
 			current_animation = animations.TURN_LEFT;
 			boy_actions[animations.TURN_LEFT].reset()
 			boy_actions[animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
-			if (current_lane === lanes.RIGHT || jumping == true || landed == true) return;
+			if (current_lane === lanes.RIGHT || landed == true) return;
 			current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
 
 			current_animation = animations.TURN_RIGHT;
