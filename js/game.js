@@ -109,7 +109,7 @@ envs.forEach((env) => {
 		env.push(cEnvController);
 		initialized.push(1)
 		if (initialized.length == envs.length) {
-			loadingScreen.hidden = true;
+			loadingScreen.style.display = "none";
 		}
 		//once all environments are loaded we can remove the loading screen
 	}, null, console.log);
@@ -351,15 +351,14 @@ function clearScene(scene) {
 }
 
 // Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
-function updateForScene(scene) {
-	let dt = 0.025
+function updateForScene(scene, dt) {
+	dt *= 1.5;
 
 	switch (scene) {
 		case SCENE.OUTFIT: {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
-			//TODO: sync w/ framerate
 			gameTime += dt;
 			playerMovementUpdate(dt);
 			//envspeed moves up 1 every 20 seconds, from 3 to 7
@@ -396,10 +395,10 @@ function updateForScene(scene) {
 }
 
 //Keep track of FPS
-var stats = new Stats();
+let stats = new Stats();
 stats.showPanel(0);
 document.getElementById('stats').appendChild(stats.domElement);
-
+let clock = new THREE.Clock();
 /**
  * RENDER
  */
@@ -415,8 +414,8 @@ function render() {
 	// camera.layers.set(1);
 
 	renderer.render(scene, camera);
-
-	updateForScene(currentScene)
+	let delta = clock.getDelta();
+	updateForScene(currentScene, delta)
 	stats.end();
 	// composer.render();
 }
@@ -609,7 +608,6 @@ function playerMovementUpdate(dt) {
 		// if you are close enough to it, land
 		if (!landed) {
 			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
-			//TODO:: get these params from the collision check ( 0.5 & -0.3)
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
