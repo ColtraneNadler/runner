@@ -441,7 +441,6 @@ let camera_positions = {
 	'LEFT': -2
 }
 let current_lane = lanes.MIDDLE;
-let camera_tween;
 
 let movementParams = {
 	forwardSpeed: 100,
