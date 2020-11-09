@@ -1,3 +1,4 @@
+const loadingScreen = document.getElementById('loadingScreen')
 const sceneTitle = document.getElementById('sceneTitle')
 const outfitScreen = document.getElementById('outfitScreen')
 const startButton = document.getElementById('startGameButton')
@@ -99,17 +100,21 @@ let envs = [
 	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
 	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
-let initialized;
+let initialized = []
 // load all envs in
 envs.forEach((env) => {
 	let envController = new EnvController(env[1], env[2], env[3], env[4], 13.2466, 10);
 	loader.load(env[0], function (glb) {
 		envController.Init(glb);
 		env.push(envController);
-		if(!initialized){
+		if(initialized.length == 0){
 			envController.SetVisibility(true);
-			initialized = true;
 		}
+		initialized.push(1)
+		if(initialized.length == envs.length){
+			loadingScreen.hidden = true;
+		}
+		//once all environments are loaded we can remove the loading screen
 	}, null, console.log);
 })
 
