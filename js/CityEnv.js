@@ -140,7 +140,7 @@ function InitCityEnv(baseSpawner, gltfModel) {
     }
 
     //add a plane geometry 
-    let groundGeo = new THREE.PlaneGeometry(100, 100)
+    let groundGeo = new THREE.PlaneGeometry(100, 200)
     let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
     planeMesh.rotation.x = -Math.PI / 2;
     planeMesh.position.y = -1;
