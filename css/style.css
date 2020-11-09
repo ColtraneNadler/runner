@@ -31,7 +31,7 @@ body {
 }
 
 button {
-	font-size: 14px;
+	font-size: 35px;
 	padding: 2rem 10rem;
 	color: black;
 	border: 6px solid pink;
@@ -50,7 +50,6 @@ button:hover {
 #startGameButton {
 	z-index: 100;
 	bottom: 50px;
-	font-size: 35px;
 	position: fixed;
 	width: 100vw;
 	text-align: center;
@@ -103,9 +102,15 @@ button:hover {
 		max-width: 100%;
 	}
 	button {
-		font-size: 16px;
+		font-size: 20px;
 		border-width: .3rem;
 		padding: 1rem 4rem;
+	}
+	#sceneTitle {
+		font-size: 20px;
+	}
+	#loadingTitle {
+		font-size: 20px;
 	}
 }
 #loadingTitle {
