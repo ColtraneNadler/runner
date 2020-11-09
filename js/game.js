@@ -25,7 +25,7 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.setSize(window.innerWidth, window.innerHeight);
 // renderer.toneMapping = THREE.ACESFilmicToneMapping;
 // renderer.toneMappingExposure = 1;
-const composer = new THREE.EffectComposer(renderer);
+// const composer = new THREE.EffectComposer(renderer);
 
 // renderer.setClearColor(0x000000,0.0);
 
