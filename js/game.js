@@ -108,7 +108,7 @@ envs.forEach((env) => {
 		cEnvController.Init(glb);
 		env.push(cEnvController);
 		initialized.push(1)
-		if(initialized.length == envs.length){
+		if (initialized.length == envs.length) {
 			loadingScreen.hidden = true;
 		}
 		//once all environments are loaded we can remove the loading screen
@@ -243,14 +243,12 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 let envController;
 let envIdx = 0;
 startButton.addEventListener("click", () => {
-	if(envController){
+	if (envController) {
 		envController.SetVisibility(false);
 	}
 	envIdx = (envIdx + 1) % 3;
 	envController = envs[envIdx][5]
-	setTimeout(()=> {
-		envController.SetVisibility(true);
-	},1)
+	envController.SetVisibility(true);
 	clearScene(SCENE.OUTFIT);
 	currentScene = SCENE.GAMEPLAY;
 	setupForScene(currentScene);
@@ -344,7 +342,6 @@ function clearScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			envController.Reset();
-			stopAllTweens();
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -444,7 +441,7 @@ let camera_positions = {
 	'LEFT': -2
 }
 let current_lane = lanes.MIDDLE;
-let avatar_tween, camera_tween;
+let camera_tween;
 
 let movementParams = {
 	forwardSpeed: 100,
@@ -589,31 +586,24 @@ function movePlayer(dir) {
 			break;
 	}
 
-	stopAllTweens();
-
-	// ANIMATE
-	avatar_tween = new TWEEN(avatar.position);
-	avatar_tween.to({ x: lane_positions[current_lane] }, 380);
-	avatar_tween.start();
-
-	camera_tween = new TWEEN(camera.position);
-	camera_tween.to({ x: camera_positions[current_lane] }, 380);
-	camera_tween.start();
-}
-
-function stopAllTweens() {
-	if (avatar_tween) {
-		avatar_tween.stop();
-	}
-	if (camera_tween)
-		camera_tween.stop();
 }
 
 let landed = false;
 let landHeight = 0;
 let avatar_land_tween;
+let maxDistanceDelta = 3.5;
 
 function playerMovementUpdate(dt) {
+
+	//move char towards current lane 
+	let dif = lane_positions[current_lane] - avatar.position.x;
+	if (Math.abs(dif) > dt * maxDistanceDelta) {
+		avatar.position.x += Math.sign(dif) * dt * maxDistanceDelta;
+	}
+	dif = camera_positions[current_lane] - camera.position.x;
+	if (Math.abs(dif) > dt * maxDistanceDelta) {
+		camera.position.x += Math.sign(dif) * dt * maxDistanceDelta;
+	}
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
