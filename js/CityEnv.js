@@ -14,7 +14,7 @@ let CitySpawnTypes = {
     MovieTheater: {
         CollideWith: false,
         Frequency: 0.4,
-        MinSpacing: 5,
+        MinSpacing: 3,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "MovieTheater",
