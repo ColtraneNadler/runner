@@ -160,7 +160,7 @@ class EnvController {
                         spawnType.LastIdx = tIdx;
                     } else if (!this.ArrayIncludesIdx(occupiedLanes, -startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
-                        el.rotation.z = (spawnType.StartingRot ? spawnType.StartingRot : 0) + (startIdx > 0 ? 0 : Math.PI);
+                        el.rotation.z = (spawnType.StartingRot ? spawnType.StartingRot : 0) + (-startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push({ "idx": -startIdx })
                         spawnType.LastIdx = tIdx;
                         // let bbox = new THREE.BoxHelper( el, 0xffff00 );

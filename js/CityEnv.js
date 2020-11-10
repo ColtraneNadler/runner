@@ -13,8 +13,8 @@ let CitySpawnTypes = {
     },
     MovieTheater: {
         CollideWith: false,
-        Frequency: 0.4,
-        MinSpacing: 3,
+        Frequency: 0.8,
+        MinSpacing: 8,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "MovieTheater",
@@ -50,8 +50,8 @@ let CitySpawnTypes = {
     },
     TallBuilding: {
         CollideWith: false,
-        Frequency: 0.8,
-        MinSpacing: 0,
+        Frequency: 0.7,
+        MinSpacing: 1,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "TallBuilding",
@@ -62,7 +62,7 @@ let CitySpawnTypes = {
     },
     ShortBuilding: {
         CollideWith: false,
-        Frequency: 0.9,
+        Frequency: 0.5,
         MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
