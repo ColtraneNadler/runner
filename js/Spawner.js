@@ -133,11 +133,11 @@ class EnvController {
             let distToLast = tIdx - spawnType.LastIdx;
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
+               
+                if (spawnType != "Vehicle") {   // if the object is not a vehicle
                 el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-
-                // vehicles only
-                if (key == "Enviroment3Car" || key == "Truck")
-                {
+                }
+                else if (spawnType.Type == "Vehicle") { // vehicles only
                     el.rotation.z = spawnType.Rotation * Math.round(Math.random()) + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
 
                 }

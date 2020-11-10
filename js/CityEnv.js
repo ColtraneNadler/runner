@@ -9,7 +9,8 @@ let CitySpawnTypes = {
         Name: "Truck",
         Rotation: Math.PI,
         RandomizeRot: 0,
-        RandomizePos: 0
+        RandomizePos: 0,
+        Type: "Vehicle"
     },
     MovieTheater: {
         CollideWith: false,

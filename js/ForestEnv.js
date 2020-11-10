@@ -9,7 +9,8 @@ let ForestSpawnTypes = {
         Name: "Enviroment3Car",
         Rotation: Math.PI,
         RandomizeRot: 0,
-        RandomizePos: 0
+        RandomizePos: 0,
+        Type: "Vehicle"
     },
     Tree1: {
         CollideWith: false,
