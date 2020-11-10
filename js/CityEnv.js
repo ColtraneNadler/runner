@@ -7,7 +7,7 @@ let CitySpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Truck",
-        Rotation: 0,
+        Rotation: Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0
     },

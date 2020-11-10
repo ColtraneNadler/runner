@@ -134,6 +134,14 @@ class EnvController {
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
                 el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
+
+                // vehicles only
+                if (key == "Enviroment3Car" || key == "Truck")
+                {
+                    el.rotation.z = spawnType.Rotation * Math.round(Math.random()) + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
+
+                }
+
                 //pick a random lane
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
