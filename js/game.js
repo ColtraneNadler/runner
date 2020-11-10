@@ -589,18 +589,19 @@ function movePlayer(dir) {
 let landed = false;
 let landHeight = 0;
 let avatar_land_tween;
-let maxDistanceDelta = 3.5;
+let maxPlayerDistanceDelta = 3.5;
+let maxCamDistanceDelta = 4.5;
 
 function playerMovementUpdate(dt) {
 
 	//move char towards current lane 
 	let dif = lane_positions[current_lane] - avatar.position.x;
-	if (Math.abs(dif) > dt * maxDistanceDelta) {
-		avatar.position.x += Math.sign(dif) * dt * maxDistanceDelta;
+	if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
+		avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
 	}
 	dif = camera_positions[current_lane] - camera.position.x;
-	if (Math.abs(dif) > dt * maxDistanceDelta) {
-		camera.position.x += Math.sign(dif) * dt * maxDistanceDelta;
+	if (Math.abs(dif) > dt * maxCamDistanceDelta) {
+		camera.position.x += Math.sign(dif) * dt * maxCamDistanceDelta;
 	}
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
