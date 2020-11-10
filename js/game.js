@@ -435,9 +435,9 @@ let lane_positions = {
 	'LEFT': - 2.5
 }
 let camera_positions = {
-	'RIGHT': 2,
+	'RIGHT': 2.5,
 	'MIDDLE': 0.0,
-	'LEFT': -2
+	'LEFT': -2.5
 }
 let current_lane = lanes.MIDDLE;
 
@@ -590,7 +590,7 @@ let landed = false;
 let landHeight = 0;
 let avatar_land_tween;
 let maxPlayerDistanceDelta = 3.5;
-let maxCamDistanceDelta = 4.5;
+let maxCamDistanceDelta = 3.5;
 
 function playerMovementUpdate(dt) {
 
