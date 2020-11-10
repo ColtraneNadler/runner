@@ -50,8 +50,8 @@ let CitySpawnTypes = {
     },
     TallBuilding: {
         CollideWith: false,
-        Frequency: 0.7,
-        MinSpacing: 3,
+        Frequency: 0.8,
+        MinSpacing: 0,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "TallBuilding",
@@ -62,7 +62,7 @@ let CitySpawnTypes = {
     },
     ShortBuilding: {
         CollideWith: false,
-        Frequency: 0.5,
+        Frequency: 0.9,
         MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),

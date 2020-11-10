@@ -68,7 +68,8 @@ let ConstructionSpawnTypes = {
         Rotation:  -Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 18
+        SideOffset: 18,
+        StartingRot: Math.PI
     },
     Pole: {
             CollideWith: false,
@@ -117,7 +118,6 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
           });
         
         // node.layers.set(1);
-
         if (node.name.toLowerCase() === 'ground')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'ground2')
