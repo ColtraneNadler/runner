@@ -430,8 +430,8 @@ let lanes = {
 	RIGHT: 'RIGHT'
 }
 let lane_positions = {
-	'RIGHT': 2.5,
 	'MIDDLE': 0.0,
+	'RIGHT': 2.5,
 	'LEFT': - 2.5
 }
 let camera_positions = {
