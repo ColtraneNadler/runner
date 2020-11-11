@@ -30,10 +30,12 @@ let ConstructionSpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Crane",
-        Rotation: 0,
+        Rotation: Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 8
+        SideOffset: 8,
+        Type: "Vehicle"
+
     },
     Sign1: {
         CollideWith: true,

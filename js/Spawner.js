@@ -133,17 +133,8 @@ class EnvController {
             let distToLast = tIdx - spawnType.LastIdx;
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
-               
-                if (spawnType.Type != "Vehicle") {   // if the object is not a vehicle
-                el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-                console.log("non vehicle rotation")
-                }
-                if (spawnType.Type == "Vehicle") { // vehicles only
-                    el.rotation.z = spawnType.Rotation * Math.round(Math.random()) + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
-                    console.log("rotate honey")
-                }
 
-                //pick a random lane
+                //pick a random lane for objects we can collide with
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
@@ -154,7 +145,7 @@ class EnvController {
                             if (spawnType.Type != "Vehicle") {
                                 this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
                                 }
-                            if (spawnType.Type == "Vehicle") {
+                            if (spawnType.Type == "Vehicle") { // for vehicles we're excluding the middle lane so I (Ian) re-ordered the lane_position array to make it easy to exclude the 0 element
                                 if (idx == 0) {
                                 idx = idx + (Math.round(Math.random()) + 1);
                                 }
@@ -167,7 +158,25 @@ class EnvController {
                             break;
                         }
                     }
-                } else {
+                } 
+                
+                // apply object rotations
+                if (spawnType.Type != "Vehicle") {   // if the object is not a vehicle
+                    el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
+                }
+                    if (spawnType.Type == "Vehicle") { // vehicles only
+
+                        if (lane_positions.RIGHT == el.position.x) {
+                        el.rotation.z = (spawnType.Rotation * 0) + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
+                        }
+                        if (lane_positions.LEFT == el.position.x) {
+                            el.rotation.z = spawnType.Rotation + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
+                        }
+
+                    }
+
+                // set position and rotation of objects to the side of the road that we cannot collide with
+                if (!spawnType.CollideWith) {
                     //pick a side :
                     let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
                     if (!this.ArrayIncludesIdx(occupiedLanes, startIdx)) {
