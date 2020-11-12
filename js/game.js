@@ -350,6 +350,19 @@ function clearScene(scene) {
 	}
 }
 
+function initFall() {
+	current_animation = animations.FALL;
+	boy_actions[animations.FALL].reset()
+	boy_actions[animations.FALL].setDuration(3)
+	boy_actions[animations.FALL].time = 0.7;
+
+	setTimeout(function () {
+		clearScene(currentScene);
+		currentScene = SCENE.GAMEOVER;
+		setupForScene(currentScene);
+	}, 1500);
+}
+
 // Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
 function updateForScene(scene, dt) {
 	dt *= 1.5;
@@ -366,24 +379,29 @@ function updateForScene(scene, dt) {
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			let col = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1));
-			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
-				current_animation = animations.FALL;
-				boy_actions[animations.FALL].reset()
-				boy_actions[animations.FALL].setDuration(3)
-				boy_actions[animations.FALL].time = 0.7;
-
-				setTimeout(function () {
-					clearScene(currentScene);
-					currentScene = SCENE.GAMEOVER;
-					setupForScene(currentScene);
-				}, 1500);
-
-			}
 			// coin collision check
-			col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
+			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
 			if (col[0]) {
 				currentScore += 5;
+			}
+			//forward collision check
+			if(current_animation == animations.FALL) {
+				break;
+			}
+			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1))
+			if (fCol[0] && fCol[1] < 0.1) {
+				initFall();
+				break;
+			}
+			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0))
+			if (lCol[0] && lCol[1] < 0.1) {
+				initFall();
+				break;
+			}
+			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0))
+			if (rCol[0] && rCol[1] < 0.1) {
+				initFall();
+				break;
 			}
 			break;
 		}
@@ -594,15 +612,18 @@ let maxCamDistanceDelta = 3.5;
 
 function playerMovementUpdate(dt) {
 
-	//move char towards current lane 
-	let dif = lane_positions[current_lane] - avatar.position.x;
-	if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
-		avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
+	//move char towards current lane , unless they are falling 
+	if (current_animation !== animations.FALL) {
+		let dif = lane_positions[current_lane] - avatar.position.x;
+		if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
+			avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
+		}
+		dif = camera_positions[current_lane] - camera.position.x;
+		if (Math.abs(dif) > dt * maxCamDistanceDelta) {
+			camera.position.x += Math.sign(dif) * dt * maxCamDistanceDelta;
+		}
 	}
-	dif = camera_positions[current_lane] - camera.position.x;
-	if (Math.abs(dif) > dt * maxCamDistanceDelta) {
-		camera.position.x += Math.sign(dif) * dt * maxCamDistanceDelta;
-	}
+
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
