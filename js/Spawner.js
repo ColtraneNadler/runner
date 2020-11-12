@@ -76,7 +76,7 @@ class EnvController {
     }
     SetVisibility(visibility) {
         this.rootObj.visible = visibility;
-        if(visibility){ 
+        if (visibility) {
             this.envPropFunc(this);
         } else {
             const cleanMaterial = material => {
@@ -98,8 +98,8 @@ class EnvController {
                     for (const material of object.material) cleanMaterial(material)
                 }
             })
-            
-      
+
+
         }
 
     }
@@ -139,18 +139,18 @@ class EnvController {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
                         let idx = (startIdx + i) % 3;
-                        let vehicle_idx = (startIdx + i) % 2;
                         if (!this.ArrayIncludesIdx(occupiedLanes, idx)) {
-                           
+
                             if (spawnType.Type != "Vehicle") {
                                 this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
-                                }
+                            }
                             if (spawnType.Type == "Vehicle") { // for vehicles we're excluding the middle lane so I (Ian) re-ordered the lane_position array to make it easy to exclude the 0 element
                                 if (idx == 0) {
-                                idx = idx + (Math.round(Math.random()) + 1);
+                                    //cannot change idx here , otherwise there could be collisions, just break instead
+                                    break;
                                 }
                                 this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
-                                }
+                            }
                             occupiedLanes.push({ "idx": idx, "height": el.geometry.boundingBox.max.z - el.geometry.boundingBox.min.z })
                             spawnType.LastIdx = tIdx;
                             // let bbox = new THREE.BoxHelper( el, 0xffff00 );
@@ -158,22 +158,22 @@ class EnvController {
                             break;
                         }
                     }
-                } 
-                
+                }
+
                 // apply object rotations
                 if (spawnType.Type != "Vehicle") {   // if the object is not a vehicle
                     el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
                 }
-                    if (spawnType.Type == "Vehicle") { // vehicles only
+                if (spawnType.Type == "Vehicle") { // vehicles only
 
-                        if (lane_positions.RIGHT == el.position.x) {
-                        el.rotation.z = (spawnType.Rotation * 0) + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
-                        }
-                        if (lane_positions.LEFT == el.position.x) {
-                            el.rotation.z = spawnType.Rotation + ( spawnType.RandomizeRot * (Math.random() - 0.5) );
-                        }
-
+                    if (lane_positions.RIGHT == el.position.x) {
+                        el.rotation.z = (spawnType.Rotation * 0) + (spawnType.RandomizeRot * (Math.random() - 0.5));
                     }
+                    if (lane_positions.LEFT == el.position.x) {
+                        el.rotation.z = spawnType.Rotation + (spawnType.RandomizeRot * (Math.random() - 0.5));
+                    }
+
+                }
 
                 // set position and rotation of objects to the side of the road that we cannot collide with
                 if (!spawnType.CollideWith) {
@@ -250,7 +250,7 @@ class EnvController {
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
             if (tile.position.z > this.tileWidth) {
-                let prevTile = ( i + this.numTiles - 1 ) % this.numTiles;
+                let prevTile = (i + this.numTiles - 1) % this.numTiles;
                 tile.position.z = this.groundTiles[prevTile].position.z - this.tileWidth;
                 this.ReturnSpawnedObjectsToPool(tile);
                 this.AddSpawnedObjectsToTile(tile, i);
