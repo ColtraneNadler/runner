@@ -2,7 +2,7 @@
 let ForestSpawnTypes = {
     Enviroment3Car: {
         CollideWith: true,
-        Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
+        Frequency: 0.7, // frequency of 1 means that it will 100% show up on this tile
         MinSpacing: 5, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
         Obj: new THREE.Object3D(),

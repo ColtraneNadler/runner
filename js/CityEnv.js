@@ -2,7 +2,7 @@
 let CitySpawnTypes = {
     Truck: {
         CollideWith: true,
-        Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
+        Frequency: 0.6, // frequency of 1 means that it will 100% show up on this tile
         MinSpacing: 6, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
         Obj: new THREE.Object3D(),
