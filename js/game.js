@@ -394,12 +394,12 @@ function updateForScene(scene, dt) {
 				break;
 			}
 			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0))
-			if (lCol[0] && lCol[1] < 0.1) {
+			if (lCol[0] && lCol[1] < 0.2) {
 				initFall();
 				break;
 			}
 			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0))
-			if (rCol[0] && rCol[1] < 0.1) {
+			if (rCol[0] && rCol[1] < 0.2) {
 				initFall();
 				break;
 			}
