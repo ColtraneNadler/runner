@@ -384,7 +384,7 @@ function updateForScene(scene, dt) {
 			if (col[0]) {
 				currentScore += 5;
 			}
-			//forward collision check
+			//forward, left and right collision checks. break early if one succeeds
 			if(current_animation == animations.FALL) {
 				break;
 			}
