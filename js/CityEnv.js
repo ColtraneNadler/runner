@@ -73,6 +73,18 @@ let CitySpawnTypes = {
         RandomizePos: 1,
         SideOffset: 16
     },
+    // LightPole: {
+    //     CollideWith: false,
+    //     Frequency: 0.5,
+    //     MinSpacing: 2,
+    //     LastIdx: 0,
+    //     Obj: new THREE.Object3D(),
+    //     Name: "LightPole",
+    //     Rotation: 0,
+    //     RandomizeRot: 0,
+    //     RandomizePos: 0,
+    //     SideOffset: -12
+    // },
     Coin: {
         CollideWith: true,
         Frequency: 2,
@@ -135,6 +147,9 @@ function InitCityEnv(baseSpawner, gltfModel) {
         tileableWorld.add(node)
         node.position.y = -1.38
         }
+        // if (node.name.toLowerCase() === 'lightpole') {
+            
+        //     }
         
 
         let mbSpawnType = baseSpawner.GetSpawnType(node.name)
