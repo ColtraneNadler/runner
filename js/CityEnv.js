@@ -3,7 +3,7 @@ let CitySpawnTypes = {
     Truck: {
         CollideWith: true,
         Frequency: 0.6, // frequency of 1 means that it will 100% show up on this tile
-        MinSpacing: 6, //min spacing of 1 means that there must be atleast 1 tile between element
+        MinSpacing: 3, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Truck",
@@ -131,6 +131,12 @@ function InitCityEnv(baseSpawner, gltfModel) {
         if (node.name.toLowerCase() === 'highwaysign') {
             highWaySign = node;
         }
+        if (node.name.toLowerCase() === 'siderailing') {
+        tileableWorld.add(node)
+        node.position.y = -1.38
+        }
+        
+
         let mbSpawnType = baseSpawner.GetSpawnType(node.name)
         if (mbSpawnType) {
             for (let i = 0; i < Math.round(baseSpawner.numTiles * mbSpawnType.Frequency); i++) {
@@ -141,11 +147,11 @@ function InitCityEnv(baseSpawner, gltfModel) {
     }
 
     //add a plane geometry 
-    let groundGeo = new THREE.PlaneGeometry(100, 200)
-    let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
-    planeMesh.rotation.x = -Math.PI / 2;
-    planeMesh.position.y = -1;
-    baseSpawner.rootObj.add(planeMesh);
+    // let groundGeo = new THREE.PlaneGeometry(100, 200)
+    // let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
+    // planeMesh.rotation.x = -Math.PI / 2;
+    // planeMesh.position.y = -1;
+    // baseSpawner.rootObj.add(planeMesh);
     // baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
 
     return tileableWorld;
