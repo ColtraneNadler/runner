@@ -948,9 +948,9 @@
             "uri" : "Mat_5_emissive.jpg"
         },
         {
-            "mimeType" : "image/jpg",
+            "mimeType" : "image/png",
             "name" : "Mat.5_normal",
-            "uri" : "Mat_5_normal.jpg"
+            "uri" : "Mat_5_normal.png"
         },
         {
             "mimeType" : "image/jpg",
@@ -963,9 +963,9 @@
             "uri" : "Mat_3_emissive.jpg"
         },
         {
-            "mimeType" : "image/jpg",
+            "mimeType" : "image/png",
             "name" : "Mat.3_normal",
-            "uri" : "Mat_3_normal.jpg"
+            "uri" : "Mat_3_normal.png"
         },
         {
             "mimeType" : "image/jpg",
@@ -978,9 +978,9 @@
             "uri" : "Mat_4_emissive.jpg"
         },
         {
-            "mimeType" : "image/jpg",
+            "mimeType" : "image/png",
             "name" : "Mat.4_normal",
-            "uri" : "Mat_4_normal.jpg"
+            "uri" : "Mat_4_normal.png"
         },
         {
             "mimeType" : "image/jpg",
