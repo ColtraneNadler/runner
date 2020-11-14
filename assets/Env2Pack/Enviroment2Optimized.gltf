@@ -953,9 +953,9 @@
             "uri" : "Mat_5_normal.png"
         },
         {
-            "mimeType" : "image/jpg",
+            "mimeType" : "image/png",
             "name" : "Mat.5_baseColor",
-            "uri" : "Mat_5_baseColor.jpg"
+            "uri" : "Mat_5_baseColor.png"
         },
         {
             "mimeType" : "image/jpg",
