@@ -178,8 +178,7 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/hires_assets/bSkater_CompleteSet_RC6.glb', function (glb) {
-
+loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 	let models = glb.scene;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
