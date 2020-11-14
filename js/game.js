@@ -96,9 +96,9 @@ let jumping = false
  */
 
 let envs = [
-	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
-	['/assets/Enviroment2RC1.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
-	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
+	['/hires_assets/env_hires/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
+	['/assets/Env2Pack/Enviroment2Optimized.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
+	['/assets/Env3Pack/Enviroment3Optimized.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
 let initialized = []
 // load all envs in
@@ -178,7 +178,7 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
+loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 
 	let models = glb.scene;
 	models.traverse((child) => {
@@ -289,7 +289,7 @@ getCubeMapTexture();
 function getCubeMapTexture() {
 	let OurRGBELoader = new THREE.RGBELoader()
 		.setDataType(THREE.UnsignedByteType)
-		.load('/assets/environment/venice_sunset_1k.hdr', texture => {
+		.load('/assets/hdr/venice_sunset_1k.hdr', texture => {
 
 			const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 			pmremGenerator.dispose();
