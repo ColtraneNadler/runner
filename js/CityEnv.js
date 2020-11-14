@@ -28,11 +28,24 @@ let CitySpawnTypes = {
         CollideWith: true,
         Grindable: true,
         Frequency: 0.7,
-        MinSpacing: 1,
+        MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Bench",
         Rotation: -Math.PI / 2 ,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 0
+    },
+    GrindPipeE2: {
+        CollideWith: true,
+        Grindable: true,
+        Frequency: 0.5,
+        MinSpacing: 1,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "GrindPipeE2",
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 0
@@ -73,18 +86,18 @@ let CitySpawnTypes = {
         RandomizePos: 1,
         SideOffset: 16
     },
-    // LightPole: {
-    //     CollideWith: false,
-    //     Frequency: 0.5,
-    //     MinSpacing: 2,
-    //     LastIdx: 0,
-    //     Obj: new THREE.Object3D(),
-    //     Name: "LightPole",
-    //     Rotation: 0,
-    //     RandomizeRot: 0,
-    //     RandomizePos: 0,
-    //     SideOffset: -12
-    // },
+    LightPole: {
+        CollideWith: false,
+        Frequency: 0.7,
+        MinSpacing: 1,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "LightPole",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: -5
+    },
     Coin: {
         CollideWith: true,
         Frequency: 2,
@@ -100,6 +113,7 @@ let CitySpawnTypes = {
 }
 
 let tree;
+let lightpole;
 let highWaySign;
 
 function InitCityEnv(baseSpawner, gltfModel) {
@@ -108,19 +122,6 @@ function InitCityEnv(baseSpawner, gltfModel) {
     //backwards iterating since the nodes may get removed
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
-
-
-        // if (node.name.toLowerCase() === 'tallbuilding') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
-    
-        // if (node.name.toLowerCase() === 'shortbuilding') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
-
-        // if (node.name.toLowerCase() === 'movietheater') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
 
         node.position.y = -1;
         node.traverse((o) => {
@@ -136,9 +137,12 @@ function InitCityEnv(baseSpawner, gltfModel) {
 
         if (node.name.toLowerCase() === 'highway')
             tileableWorld.add(node)
+        if (node.name.toLowerCase() === 'lightpole') {
+            lightpole = node; 
+            lightpole.scale.x = -0.01;
+        }
         if (node.name.toLowerCase() === 'palmtree') {
             tree = node;
-            // tree.scale.set(0.012,0.012,0.012);
         }
         if (node.name.toLowerCase() === 'highwaysign') {
             highWaySign = node;
@@ -184,6 +188,8 @@ function SetUpStaticCityEnv(baseSpawner) {
     for (let i = 0; i < baseSpawner.numTiles; i++) {
         let tile = baseSpawner.groundTiles[i];
         //add poles to both sides 
+
+        //add trees to both sides
         let leftTree = tree.clone();
         leftTree.position.x = -8;
         leftTree.rotation.z = Math.PI;
