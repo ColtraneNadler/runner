@@ -113,7 +113,7 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             // o.material.encoding = THREE.sRGBEncoding;
             // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
             // o.material.emissiveIntensity = 1;
-            o.material.metalness = 1;
+            o.material.metalness = 0;
             o.material.roughness = 0.7;
             // o.material.wireframe = false;
             }
