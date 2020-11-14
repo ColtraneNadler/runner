@@ -39,10 +39,10 @@ camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
 
-// let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2);
-// hemiLight.position.set(0, 50, -100);
+let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2);
+hemiLight.position.set(0, 50, -100);
 
-// scene.add(hemiLight);
+scene.add(hemiLight);
 
 // let plight = new THREE.SpotLight( 0xffffff , 5, 5000);
 // plight.position.set(0,0,1);
@@ -185,7 +185,7 @@ loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 			// child.layers.set(1);
 			child.material.encoding = THREE.sRGBEncoding;
 			// child.material.emissiveMap.encoding = THREE.sRGBEncoding;
-			child.material.roughness = 0.35;
+			child.material.roughness = 0.9;
 			child.material.metalness = 0;
 			child.material.side = THREE.DoubleSide;
 			child.receiveShadow = true;
