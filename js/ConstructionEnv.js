@@ -118,7 +118,9 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             // o.material.wireframe = false;
             }
           });
-        
+          if (node.name.toLowerCase() === 'sign2'){
+              node.scale.set(0.008,0.008,0.008);
+          }
         // node.layers.set(1);
         if (node.name.toLowerCase() === 'ground')
             tileableWorld.add(node)

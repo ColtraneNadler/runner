@@ -135,6 +135,8 @@ function InitCityEnv(baseSpawner, gltfModel) {
             }
         });
 
+        if (node.name.toLowerCase() === 'trash')
+        node.scale.set(0.009,0.009,0.009)
         if (node.name.toLowerCase() === 'highway')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'lightpole') {
