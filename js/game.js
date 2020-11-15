@@ -96,9 +96,9 @@ let jumping = false
  */
 
 let envs = [
-	['/hires_assets/env_hires/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
-	['/assets/Env2Pack/Enviroment2Optimized.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
-	['/assets/Env3Pack/Enviroment3Optimized.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
+	['/assets/Env1Packaged/Enviroment1Packaged.gltf', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
+	['/assets/Env2Packaged/Enviroment2Packaged.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
+	['/assets/Env3Packaged/Enviroment3Packaged.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
 let initialized = []
 // load all envs in
