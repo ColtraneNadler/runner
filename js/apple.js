@@ -3,6 +3,7 @@ let play_btn = document.getElementById('play_btn');
 let time = 30;
 let apple_player;
 let playing = false; 
+let wrapper = document.getElementById('wrapper');
 
 fetch('http://localhost:4000/token')
 .then(res => res.json())
@@ -26,7 +27,7 @@ function registerApple(token) {
 
 			// playing
 			playing = true;
-			startGame()
+			// startGame()
 		})
 	});
 
@@ -46,6 +47,7 @@ let apple_id = '1444617719'
 async function authorize() {
 	authorized = await apple_player.authorize();
 	playAudio(apple_id);
+	wrapper.hidden = true;
 }
 
 /**

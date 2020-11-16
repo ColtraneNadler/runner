@@ -355,7 +355,7 @@ function clearScene(scene) {
 
 // Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
 function updateForScene(scene) {
-	let dt = 0.025
+	let dt = 0.03
 
 	switch (scene) {
 		case SCENE.OUTFIT: {

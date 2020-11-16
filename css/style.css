@@ -16,8 +16,12 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: fixed;
+	z-index: 500000;
 	height: 100vh;
 	width: 100vw;
+	background-color: #000;
+	color: #fff;
 }
 
 #content {
@@ -33,7 +37,7 @@ body {
 button {
 	font-size: 14px;
 	padding: 2rem 10rem;
-	color: black;
+	color: #fff;
 	border: 6px solid pink;
 	background: none;
 	max-width: 100%;
