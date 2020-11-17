@@ -2,7 +2,6 @@ const loadingScreen = document.getElementById('loadingScreen')
 const sceneTitle = document.getElementById('sceneTitle')
 const outfitScreen = document.getElementById('outfitScreen')
 const startButton = document.getElementById('startGameButton')
-const wrapper = document.getElementById('wrapper');
 const prevOutfitBtn = document.getElementById('prevOutfitBtn');
 const nextOutfitBtn = document.getElementById('nextOutfitBtn');
 

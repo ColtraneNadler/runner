@@ -5,7 +5,7 @@ let apple_player;
 let playing = false; 
 let wrapper = document.getElementById('wrapper');
 
-fetch('http://localhost:4000/token')
+fetch(`${env.api}/token`)
 .then(res => res.json())
 .then(res => registerApple(res.token))
 

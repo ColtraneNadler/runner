@@ -1,4 +1,4 @@
 window.env = {
 	env: 'local',
-  	api: "http://localhost:4444"
+  	api: "http://localhost:4000"
 }
