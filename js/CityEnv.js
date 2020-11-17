@@ -2,19 +2,20 @@
 let CitySpawnTypes = {
     Truck: {
         CollideWith: true,
-        Frequency: 0.4, // frequency of 1 means that it will 100% show up on this tile
-        MinSpacing: 6, //min spacing of 1 means that there must be atleast 1 tile between element
+        Frequency: 0.6, // frequency of 1 means that it will 100% show up on this tile
+        MinSpacing: 3, //min spacing of 1 means that there must be atleast 1 tile between element
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Truck",
-        Rotation: 0,
+        Rotation: Math.PI,
         RandomizeRot: 0,
-        RandomizePos: 0
+        RandomizePos: 0,
+        Type: "Vehicle"
     },
     MovieTheater: {
         CollideWith: false,
-        Frequency: 0.4,
-        MinSpacing: 5,
+        Frequency: 0.8,
+        MinSpacing: 8,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "MovieTheater",
@@ -27,11 +28,24 @@ let CitySpawnTypes = {
         CollideWith: true,
         Grindable: true,
         Frequency: 0.7,
-        MinSpacing: 1,
+        MinSpacing: 2,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Bench",
         Rotation: -Math.PI / 2 ,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: 0
+    },
+    GrindPipeE2: {
+        CollideWith: true,
+        Grindable: true,
+        Frequency: 0.5,
+        MinSpacing: 1,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "GrindPipeE2",
+        Rotation: 0,
         RandomizeRot: 0,
         RandomizePos: 0,
         SideOffset: 0
@@ -51,7 +65,7 @@ let CitySpawnTypes = {
     TallBuilding: {
         CollideWith: false,
         Frequency: 0.7,
-        MinSpacing: 3,
+        MinSpacing: 1,
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "TallBuilding",
@@ -72,6 +86,18 @@ let CitySpawnTypes = {
         RandomizePos: 1,
         SideOffset: 16
     },
+    LightPole: {
+        CollideWith: false,
+        Frequency: 0.7,
+        MinSpacing: 1,
+        LastIdx: 0,
+        Obj: new THREE.Object3D(),
+        Name: "LightPole",
+        Rotation: 0,
+        RandomizeRot: 0,
+        RandomizePos: 0,
+        SideOffset: -5
+    },
     Coin: {
         CollideWith: true,
         Frequency: 2,
@@ -87,6 +113,7 @@ let CitySpawnTypes = {
 }
 
 let tree;
+let lightpole;
 let highWaySign;
 
 function InitCityEnv(baseSpawner, gltfModel) {
@@ -95,19 +122,6 @@ function InitCityEnv(baseSpawner, gltfModel) {
     //backwards iterating since the nodes may get removed
     for (let i = gltfModel.scene.children.length - 1; i >= 0; i--) {
         let node = gltfModel.scene.children[i];
-
-
-        // if (node.name.toLowerCase() === 'tallbuilding') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
-    
-        // if (node.name.toLowerCase() === 'shortbuilding') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
-
-        // if (node.name.toLowerCase() === 'movietheater') {
-        //     node.scale.set(0.013,0.013,0.013);
-        // }
 
         node.position.y = -1;
         node.traverse((o) => {
@@ -121,15 +135,29 @@ function InitCityEnv(baseSpawner, gltfModel) {
             }
         });
 
+        if (node.name.toLowerCase() === 'trash')
+        node.scale.set(0.009,0.009,0.009)
         if (node.name.toLowerCase() === 'highway')
             tileableWorld.add(node)
+        if (node.name.toLowerCase() === 'lightpole') {
+            lightpole = node; 
+            lightpole.scale.x = -0.01;
+        }
         if (node.name.toLowerCase() === 'palmtree') {
             tree = node;
-            // tree.scale.set(0.012,0.012,0.012);
         }
         if (node.name.toLowerCase() === 'highwaysign') {
             highWaySign = node;
         }
+        if (node.name.toLowerCase() === 'siderailing') {
+        tileableWorld.add(node)
+        node.position.y = -1.38
+        }
+        // if (node.name.toLowerCase() === 'lightpole') {
+            
+        //     }
+        
+
         let mbSpawnType = baseSpawner.GetSpawnType(node.name)
         if (mbSpawnType) {
             for (let i = 0; i < Math.round(baseSpawner.numTiles * mbSpawnType.Frequency); i++) {
@@ -140,11 +168,11 @@ function InitCityEnv(baseSpawner, gltfModel) {
     }
 
     //add a plane geometry 
-    let groundGeo = new THREE.PlaneGeometry(100, 100)
-    let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
-    planeMesh.rotation.x = -Math.PI / 2;
-    planeMesh.position.y = -1;
-    baseSpawner.rootObj.add(planeMesh);
+    // let groundGeo = new THREE.PlaneGeometry(100, 200)
+    // let planeMesh = new THREE.Mesh(groundGeo, new THREE.MeshBasicMaterial({ color: new THREE.Color("#9803fc") }));
+    // planeMesh.rotation.x = -Math.PI / 2;
+    // planeMesh.position.y = -1;
+    // baseSpawner.rootObj.add(planeMesh);
     // baseSpawner.initSkybox(new THREE.Color('#dfa6fb'));
 
     return tileableWorld;
@@ -162,6 +190,8 @@ function SetUpStaticCityEnv(baseSpawner) {
     for (let i = 0; i < baseSpawner.numTiles; i++) {
         let tile = baseSpawner.groundTiles[i];
         //add poles to both sides 
+
+        //add trees to both sides
         let leftTree = tree.clone();
         leftTree.position.x = -8;
         leftTree.rotation.z = Math.PI;

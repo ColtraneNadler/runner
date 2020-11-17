@@ -39,10 +39,10 @@ camera.position.y = 1.4;
 camera.position.x = 0;
 camera.position.z = 4.6;
 
-// let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2);
-// hemiLight.position.set(0, 50, -100);
+let hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 2);
+hemiLight.position.set(0, 50, -100);
 
-// scene.add(hemiLight);
+scene.add(hemiLight);
 
 // let plight = new THREE.SpotLight( 0xffffff , 5, 5000);
 // plight.position.set(0,0,1);
@@ -96,9 +96,9 @@ let jumping = false
  */
 
 let envs = [
-	['/assets/Enviroment1SeamlessForIan.glb', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
-	['/assets/Enviroment2Packaged.glb', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
-	['/assets/Enviroment3NewCorn.glb', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
+	['/assets/Env1Packaged/Enviroment1Packaged.gltf', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
+	['/assets/Env2Packaged/Enviroment2Packaged.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
+	['/assets/Env3Packaged/Enviroment3Packaged.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
 ]
 let initialized = []
 // load all envs in
@@ -108,8 +108,8 @@ envs.forEach((env) => {
 		cEnvController.Init(glb);
 		env.push(cEnvController);
 		initialized.push(1)
-		if(initialized.length == envs.length){
-			loadingScreen.hidden = true;
+		if (initialized.length == envs.length) {
+			loadingScreen.style.display = "none";
 		}
 		//once all environments are loaded we can remove the loading screen
 	}, null, console.log);
@@ -178,19 +178,18 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
-
+loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 	let models = glb.scene;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
 			// child.layers.set(1);
 			child.material.encoding = THREE.sRGBEncoding;
 			// child.material.emissiveMap.encoding = THREE.sRGBEncoding;
-			child.material.roughness = 0.35;
+			child.material.roughness = 0.9;
 			child.material.metalness = 0;
 			child.material.side = THREE.DoubleSide;
-			child.receiveShadow = true;
-			child.castShadow = true
+			// child.receiveShadow = true;
+			// child.castShadow = true
 		}
 	})
 
@@ -243,14 +242,12 @@ loader.load('/assets/bSkater_CompleteSet_RC6.glb', function (glb) {
 let envController;
 let envIdx = 0;
 startButton.addEventListener("click", () => {
-	if(envController){
+	if (envController) {
 		envController.SetVisibility(false);
 	}
 	envIdx = (envIdx + 1) % 3;
 	envController = envs[envIdx][5]
-	setTimeout(()=> {
-		envController.SetVisibility(true);
-	},1)
+	envController.SetVisibility(true);
 	clearScene(SCENE.OUTFIT);
 	currentScene = SCENE.GAMEPLAY;
 	setupForScene(currentScene);
@@ -291,7 +288,7 @@ getCubeMapTexture();
 function getCubeMapTexture() {
 	let OurRGBELoader = new THREE.RGBELoader()
 		.setDataType(THREE.UnsignedByteType)
-		.load('/assets/environment/venice_sunset_1k.hdr', texture => {
+		.load('/assets/hdr/venice_sunset_1k.hdr', texture => {
 
 			const envMap = pmremGenerator.fromEquirectangular(texture).texture;
 			pmremGenerator.dispose();
@@ -344,7 +341,6 @@ function clearScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			envController.Reset();
-			stopAllTweens();
 			break;
 		}
 		case SCENE.GAMEOVER: {
@@ -353,16 +349,32 @@ function clearScene(scene) {
 	}
 }
 
+function initFall() {
+	current_animation = animations.FALL;
+	boy_actions[animations.FALL].reset()
+	boy_actions[animations.FALL].setDuration(3)
+	boy_actions[animations.FALL].time = 0.7;
+
+	setTimeout(function () {
+		clearScene(currentScene);
+		currentScene = SCENE.GAMEOVER;
+		setupForScene(currentScene);
+	}, 1500);
+}
+
 // Ian added this and the if check in the below function to get a temp falling animation and environment movement pause before going to game over state
-function updateForScene(scene) {
-	let dt = 0.03
+// <<<<<<< HEAD
+// function updateForScene(scene) {
+// 	let dt = 0.03
+// =======
+function updateForScene(scene, dt) {
+	dt *= 1.5;
 
 	switch (scene) {
 		case SCENE.OUTFIT: {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
-			//TODO: sync w/ framerate
 			gameTime += dt;
 			playerMovementUpdate(dt);
 			//envspeed moves up 1 every 20 seconds, from 3 to 7
@@ -370,24 +382,29 @@ function updateForScene(scene) {
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
-			let col = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1));
-			if ((current_animation !== animations.FALL) && col[0] && col[1] < 0.1) {
-				current_animation = animations.FALL;
-				boy_actions[animations.FALL].reset()
-				boy_actions[animations.FALL].setDuration(3)
-				boy_actions[animations.FALL].time = 0.7;
-
-				setTimeout(function () {
-					clearScene(currentScene);
-					currentScene = SCENE.GAMEOVER;
-					setupForScene(currentScene);
-				}, 1500);
-
-			}
 			// coin collision check
-			col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
+			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
 			if (col[0]) {
 				currentScore += 5;
+			}
+			//forward, left and right collision checks. break early if one succeeds
+			if(current_animation == animations.FALL) {
+				break;
+			}
+			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1))
+			if (fCol[0] && fCol[1] < 0.1) {
+				initFall();
+				break;
+			}
+			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0))
+			if (lCol[0] && lCol[1] < 0.2) {
+				initFall();
+				break;
+			}
+			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0))
+			if (rCol[0] && rCol[1] < 0.2) {
+				initFall();
+				break;
 			}
 			break;
 		}
@@ -399,10 +416,10 @@ function updateForScene(scene) {
 }
 
 //Keep track of FPS
-var stats = new Stats();
+let stats = new Stats();
 stats.showPanel(0);
 document.getElementById('stats').appendChild(stats.domElement);
-
+let clock = new THREE.Clock();
 /**
  * RENDER
  */
@@ -418,8 +435,8 @@ function render() {
 	// camera.layers.set(1);
 
 	renderer.render(scene, camera);
-
-	updateForScene(currentScene)
+	let delta = clock.getDelta();
+	updateForScene(currentScene, delta)
 	stats.end();
 	// composer.render();
 }
@@ -434,17 +451,16 @@ let lanes = {
 	RIGHT: 'RIGHT'
 }
 let lane_positions = {
-	'RIGHT': 2.5,
 	'MIDDLE': 0.0,
+	'RIGHT': 2.5,
 	'LEFT': - 2.5
 }
 let camera_positions = {
-	'RIGHT': 2,
+	'RIGHT': 2.5,
 	'MIDDLE': 0.0,
-	'LEFT': -2
+	'LEFT': -2.5
 }
 let current_lane = lanes.MIDDLE;
-let avatar_tween, camera_tween;
 
 let movementParams = {
 	forwardSpeed: 100,
@@ -589,38 +605,34 @@ function movePlayer(dir) {
 			break;
 	}
 
-	stopAllTweens();
-
-	// ANIMATE
-	avatar_tween = new TWEEN(avatar.position);
-	avatar_tween.to({ x: lane_positions[current_lane] }, 380);
-	avatar_tween.start();
-
-	camera_tween = new TWEEN(camera.position);
-	camera_tween.to({ x: camera_positions[current_lane] }, 380);
-	camera_tween.start();
-}
-
-function stopAllTweens() {
-	if (avatar_tween) {
-		avatar_tween.stop();
-	}
-	if (camera_tween)
-		camera_tween.stop();
 }
 
 let landed = false;
 let landHeight = 0;
 let avatar_land_tween;
+let maxPlayerDistanceDelta = 3.5;
+let maxCamDistanceDelta = 3.5;
 
 function playerMovementUpdate(dt) {
+
+	//move char towards current lane , unless they are falling 
+	if (current_animation !== animations.FALL) {
+		let dif = lane_positions[current_lane] - avatar.position.x;
+		if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
+			avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
+		}
+		dif = camera_positions[current_lane] - camera.position.x;
+		if (Math.abs(dif) > dt * maxCamDistanceDelta) {
+			camera.position.x += Math.sign(dif) * dt * maxCamDistanceDelta;
+		}
+	}
+
 	if (jumping) {
 		jump_time += movementParams.jumpSpeed * dt;
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
 		if (!landed) {
 			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
-			//TODO:: get these params from the collision check ( 0.5 & -0.3)
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;

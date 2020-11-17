@@ -30,10 +30,12 @@ let ConstructionSpawnTypes = {
         LastIdx: 0,
         Obj: new THREE.Object3D(),
         Name: "Crane",
-        Rotation: 0,
+        Rotation: Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 8
+        SideOffset: 8,
+        Type: "Vehicle"
+
     },
     Sign1: {
         CollideWith: true,
@@ -55,7 +57,7 @@ let ConstructionSpawnTypes = {
         Name: "Sign2",
         Rotation: Math.PI,
         RandomizeRot: Math.PI/2,
-        RandomizePos: 3,
+        RandomizePos: 1,
         SideOffset: 0
     },
     Rock: {
@@ -68,7 +70,8 @@ let ConstructionSpawnTypes = {
         Rotation:  -Math.PI,
         RandomizeRot: 0,
         RandomizePos: 0,
-        SideOffset: 18
+        SideOffset: 18,
+        StartingRot: Math.PI
     },
     Pole: {
             CollideWith: false,
@@ -110,14 +113,15 @@ function InitConstructionEnv(baseSpawner, gltfModel) {
             // o.material.encoding = THREE.sRGBEncoding;
             // o.material.emissive = new THREE.Color("rgb(1, 1, 1)");
             // o.material.emissiveIntensity = 1;
-            o.material.metalness = 1;
+            o.material.metalness = 0;
             o.material.roughness = 0.7;
             // o.material.wireframe = false;
             }
           });
-        
+          if (node.name.toLowerCase() === 'sign2'){
+              node.scale.set(0.008,0.008,0.008);
+          }
         // node.layers.set(1);
-
         if (node.name.toLowerCase() === 'ground')
             tileableWorld.add(node)
         if (node.name.toLowerCase() === 'ground2')

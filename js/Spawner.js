@@ -76,7 +76,7 @@ class EnvController {
     }
     SetVisibility(visibility) {
         this.rootObj.visible = visibility;
-        if(visibility){ 
+        if (visibility) {
             this.envPropFunc(this);
         } else {
             const cleanMaterial = material => {
@@ -98,8 +98,8 @@ class EnvController {
                     for (const material of object.material) cleanMaterial(material)
                 }
             })
-            
-      
+
+
         }
 
     }
@@ -133,14 +133,24 @@ class EnvController {
             let distToLast = tIdx - spawnType.LastIdx;
             distToLast = distToLast >= 0 ? distToLast : tIdx + (this.numTiles - spawnType.LastIdx);
             if (Math.random() < spawnType.Frequency && el && distToLast >= spawnType.MinSpacing) {
-                el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
-                //pick a random lane
+
+                //pick a random lane for objects we can collide with
                 if (spawnType.CollideWith) {
                     let startIdx = Math.floor(3 * Math.random());
                     for (let i = 0; i < 3; i++) {
                         let idx = (startIdx + i) % 3;
                         if (!this.ArrayIncludesIdx(occupiedLanes, idx)) {
-                            this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
+
+                            if (spawnType.Type != "Vehicle") {
+                                this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
+                            }
+                            if (spawnType.Type == "Vehicle") { // for vehicles we're excluding the middle lane so I (Ian) re-ordered the lane_position array to make it easy to exclude the 0 element
+                                if (idx == 0) {
+                                    //cannot change idx here , otherwise there could be collisions, just break instead
+                                    break;
+                                }
+                                this.SetPos(Object.entries(lane_positions)[idx][1], spawnType.RandomizePos, el)
+                            }
                             occupiedLanes.push({ "idx": idx, "height": el.geometry.boundingBox.max.z - el.geometry.boundingBox.min.z })
                             spawnType.LastIdx = tIdx;
                             // let bbox = new THREE.BoxHelper( el, 0xffff00 );
@@ -148,19 +158,37 @@ class EnvController {
                             break;
                         }
                     }
-                } else {
+                }
+
+                // apply object rotations
+                if (spawnType.Type != "Vehicle") {   // if the object is not a vehicle
+                    el.rotation.z = spawnType.Rotation + spawnType.RandomizeRot * (Math.random() - 0.5);
+                }
+                if (spawnType.Type == "Vehicle") { // vehicles only
+
+                    if (lane_positions.RIGHT == el.position.x) {
+                        el.rotation.z = (spawnType.Rotation * 0) + (spawnType.RandomizeRot * (Math.random() - 0.5));
+                    }
+                    if (lane_positions.LEFT == el.position.x) {
+                        el.rotation.z = spawnType.Rotation + (spawnType.RandomizeRot * (Math.random() - 0.5));
+                    }
+
+                }
+
+                // set position and rotation of objects to the side of the road that we cannot collide with
+                if (!spawnType.CollideWith) {
                     //pick a side :
                     let startIdx = Math.random() > 0.5 ? -spawnType.SideOffset : spawnType.SideOffset;
                     if (!this.ArrayIncludesIdx(occupiedLanes, startIdx)) {
                         this.SetPos(startIdx, spawnType.RandomizePos, el)
-                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
+                        el.rotation.z = (spawnType.StartingRot ? spawnType.StartingRot : 0) + (startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push({ "idx": startIdx })
                         // let bbox = new THREE.BoxHelper( el, 0xffff00 );
                         tile.add(el);
                         spawnType.LastIdx = tIdx;
                     } else if (!this.ArrayIncludesIdx(occupiedLanes, -startIdx)) {
                         this.SetPos(-startIdx, spawnType.RandomizePos, el)
-                        el.rotation.z += (startIdx > 0 ? 0 : Math.PI);
+                        el.rotation.z = (spawnType.StartingRot ? spawnType.StartingRot : 0) + (-startIdx > 0 ? 0 : Math.PI);
                         occupiedLanes.push({ "idx": -startIdx })
                         spawnType.LastIdx = tIdx;
                         // let bbox = new THREE.BoxHelper( el, 0xffff00 );
@@ -222,7 +250,7 @@ class EnvController {
         for (let i = 0; i < this.groundTiles.length; i++) {
             let tile = this.groundTiles[i];
             if (tile.position.z > this.tileWidth) {
-                let prevTile = ( i + this.numTiles - 1 ) % this.numTiles;
+                let prevTile = (i + this.numTiles - 1) % this.numTiles;
                 tile.position.z = this.groundTiles[prevTile].position.z - this.tileWidth;
                 this.ReturnSpawnedObjectsToPool(tile);
                 this.AddSpawnedObjectsToTile(tile, i);
@@ -290,7 +318,7 @@ class EnvController {
             if (intersect) {
                 let dist = this.intersectionPoint.distanceTo(this.tRay.origin) / 100;
                 if (collisionType == "Coin") {
-                    if (dist < 0.05) {
+                    if (dist < 0.075) {
                         // return coin to object pool
                         this.GetSpawnType(obj.name).Obj.add(obj);
                         return [true, 0];
