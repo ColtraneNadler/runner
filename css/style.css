@@ -3,13 +3,24 @@
 	padding: 0;
 	margin: 0;
 	border: 0;
-	color: black;
+	/*color: black;*/
 }
 
 body {
 	overflow: hidden;
-	background-color: #000;
+	background-color: #fff;
 	font-family: 'Press Start 2P', monospace;
+}
+
+#bkg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-image: url(https://i.imgur.com/zbr96oI.jpg);
+	z-index: -1;
+	opacity: .3;
 }
 
 #wrapper {
@@ -24,17 +35,83 @@ body {
 	color: #fff;
 }
 
-#content {
+.btn {
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	box-shadow: 0px 0px 20px #FFFFFF;
+	border-radius: 10px;
+	color: #333;
+	padding: 1rem 2rem;
+	font-family: 'Press Start 2P', monospace;
+}
+
+/**
+ * LANDING
+ */
+#landing {
 	margin-top: -10rem;
 	padding: 40px;
 	text-align: center;
 }
 
-#content img {
+#landing img {
 	max-width: 80%;
 }
 
-button {
+#landing h1 {
+	text-shadow: 0px 0px 6px #FFFFFFDE;
+	font-size: 3rem;
+}
+
+#landing p {
+	font-size: 12px;
+	max-width: 500px;
+	letter-spacing: 0px;
+	margin: auto;
+}
+
+/**
+ * NAME
+ */
+#name input {
+	display: block;
+	width: 100%;
+	padding: 1rem;
+}
+
+#popup {
+	background: #000000 0% 0% no-repeat padding-box;
+	box-shadow: 0px 0px 20px #FFFFFF;
+	border-radius: 10px;
+	opacity: 1;
+	position: fixed;
+	margin-left: 50%;
+	width: 500px;
+	padding: 2rem;
+	text-align: center;
+}
+
+#popup table {
+	width: 100%;
+	font-size: 12px;
+}
+
+#popup table td {
+	padding: .4rem 0 .2rem 0;
+}
+
+#popup td {
+	border: .5px solid #fff;
+}
+
+/*#popup table tr td:nth-child(1) {
+	border-right: .5px solid #fff;
+}
+*/
+#popup table tr td:nth-child(2) {
+	text-align: left;
+}
+
+/*button {
 	font-size: 35px;
 	padding: 2rem 10rem;
 	color: #fff;
@@ -49,7 +126,7 @@ button {
 button:hover {
 	color: #333;
 	background: pink
-}
+}*/
 
 #startGameButton {
 	z-index: 100;
@@ -132,7 +209,7 @@ button:hover {
     }
 }
 @media screen and (max-width: 700px) {
-	#content {
+	#landing {
 		margin-top: -6rem;
 	}
 	#content img {

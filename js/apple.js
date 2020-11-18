@@ -5,6 +5,55 @@ let apple_player;
 let playing = false; 
 let wrapper = document.getElementById('wrapper');
 
+/**
+ * get cookie
+ */
+function getCookie(name) {
+  // Split cookie string and get all individual name=value pairs in an array
+  var cookieArr = document.cookie.split(";");
+  
+  // Loop through the array elements
+  for(var i = 0; i < cookieArr.length; i++) {
+      var cookiePair = cookieArr[i].split("=");
+      
+      /* Removing whitespace at the beginning of the cookie name
+      and compare it with the given string */
+      if(name == cookiePair[0].trim()) {
+          // Decode the cookie value and return
+          return decodeURIComponent(cookiePair[1]);
+      }
+  }
+  
+  // Return null if not found
+  return null;
+}
+/**
+ * INIT
+ */
+// let cookie = getCookie('p2.session');
+// if(cookie) {
+// 	fetch(`${env.api}/session?token=${cookie}`)
+// 	.then(res => res.json())
+// 	.then(res => {
+// 		if(!res.success) return;
+
+// 		switch(res.dsp) {
+// 			case 'spotify':
+// 				// do spotify stuff
+// 				document.cookie = `p2.session=${res.token}`;
+// 				break;
+// 			case 'apple':
+// 				window.p2data = {
+// 					name: res.name,
+// 					high_score: res.high_score
+// 				}
+// 				// do apple stuff
+// 				document.cookie = `p2.session=${res.token}`;
+// 				break;
+// 		}
+// 	})
+// }
+
 fetch(`${env.api}/token`)
 .then(res => res.json())
 .then(res => registerApple(res.token))
