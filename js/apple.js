@@ -67,7 +67,7 @@ let scenes = {
 	game: document.getElementById('game'),
 }
 
-function changeScene(scene) {
+function changeUIScene(scene) {
 	for(prop in scenes) {
 		if(scene === prop)
 			scenes[prop].hidden = false;
@@ -77,19 +77,23 @@ function changeScene(scene) {
 }
 
 function auth() {
-	changeScene('name');
+	changeUIScene('name');
 }
 
 function submitName() {
-	changeScene('characterSelect');
+	changeUIScene('characterSelect');
+	changeGameScene(SCENE.OUTFIT);
 }
 
 function selectCharacter() {
-	changeScene('levelSelect');
+	changeUIScene('levelSelect');
+	changeGameScene(SCENE.LEVEL);
 }
 
 function selectLevel() {
-	changeScene('game');
+	setLevel(1);
+	changeUIScene('game');
+	changeGameScene(SCENE.GAMEPLAY);
 }
 
 function registerApple(token) {

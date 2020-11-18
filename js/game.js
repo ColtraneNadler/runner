@@ -1,9 +1,6 @@
-const loadingScreen = document.getElementById('loadingScreen')
 const sceneTitle = document.getElementById('sceneTitle')
-const outfitScreen = document.getElementById('outfitScreen')
-const startButton = document.getElementById('startGameButton')
-const prevOutfitBtn = document.getElementById('prevOutfitBtn');
-const nextOutfitBtn = document.getElementById('nextOutfitBtn');
+const prevOutfitBtn = document.getElementById('outfit-prev');
+const nextOutfitBtn = document.getElementById('outfit-next');
 
 /**
  * SETUP THREE.JS SCENE
@@ -107,9 +104,6 @@ envs.forEach((env) => {
 		cEnvController.Init(glb);
 		env.push(cEnvController);
 		initialized.push(1)
-		if (initialized.length == envs.length) {
-			loadingScreen.style.display = "none";
-		}
 		//once all environments are loaded we can remove the loading screen
 	}, null, console.log);
 })
@@ -146,7 +140,7 @@ function initSkybox(color) {
 	scene.add(skybox);
 }
 let materialArray = []
-initSkybox(new THREE.Color());
+initSkybox(new THREE.Color("#dfa6fb"));
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
@@ -230,7 +224,7 @@ loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 	boy_actions[animations.PUSH].clampWhenFinished = false;
 	boy_actions[animations.IDLE].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.IDLE].clampWhenFinished = false;
-	setupForScene(currentScene);
+	current_animation = animations.IDLE;
 }, undefined, err => {
 	console.error('Error loading avatar glb', err);
 });
@@ -240,17 +234,19 @@ loader.load('/assets/bieber/bSkater.gltf', function (glb) {
  */
 let envController;
 let envIdx = 0;
-startButton.addEventListener("click", () => {
+
+function changeGameScene(scene){
+	clearScene(currentScene);
+	currentScene = scene;
+	setupForScene(currentScene)
+}
+function setLevel(idx) {
 	if (envController) {
 		envController.SetVisibility(false);
 	}
-	envIdx = (envIdx + 1) % 3;
 	envController = envs[envIdx][5]
 	envController.SetVisibility(true);
-	clearScene(SCENE.OUTFIT);
-	currentScene = SCENE.GAMEPLAY;
-	setupForScene(currentScene);
-});
+}
 
 prevOutfitBtn.addEventListener("click", () => {
 	if (currentOutfit === 0) {
@@ -274,15 +270,18 @@ nextOutfitBtn.addEventListener("click", () => {
  * GAME STATE
  */
 SCENE = {
-	OUTFIT: 0,
-	GAMEPLAY: 1,
-	GAMEOVER: 2
+	APPLE : 0,
+	OUTFIT: 2,
+	LEVEL: 1,
+	GAMEPLAY: 3,
+	GAMEOVER: 4
 }
-let currentScene = SCENE.OUTFIT;
+let currentScene = SCENE.APPLE;
 let currentScore = 0;
 let gameTime = 0;
 
 getCubeMapTexture();
+setupForScene(currentScene);
 
 function getCubeMapTexture() {
 	let OurRGBELoader = new THREE.RGBELoader()
@@ -296,8 +295,20 @@ function getCubeMapTexture() {
 		});
 }
 
+function SetUpDefaultEnvProps(baseSpawner) {
+    scene.fog = new THREE.FogExp2('#f0d3fd', 0.02);
+    scene.fog.far = 200;
+    materialArray.forEach(mat => {
+        mat.color = new THREE.Color('#dfa6fb');
+    });
+}
+
 function setupForScene(scene) {
 	switch (scene) {
+		case SCENE.APPLE: {
+			camera.position.set(-100, 1., 2.6)
+			break;
+		}
 		case SCENE.OUTFIT: {
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
@@ -305,7 +316,11 @@ function setupForScene(scene) {
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
 			sceneTitle.innerHTML = "outfit select"
-			outfitScreen.hidden = false;
+			SetUpDefaultEnvProps();
+			break;
+		}
+		case SCENE.LEVEL: {
+			camera.position.set(-100, 1., 2.6)
 			break;
 		}
 		case SCENE.GAMEPLAY: {
@@ -335,7 +350,6 @@ function setupForScene(scene) {
 function clearScene(scene) {
 	switch (scene) {
 		case SCENE.OUTFIT: {
-			outfitScreen.hidden = true;
 			break;
 		}
 		case SCENE.GAMEPLAY: {
@@ -485,6 +499,7 @@ window.addEventListener('keydown', e => {
 			break;
 		case 32:
 			if (currentScene == SCENE.GAMEOVER) {
+				changeUIScene('characterSelect');
 				clearScene(currentScene)
 				currentScene = SCENE.OUTFIT
 				setupForScene(currentScene)
@@ -704,3 +719,13 @@ function HardResetAnimsToIdle() {
 	}
 }
 
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
