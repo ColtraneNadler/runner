@@ -58,6 +58,40 @@ fetch(`${env.api}/token`)
 .then(res => res.json())
 .then(res => registerApple(res.token))
 
+
+let scenes = {
+	landing: document.getElementById('landing'),
+	name: document.getElementById('name'),
+	characterSelect: document.getElementById('character-select'),
+	levelSelect: document.getElementById('level-select'),
+	game: document.getElementById('game'),
+}
+
+function changeScene(scene) {
+	for(prop in scenes) {
+		if(scene === prop)
+			scenes[prop].hidden = false;
+		else
+			scenes[prop].hidden = true;
+	}
+}
+
+function auth() {
+	changeScene('name');
+}
+
+function submitName() {
+	changeScene('characterSelect');
+}
+
+function selectCharacter() {
+	changeScene('levelSelect');
+}
+
+function selectLevel() {
+	changeScene('game');
+}
+
 function registerApple(token) {
 	document.addEventListener('musickitloaded', function() {
 		MusicKit.configure({
