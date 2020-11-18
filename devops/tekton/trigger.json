@@ -1,0 +1,23 @@
+{
+    "API": {
+        "Version": "v1",
+        "Pipeline": "execute"
+    },
+    "Git": {
+        "Ref": "refs/heads/master",
+        "Revision": "master",
+        "URL": "https://github.com/umg/bieb-runner-frontend.git"
+    },
+    "Image": {
+        "URL": "docker-registry.umusic.com/mira/bieb-runner-frontend",
+        "Tag": "v0.0.1",
+        "Dockerfile": "Dockerfile",
+        "Context": ""
+    },
+    "K8S": {
+        "YamlPath": "devops/app.yaml",
+        "YamlDir": "devops/k8s",
+        "ClusterName": "awsa4-hybrid-eks-dev",
+        "Namespace": "tunecast-dev"
+    }
+}

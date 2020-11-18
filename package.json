@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "config-env": "export ENV=${ENV:-dev}; cp config/$ENV.js config/index.js; cat config/index.js",
-    "build": "npm run config-env && vue-cli-service build && cp ./dist/index.html .",
+    "build": "npm run config-env && vue-cli-service build && cp ./dist/index.html ."
   },
   "repository": {
     "type": "git",

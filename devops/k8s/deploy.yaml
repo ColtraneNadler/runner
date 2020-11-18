@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bieb-runner-frontend-v1
+  namespace: tunecast-dev
+  labels:
+    app: bieb-runner-frontend
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bieb-runner-frontend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: bieb-runner-frontend
+        version: v1
+    spec:
+      containers:
+      - name: bieb-runner-frontend
+        image: docker-registry.umusic.com/mira/bieb-runner-frontend
+        resources:
+          limits:
+            memory: 500Mi
+            cpu: 500m
+          requests:
+            memory: 500Mi
+            cpu: 500m
+        ports:
+        - containerPort: 80
+        env:
+        - name: VAULT_KV_PATH
+          value: VAULT_KV_PATH
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 20
+      imagePullSecrets:
+      - name: regcred
