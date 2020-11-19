@@ -398,25 +398,29 @@ function updateForScene(scene, dt) {
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check
-			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
+			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.5, -0.2));
 			if (col[0]) {
+				currentScore += 5;
+			}
+			let bCol = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2));
+			if (bCol[0]) {
 				currentScore += 5;
 			}
 			//forward, left and right collision checks. break early if one succeeds
 			if(current_animation == animations.FALL) {
 				break;
 			}
-			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1))
+			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2))
 			if (fCol[0] && fCol[1] < 0.1) {
 				initFall();
 				break;
 			}
-			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0))
+			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0.1, -0.2))
 			if (lCol[0] && lCol[1] < 0.2) {
 				initFall();
 				break;
 			}
-			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0))
+			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0.1, -0.2))
 			if (rCol[0] && rCol[1] < 0.2) {
 				initFall();
 				break;
@@ -648,7 +652,7 @@ function playerMovementUpdate(dt) {
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
 		if (!landed) {
-			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
+			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0), new THREE.Vector3(0, 0.1, -0.2));
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
@@ -671,7 +675,7 @@ function playerMovementUpdate(dt) {
 
 	//stopped jumping and waiting to land back to the ground
 	if (landed && !jumping) {
-		let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
+		let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0), new THREE.Vector3(0, 0.1, -0.2));
 		if (!c[0]) {
 			avatar_land_tween = new TWEEN(avatar.position);
 			avatar_land_tween.to({ y: -1 }, 100);
