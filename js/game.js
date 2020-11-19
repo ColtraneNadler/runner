@@ -368,6 +368,19 @@ function initFall() {
 	boy_actions[animations.FALL].setDuration(3)
 	boy_actions[animations.FALL].time = 0.7;
 
+	/**
+	 * 
+	 */
+	// fetch(`${window.env.api}`, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'content-type': 'application/json'
+	// 	},
+	// 	body: JSON.stringify({
+	// 		score
+	// 	})
+	// })
+
 	setTimeout(function () {
 		clearScene(currentScene);
 		currentScene = SCENE.GAMEOVER;
@@ -429,16 +442,16 @@ function updateForScene(scene, dt) {
 }
 
 //Keep track of FPS
-let stats = new Stats();
-stats.showPanel(0);
-document.getElementById('stats').appendChild(stats.domElement);
+// let stats = new Stats();
+// stats.showPanel(0);
+// document.getElementById('stats').appendChild(stats.domElement);
 let clock = new THREE.Clock();
 /**
  * RENDER
  */
 function render() {
 	requestAnimationFrame(render);
-	stats.begin();
+	// stats.begin();
 
 	// Used with light select layers
 	// renderer.autoClear = true;
@@ -450,7 +463,7 @@ function render() {
 	renderer.render(scene, camera);
 	let delta = clock.getDelta();
 	updateForScene(currentScene, delta)
-	stats.end();
+	// stats.end();
 	// composer.render();
 }
 render();

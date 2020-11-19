@@ -50,8 +50,8 @@
 			<br />
 			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 			<br /><br />
-			<button id="play_btn" class="btn" onclick="authorize()">APPLE MUSIC</button>
-			<button id="play_btn" class="btn" onclick="auth()">SPOTIFY</button>
+			<button id="play_btn" class="btn" onclick="authApple()">APPLE MUSIC</button>
+			<button id="play_btn" class="btn" onclick="authSpotify()">SPOTIFY</button>
 		</div>
 
 		<!-- set name -->
@@ -100,4 +100,90 @@
 <script type="text/javascript" src="/js/game.js"></script>
 <script type="text/javascript" src="/js/apple.js"></script>
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WP28MSFMTM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WP28MSFMTM');
+</script>
+<script type="text/javascript">
+window.addScript = link => {
+	let tag = document.createElement("script");
+	tag.src = link;
+	document.getElementsByTagName("head")[0].appendChild(tag);
+}
+</script>
+<script type="text/javascript">
+const play = ({
+  uris,
+  spotify_uri,
+  position_ms,
+  playerInstance: {
+    _options: {
+      getOAuthToken,
+      id
+    }
+  }
+}) => new Promise((res, rej) => {
+  getOAuthToken(access_token => {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ uris, offset: {uri: spotify_uri}, position_ms }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${access_token}`
+      },
+    }).then(response => res())
+    .catch(err => console.log('ERROR PLAYING SPOTIFY',err));
+  });
+});
+
+function initSpotifyWebPlayback(oauth_token, onPlayerReady, onPlayerStateChange) {
+	window.onSpotifyWebPlaybackSDKReady = () => {
+	  const token = oauth_token;
+
+	  let token_update = Date.now();
+
+	  let spotify_player = new Spotify.Player({
+	    name: 'tunecast.com',
+	    getOAuthToken: async cb => { 
+	    	if(Date.now() - token_update < 1000 * 60 * 60)
+	    		return cb(token); 
+
+	    	// fetch token
+	    	token_update = Date.now();
+	    	cb(token)
+	    }
+	  });
+
+	  // Error handling
+	  spotify_player.addListener('initialization_error', ({ message }) => { console.error('init error', message); });
+	  spotify_player.addListener('authentication_error', ({ message }) => { console.error('auth error', message); });
+	  spotify_player.addListener('account_error', ({ message }) => { console.error('account error', message); });
+	  spotify_player.addListener('playback_error', ({ message }) => { console.error('playback error', message); });
+
+	  // Playback status updates
+	  // spotify_player.addListener('player_state_changed', state => { console.log('SPOTIFY STATE',state); });
+
+	  // spotify_player.addListener('player_state_changed', onPlayerStateChange);
+
+	  // Ready
+	  spotify_player.addListener('ready', ({ device_id }) => {
+	    onPlayerReady(spotify_player);
+	  });
+
+	  // Not Ready
+	  spotify_player.addListener('not_ready', ({ device_id }) => {
+	    console.log('Device ID has gone offline', device_id);
+	  });
+
+	  // Connect to the player!
+	  spotify_player.connect()
+	  .then(() => console.log('successfully connected to spotify connect!'));
+	};
+}
+</script>
 </html>

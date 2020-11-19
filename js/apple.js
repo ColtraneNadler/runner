@@ -76,9 +76,9 @@ function changeUIScene(scene) {
 	}
 }
 
-function auth() {
-	changeUIScene('name');
-}
+// function auth() {
+// 	changeUIScene('name');
+// }
 
 function submitName() {
 	changeUIScene('characterSelect');
@@ -94,6 +94,7 @@ function selectLevel() {
 	setLevel(1);
 	changeUIScene('game');
 	changeGameScene(SCENE.GAMEPLAY);
+	playAudio(apple_id);
 }
 
 function registerApple(token) {
@@ -131,10 +132,48 @@ let apple_id = '1444617719'
  * METHOD authorize()
  * Authorize Apple Music user
  */
-async function authorize() {
+async function authApple() {
 	authorized = await apple_player.authorize();
-	playAudio(apple_id);
-	wrapper.hidden = true;
+	window.dsp = 'apple';
+	console.log('authorizedd!!')
+	console.log('changed ui scene!');
+	changeUIScene('name');
+	// playAudio(apple_id);
+	// wrapper.hidden = true;
+}
+
+let popup;
+console.log('registering callbaasdfasdfck');
+
+window.addEventListener('message', handleMessage, false);
+
+function handleMessage(e) {
+  if(!e.data) return;
+
+  let data;
+  try {
+    data = JSON.parse(e.data);
+  } catch(err) {
+    return;
+  }
+
+  if(!data.access_token) return;
+
+  popup.close();
+  window.dsp = 'spotify';
+  initSpotifyWebPlayback(data.access_token, spotify_player => window.spotify_player = spotify_player);
+  addScript('https://sdk.scdn.co/spotify-player.js');
+  console.log('got the data!',data);
+  changeUIScene('name');
+}
+
+
+async function authSpotify() {
+	popup = window.open(
+		`${window.env.api}/oauth/spotify`,
+		'Login with Spotify',
+		'width=800,height=600'
+	)
 }
 
 /**
@@ -142,30 +181,42 @@ async function authorize() {
  * play an apple music song through msic kit
  */
 async function playAudio() {
-	if(!apple_id) return;
-	console.log('playing',apple_id)
-	if(!authorized) return authorize(apple_id);
+	switch(window.dsp) {
+		case 'apple':
+			if(!apple_id) return;
+			console.log('playing',apple_id)
+			if(!authorized) return authorize(apple_id);
 
-	if(playing) return; // pauseAudio();
-	let queue, data, seeked;
+			if(playing) return; // pauseAudio();
+			let queue, data, seeked;
 
-	play_btn.innerHTML = 'LOADING...';
-	/**
-	 * closure variable to make sure listener handle doesnt run twice
-	 */
-	let triggered = false;
+			play_btn.innerHTML = 'LOADING...';
+			/**
+			 * closure variable to make sure listener handle doesnt run twice
+			 */
+			let triggered = false;
 
-	try {
-		await apple_player.setQueue({
-	      songs: [apple_id], // queue's last
-	    })
-	} catch(err) {
-		return console.log('ERROR QUEUING',err);
-	}
+			try {
+				await apple_player.setQueue({
+			      songs: [apple_id], // queue's last
+			    })
+			} catch(err) {
+				return console.log('ERROR QUEUING',err);
+			}
 
-	try {
-		data = await apple_player.player.play();
-	} catch(err) {
-		return console.log('ERROR PLAYING APPLE',err);
+			try {
+				data = await apple_player.player.play();
+			} catch(err) {
+				return console.log('ERROR PLAYING APPLE',err);
+			}
+			break;
+		case 'spotify':
+			play({
+		      playerInstance: window.spotify_player,
+		      spotify_uri: 'spotify:track:3LTinH60rltyAZiMmHF7JH',
+		      uris: ['spotify:track:3LTinH60rltyAZiMmHF7JH'],
+		      position_ms: 0
+		    })
+			break;
 	}
 }

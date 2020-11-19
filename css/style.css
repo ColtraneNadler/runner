@@ -12,6 +12,11 @@ body {
 	font-family: 'Press Start 2P', monospace;
 }
 
+button:hover {
+	cursor: pointer;
+	opacity: .8;
+}
+
 #bkg {
 	position: fixed;
 	top: 0;
@@ -247,11 +252,11 @@ button:hover {
 	#content img {
 		max-width: 100%;
 	}
-	button {
+	/*button {
 		font-size: 20px;
 		border-width: .3rem;
 		padding: 1rem 4rem;
-	}
+	}*/
 	#sceneTitle {
 		font-size: 20px;
 	}
