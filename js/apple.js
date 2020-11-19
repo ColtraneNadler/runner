@@ -94,7 +94,7 @@ function selectLevel() {
 	setLevel(1);
 	changeUIScene('game');
 	changeGameScene(SCENE.GAMEPLAY);
-	playAudio(apple_id);
+	// playAudio(apple_id);
 }
 
 function registerApple(token) {
@@ -127,6 +127,10 @@ function registerApple(token) {
 
 // sorry (j balvin remix)
 let apple_id = '1444617719'
+
+async function authNext() {
+	changeUIScene('name');
+}
 
 /**
  * METHOD authorize()
