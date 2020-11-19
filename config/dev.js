@@ -1,4 +1,4 @@
 window.env = {
-	env: 'prod',
+	env: 'dev',
   	api: "https://api.dev.purposepro.justinbiebermusic.com"
 }
