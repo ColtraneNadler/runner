@@ -146,7 +146,7 @@ initSkybox(new THREE.Color("#dfa6fb"));
  */
 
 // TEMP FOR TEST
-const outfits = [[], []];
+const outfits = [[], [], []];
 let currentOutfit = 0;
 
 function setUpForCurrentOutfit() {
@@ -171,7 +171,7 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bieber/bSkater.gltf', function (glb) {
+loader.load('/assets/bieberRC13/bSkater.glb', function (glb) {
 	let models = glb.scene;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
@@ -196,9 +196,11 @@ loader.load('/assets/bieber/bSkater.gltf', function (glb) {
 
 		if (child.name.startsWith("o1")) {
 			outfits[0].push(idx);
-		} else if (child.name.startsWith("o2")) {
+		} else if (child.name.startsWith("o4")) {
 			outfits[1].push(idx);
-		}
+		} else if (child.name.startsWith("o2")) {
+			outfits[2].push(idx);
+		} 
 		else if (child.name.startsWith("o3")) {
 			child.visible = false;
 		}
