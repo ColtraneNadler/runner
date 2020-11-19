@@ -4,6 +4,7 @@ let time = 30;
 let apple_player;
 let playing = false; 
 let wrapper = document.getElementById('wrapper');
+let nameInput = document.getElementById('name-input');
 
 /**
  * get cookie
@@ -76,11 +77,28 @@ function changeUIScene(scene) {
 	}
 }
 
-// function auth() {
-// 	changeUIScene('name');
-// }
+function auth() {
+	changeUIScene('name');
+}
 
 function submitName() {
+	console.log(`the name is ${nameInput.value}`);
+
+	if(nameInput.value.length === 0)
+		return alert('You must enter a name!');
+	if(nameInput.value.length > 13)
+		return alert('Name must be shorter than 13 characters!');
+
+	fetch(`${window.env.api}/name`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			name: nameInput.value
+		})
+	})
+
 	changeUIScene('characterSelect');
 	changeGameScene(SCENE.OUTFIT);
 }
@@ -213,8 +231,8 @@ async function playAudio() {
 		case 'spotify':
 			play({
 		      playerInstance: window.spotify_player,
-		      spotify_uri: 'spotify:track:3LTinH60rltyAZiMmHF7JH',
-		      uris: ['spotify:track:3LTinH60rltyAZiMmHF7JH'],
+		      spotify_uri: 'spotify:track:09CtPGIpYB4BrO8qb1RGsF',
+		      uris: ['spotify:track:09CtPGIpYB4BrO8qb1RGsF'],
 		      position_ms: 0
 		    })
 			break;
