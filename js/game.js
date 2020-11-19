@@ -681,7 +681,7 @@ function playerMovementUpdate(dt) {
 				current_animation = animations.PUSH;
 				// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 				//So I'm trying to reset the duration back to 1 when not grinding
-				boy_actions[animations.TURN_RIGHT].setDuration(1)
+				boy_actions[animations.TURN_RIGHT].setDuration(1.4)
 			}
 		}
 
