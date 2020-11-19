@@ -1,6 +1,15 @@
 const sceneTitle = document.getElementById('sceneTitle')
+const scoreElement = document.getElementById('score')
 const prevOutfitBtn = document.getElementById('outfit-prev');
 const nextOutfitBtn = document.getElementById('outfit-next');
+const prevEnvBtn = document.getElementById('level-prev');
+const nextEnvBtn = document.getElementById('level-next');
+let paused = false;
+let leaderboardElement = document.getElementById('popup-wrapper');
+let leaderboardScoreElement = document.getElementById('leaderboard-score');
+let levelImageElement = document.getElementById('level-image');
+
+console.log('got the leaderboard elem', leaderboardElement)
 
 /**
  * SETUP THREE.JS SCENE
@@ -250,6 +259,26 @@ function setLevel(idx) {
 	envController.SetVisibility(true);
 }
 
+prevEnvBtn.addEventListener("click", () => {
+	if (envIdx === 0) {
+		envIdx = envs.length - 1;
+	} else {
+		envIdx--;
+	}
+
+	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
+});
+
+nextEnvBtn.addEventListener("click", () => {
+	if (envIdx === envs.length - 1) {
+		envIdx = 0;
+	} else {
+		envIdx++;
+	}
+
+	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
+});
+
 prevOutfitBtn.addEventListener("click", () => {
 	if (currentOutfit === 0) {
 		currentOutfit = outfits.length - 1;
@@ -333,6 +362,8 @@ function setupForScene(scene) {
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
+			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
+			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			current_lane = lanes.MIDDLE;
 			gameTime = 0;
 			break;
@@ -410,6 +441,8 @@ function updateForScene(scene, dt) {
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
+			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
+			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check
 			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
 			if (col[0]) {
@@ -452,6 +485,8 @@ let clock = new THREE.Clock();
  * RENDER
  */
 function render() {
+	if(paused) return;
+
 	requestAnimationFrame(render);
 	// stats.begin();
 
@@ -469,6 +504,21 @@ function render() {
 	// composer.render();
 }
 render();
+
+function togglePause() {
+	paused = !paused;
+
+	clock.stop();
+
+	if(!paused) {
+		leaderboardElement.hidden = true;
+		clock.start();
+		console.log('rendering!!')
+		render();
+	} else {
+		leaderboardElement.hidden = false;
+	}
+}
 
 /**
  * MOVEMENT CONFIG
@@ -503,6 +553,18 @@ let movementParams = {
  */
 window.addEventListener('keydown', e => {
 	switch (e.keyCode) {
+		case 87:
+			movePlayer('UP');
+			break;
+		case 32:
+			movePlayer('UP');
+			break;
+		case 65:
+			movePlayer('LEFT')
+			break;
+		case 68:
+			movePlayer('RIGHT')
+			break;
 		case 38:
 			movePlayer('UP');
 			break;

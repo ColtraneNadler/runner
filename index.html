@@ -27,7 +27,7 @@
 
 		<div id="popup-wrapper" hidden>
 			<div id="popup">
-				<h4>SCORE: 15102</h4>
+				<h4 id="leaderboard-score">SCORE: 15102</h4>
 				<br />
 				<table>
 					<tr>
@@ -40,9 +40,10 @@
 					</tr>
 				</table>
 				<br />
-				<button class="btn">RESUME</button>
+				<button class="btn" onclick="togglePause()">RESUME</button>
 			</div>
 		</div>
+
 
 		<!-- landing -->
 		<div id="landing">
@@ -52,16 +53,14 @@
 			<br /><br /><!-- 
 			<button id="play_btn" class="btn" onclick="authApple()">APPLE MUSIC</button>
 			<button id="play_btn" class="btn" onclick="authSpotify()">SPOTIFY</button> -->
-
-			<button id="play_btn" class="btn" onclick="authNext()">APPLE MUSIC</button>
-			<button id="play_btn" class="btn" onclick="authNext()">SPOTIFY</button>
+			<button id="play_btn" class="btn" onclick="auth()">PLAY</button>
 		</div>
 
 		<!-- set name -->
 		<div id="name" hidden>
 			<h3>What's your name?</h3>
 			<br />
-			<input type="" name="" placeholder="Enter your name...">
+			<input type="text" id="name-input" placeholder="Enter your name...">
 			<br />
 			<button class="btn" style="width: 100%" onclick="submitName()">SUBMIT</button>
 		</div>
@@ -80,9 +79,12 @@
 		<!-- select level -->
 		<div id="level-select" hidden>
 			<h3>LEVEL Select</h3>
-			<button class="outfit-btn" id="level-prev"><i class="fa fa-arrow-left"></i></button>
-			<button class="outfit-btn" id="level-next"><i class="fa fa-arrow-right"></i></button>
 
+			<div style="display: flex; margin-top: 4rem; margin-bottom: 4rem">
+				<button class="outfit-btn" id="level-prev"><i class="fa fa-arrow-left"></i></button>
+				<div style="background-image: url(/img/env0.jpg)" id="level-image"></div>
+				<button class="outfit-btn" id="level-next"><i class="fa fa-arrow-right"></i></button>
+			</div>
 			<br />
 			<button class="btn" onclick="selectLevel()" style="width: 12rem">PLAY</button>
 		</div>
@@ -90,7 +92,16 @@
 		
 		<div id="game" hidden>
 			<div class="ui">
-				<p id="sceneTitle">score: 0</p>
+				<div id="score-wrap" hidden>
+					<div id="score-wrapper">
+						<span id="score">score: 0</span>
+					</div>
+					<button id="pause-btn" onclick="togglePause()">
+						<i class="fa fa-pause"></i>
+					</button>
+				</div>
+
+				<p id="sceneTitle" hidden>score: 0</p>
 			</div>
 		</div>
 
@@ -101,7 +112,7 @@
 <script type="text/javascript" src="/config/index.js"></script>
 <script type="text/javascript" src="/js/tween.js"></script>
 <script type="text/javascript" src="/js/game.js"></script>
-<script type="text/javascript" src="/js/apple.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WP28MSFMTM"></script>
