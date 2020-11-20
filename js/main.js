@@ -164,10 +164,11 @@ window.onfocus = () => {
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
+		window.selected_level = null
 		if(res.playing)
 			return startGame();
 
-		window.selected_level = null;
+		window.selected_level = envIdx;
 		changeUIScene('syncSpotify');
 	});
 }
