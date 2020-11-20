@@ -21,13 +21,16 @@ spec:
       containers:
       - name: bieb-runner-frontend
         image: docker-registry.umusic.com/mira/bieb-runner-frontend
+        command:
+        - bash
+        - "/usr/share/nginx/html/docker-entrypoint.sh"
         resources:
           limits:
-            memory: 500Mi
-            cpu: 500m
+            memory: 1000Mi
+            cpu: 1000Mi
           requests:
-            memory: 500Mi
-            cpu: 500m
+            memory: 1000Mi
+            cpu: 1000Mi
         ports:
         - containerPort: 80
         env:
