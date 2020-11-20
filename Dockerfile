@@ -26,6 +26,6 @@ ENV CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_DISTRIBUTION_ID
 #COPY --from=builder /src/ /usr/share/nginx/html/
 COPY . /usr/share/nginx/html/
 
-#ENTRYPOINT [ "/usr/share/nginx/html/devops/scripts/s3-sync" ]
+ENTRYPOINT [ "/usr/share/nginx/html/devops/scripts/s3-sync" ]
 #CMD [ "nginx", "-g", "daemon off;" ]
-ENTRYPOINT [ "./docker-entrypoint.sh" ]
+#ENTRYPOINT [ "./docker-entrypoint.sh" ]
