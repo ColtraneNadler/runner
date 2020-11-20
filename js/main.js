@@ -135,7 +135,6 @@ function selectCharacter() {
 	fetch(`${window.env.api}/leaderboards`)
 	.then(res => res.json())
 	.then(res => {
-		console.log('got the leaderboard',res)
 		window.purpose_session.leaderboard = res
 	});
 }
@@ -159,9 +158,7 @@ function selectLevel() {
 }
 
 window.onfocus = () => {
-	console.log('refocusing!')
 	if(!window.selected_level) return;
-	console.log('refocusing!', 2)
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
