@@ -89,24 +89,24 @@ function submitName() {
 	if(nameInput.value.length > 13)
 		return alert('Name must be shorter than 13 characters!');
 
-	// fetch(`${window.env.api}/name`, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'content-type': 'application/json'
-	// 	},
-	// 	body: JSON.stringify({
-	// 		name: nameInput.value,
-	// 		...window.purpose_session
-	// 	})
-	// })
-	// .then(res => res.json())
-	// .then(res => {
-	// 	window.purpose_session.token = res.token;
-	// 	window.purpose_session.user = res.user;
+	fetch(`${window.env.api}/name`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			name: nameInput.value,
+			...window.purpose_session
+		})
+	})
+	.then(res => res.json())
+	.then(res => {
+		window.purpose_session.token = res.token;
+		window.purpose_session.user = res.user;
 
-	// 	changeUIScene('characterSelect');
-	// 	changeGameScene(SCENE.OUTFIT);
-	// });
+		changeUIScene('characterSelect');
+		changeGameScene(SCENE.OUTFIT);
+	});
 
 	changeUIScene('characterSelect');
 	changeGameScene(SCENE.OUTFIT);
