@@ -413,6 +413,7 @@ function initFall() {
 			'content-type': 'application/json'
 		},
 		body: JSON.stringify({
+			gt: window.purpose_session.gt,
 			score: Math.floor(currentScore)
 		})
 	})
@@ -445,6 +446,7 @@ function updateForScene(scene, dt) {
 			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime / 20, 4);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
+
 			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check

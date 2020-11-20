@@ -127,8 +127,14 @@ function selectCharacter() {
 
 function selectLevel() {
 	setLevel(1);
-	changeUIScene('game');
-	changeGameScene(SCENE.GAMEPLAY);
+
+	fetch(`${window.env.api}/gt`)
+	.then(res => res.json())
+	.then(res => {
+		window.purpose_session.gt = res.gt;
+		changeUIScene('game');
+		changeGameScene(SCENE.GAMEPLAY);
+	})
 	// playAudio(apple_id);
 }
 
