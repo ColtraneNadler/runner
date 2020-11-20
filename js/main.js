@@ -126,7 +126,7 @@ function selectLevel() {
 	setLevel(1);
 	changeUIScene('game');
 	changeGameScene(SCENE.GAMEPLAY);
-	playAudio(apple_id);
+	// playAudio(apple_id);
 }
 
 function registerApple(token) {
