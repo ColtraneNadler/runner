@@ -7,4 +7,4 @@ ENV=$(echo $VAULT_KV_PATH | awk -F'/' '{print $NF}')
 cd /usr/share/nginx/html
 cp config/$ENV.js config/index.js
 
-nginx -g 'daemon off';
+nginx -g 'daemon off;'
