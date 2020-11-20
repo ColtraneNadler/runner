@@ -95,17 +95,31 @@ function submitName() {
 			'content-type': 'application/json'
 		},
 		body: JSON.stringify({
-			name: nameInput.value
+			name: nameInput.value,
+			...window.purpose_session
 		})
 	})
+	.then(res => res.json())
+	.then(res => {
+		window.purpose_session.token = res.token;
+		window.purpose_session.user = res.user;
 
-	changeUIScene('characterSelect');
-	changeGameScene(SCENE.OUTFIT);
+		changeUIScene('characterSelect');
+		changeGameScene(SCENE.OUTFIT);
+	});
 }
 
 function selectCharacter() {
 	changeUIScene('levelSelect');
 	changeGameScene(SCENE.LEVEL);
+
+	// get leaderboards
+	fetch(`${window.env.api}/leaderboards`)
+	.then(res => res.json())
+	.then(res => {
+		console.log('got the leaderboard',res)
+		window.purpose_session.leaderboard = res
+	});
 }
 
 function selectLevel() {
@@ -156,8 +170,12 @@ async function authNext() {
  */
 async function authApple() {
 	authorized = await apple_player.authorize();
-	window.dsp = 'apple';
-	console.log('authorizedd!!')
+	window.purpose_session = {
+		dsp: 'apple',
+		access_token: authorized
+	};
+
+	console.log('authorized!!')
 	console.log('changed ui scene!');
 	changeUIScene('name');
 	// playAudio(apple_id);
@@ -170,23 +188,36 @@ console.log('registering callbaasdfasdfck');
 window.addEventListener('message', handleMessage, false);
 
 function handleMessage(e) {
-  if(!e.data) return;
+	if(!e.data) return;
 
-  let data;
-  try {
-    data = JSON.parse(e.data);
-  } catch(err) {
-    return;
-  }
+	let data;
+	try {
+		data = JSON.parse(e.data);
+	} catch(err) {
+		return;
+	}
 
-  if(!data.access_token) return;
+	if(!data.access_token) return;
 
-  popup.close();
-  window.dsp = 'spotify';
-  initSpotifyWebPlayback(data.access_token, spotify_player => window.spotify_player = spotify_player);
-  addScript('https://sdk.scdn.co/spotify-player.js');
-  console.log('got the data!',data);
-  changeUIScene('name');
+	popup.close();
+	initSpotifyWebPlayback(data.access_token, spotify_player => window.spotify_player = spotify_player);
+	addScript('https://sdk.scdn.co/spotify-player.js');
+	console.log('got the data!',data);
+
+
+  	window.purpose_session = {
+		dsp: 'spotify',
+		access_token: data.access_token,
+		refresh_token: data.refresh_token,
+		token: data.token,
+		user: data.user
+	};
+
+	if(!data.token)
+		return changeUIScene('name');
+
+	changeUIScene('characterSelect');
+	changeGameScene(SCENE.OUTFIT);
 }
 
 
@@ -203,7 +234,7 @@ async function authSpotify() {
  * play an apple music song through msic kit
  */
 async function playAudio() {
-	switch(window.dsp) {
+	switch(window.purpose_session.dsp) {
 		case 'apple':
 			if(!apple_id) return;
 			console.log('playing',apple_id)

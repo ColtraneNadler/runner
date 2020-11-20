@@ -1,4 +1,5 @@
 const sceneTitle = document.getElementById('sceneTitle')
+const scoreWrapElement = document.getElementById('score-wrap')
 const scoreElement = document.getElementById('score')
 const prevOutfitBtn = document.getElementById('outfit-prev');
 const nextOutfitBtn = document.getElementById('outfit-next');
@@ -7,9 +8,8 @@ const nextEnvBtn = document.getElementById('level-next');
 let paused = false;
 let leaderboardElement = document.getElementById('popup-wrapper');
 let leaderboardScoreElement = document.getElementById('leaderboard-score');
+let leaderboardScoresElement = document.getElementById('leaderboard-scores');
 let levelImageElement = document.getElementById('level-image');
-
-console.log('got the leaderboard elem', leaderboardElement)
 
 /**
  * SETUP THREE.JS SCENE
@@ -346,7 +346,6 @@ function setupForScene(scene) {
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
-			sceneTitle.innerHTML = "outfit select"
 			SetUpDefaultEnvProps();
 			break;
 		}
@@ -356,6 +355,8 @@ function setupForScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			current_animation = animations.PUSH;
+			sceneTitle.hidden = true;
+			scoreWrapElement.hidden = false;
 			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
 			avatar.rotation.y = Math.PI;
@@ -372,6 +373,8 @@ function setupForScene(scene) {
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			let key = isTouchDevice ? "touch" : "press space";
+			scoreWrapElement.hidden = true;
+			sceneTitle.hidden = false;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>" + key + " to skate a new location</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = 0;
@@ -402,17 +405,19 @@ function initFall() {
 	boy_actions[animations.FALL].time = 0.7;
 
 	/**
-	 * 
+	 * ajex request to post score
 	 */
-	// fetch(`${window.env.api}`, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'content-type': 'application/json'
-	// 	},
-	// 	body: JSON.stringify({
-	// 		score
-	// 	})
-	// })
+	fetch(`${window.env.api}/score?token=${window.purpose_session.token}`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			score: Math.floor(currentScore)
+		})
+	})
+	.then(res => res.json())
+	.then(res => console.log('posted the score',res));
 
 	setTimeout(function () {
 		clearScene(currentScene);
@@ -440,7 +445,6 @@ function updateForScene(scene, dt) {
 			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime / 20, 4);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
-			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
 			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check
@@ -509,15 +513,28 @@ function togglePause() {
 	paused = !paused;
 
 	clock.stop();
+	renderLeaderboard()
 
 	if(!paused) {
 		leaderboardElement.hidden = true;
 		clock.start();
-		console.log('rendering!!')
 		render();
 	} else {
 		leaderboardElement.hidden = false;
 	}
+}
+
+function renderLeaderboard() {
+	let str = '';
+
+	if(!window.purpose_session.leaderboard) return;
+	window.purpose_session.leaderboard.forEach(v => str += createLbTr(v));
+
+	leaderboardScoresElement.innerHTML = str;
+}
+
+function createLbTr(v) {
+	return `<tr><td>${v.name}</td><td>${v.score}</td></tr>`
 }
 
 /**
@@ -552,35 +569,36 @@ let movementParams = {
  * KEYBINDING CONTROLS
  */
 window.addEventListener('keydown', e => {
-	switch (e.keyCode) {
-		case 87:
-			movePlayer('UP');
-			break;
-		case 32:
-			movePlayer('UP');
-			break;
-		case 65:
-			movePlayer('LEFT')
-			break;
-		case 68:
-			movePlayer('RIGHT')
-			break;
-		case 38:
-			movePlayer('UP');
-			break;
-		case 37:
-			movePlayer('LEFT')
-			break;
-		case 39:
-			movePlayer('RIGHT')
-			break;
-		case 32:
-			if (currentScene == SCENE.GAMEOVER) {
-				changeUIScene('characterSelect');
-				clearScene(currentScene)
-				currentScene = SCENE.OUTFIT
-				setupForScene(currentScene)
-			}
+	if(currentScene === SCENE.GAMEPLAY)
+		switch (e.keyCode) {
+			case 87:
+				movePlayer('UP');
+				break;
+			case 32:
+				movePlayer('UP');
+				break;
+			case 65:
+				movePlayer('LEFT')
+				break;
+			case 68:
+				movePlayer('RIGHT')
+				break;
+			case 38:
+				movePlayer('UP');
+				break;
+			case 37:
+				movePlayer('LEFT')
+				break;
+			case 39:
+				movePlayer('RIGHT')
+				break;
+		}
+
+	if(currentScene === SCENE.GAMEOVER && e.keyCode === 32) {
+		changeUIScene('characterSelect');
+		clearScene(currentScene)
+		currentScene = SCENE.OUTFIT
+		setupForScene(currentScene)
 	}
 })
 
@@ -608,6 +626,7 @@ function handleTouchStart(evt) {
 	xDown = evt.touches[0].clientX;
 	yDown = evt.touches[0].clientY;
 	if (currentScene == SCENE.GAMEOVER) {
+		changeUIScene('characterSelect');
 		clearScene(currentScene)
 		currentScene = SCENE.OUTFIT
 		setupForScene(currentScene)
@@ -632,8 +651,6 @@ function handleTouchMove(evt) {
 	else
 		if (yDiff > 0)
 			movePlayer('UP')
-		else
-			console.log('DOWN')
 
 	/* reset values */
 	xDown = null;

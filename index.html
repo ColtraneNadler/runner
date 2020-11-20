@@ -29,7 +29,7 @@
 			<div id="popup">
 				<h4 id="leaderboard-score">SCORE: 15102</h4>
 				<br />
-				<table>
+				<table id="leaderboard-scores">
 					<tr>
 						<td>LEAH</td>
 						<td>15102</td>
@@ -49,11 +49,11 @@
 		<div id="landing">
 			<h1>Purpose Pro 2</h1>
 			<br />
-			<p>Skate with Justin Bieber in his Purpose world now!</p>
-			<br /><br /><!-- 
+			<p>In honor of the 5th anniversary of Purpose, skate with Justin to Holy, Lonely and Monster!</p>
+			<br /><br />
 			<button id="play_btn" class="btn" onclick="authApple()">APPLE MUSIC</button>
-			<button id="play_btn" class="btn" onclick="authSpotify()">SPOTIFY</button> -->
-			<button id="play_btn" class="btn" onclick="auth()">PLAY</button>
+			<button id="play_btn" class="btn" onclick="authSpotify()">SPOTIFY</button>
+			<!-- <button id="play_btn" class="btn" onclick="auth()">PLAY</button> -->
 		</div>
 
 		<!-- set name -->
@@ -68,11 +68,13 @@
 		<!-- select character -->
 		<div id="character-select" hidden>
 			<h3>Character Select</h3>
-			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			<div class="hide-mob"><br /><br /><br /><br /><br /><br /></div>
+			<br /><br /><br /><br /><br /><br /><br />
 			<button class="outfit-btn" id="outfit-prev" style="margin-right: 5rem"><i class="fa fa-arrow-left"></i></button>
 			<button class="outfit-btn" id="outfit-next" style="margin-left: 5rem"><i class="fa fa-arrow-right"></i></button>
 
-			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			<div class="hide-mob"><br /><br /><br /><br /></div>
+			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 			<button class="btn" onclick="selectCharacter()" style="width: 12rem">NEXT</button>
 		</div>
 
@@ -101,7 +103,7 @@
 					</button>
 				</div>
 
-				<p id="sceneTitle" hidden>score: 0</p>
+				<p id="sceneTitle"></p>
 			</div>
 		</div>
 

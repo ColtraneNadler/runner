@@ -259,7 +259,7 @@ button:hover {
 
 #level-image {
 	background-size: cover;
-	background-attachment: center;
+	background-position: center;
 	width: 22rem;
 	height: 12rem;
 	box-shadow: 0px 0px 10px #FFFFFF;
@@ -305,16 +305,21 @@ button:hover {
 	#content img {
 		max-width: 100%;
 	}
-	/*button {
-		font-size: 20px;
-		border-width: .3rem;
-		padding: 1rem 4rem;
-	}*/
 	#sceneTitle {
-		font-size: 20px;
+		font-size: 14px;
 	}
-	#loadingTitle {
-		font-size: 20px;
+
+	#level-image {
+		width: 12rem;
+    	height: 8rem;
+	}
+
+	.hide-mob {
+		display: none;
+	}
+
+	.outfit-btn {
+		font-size: 2.6rem;
 	}
 }
 
