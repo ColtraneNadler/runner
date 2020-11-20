@@ -11,11 +11,13 @@ USER_DATA_PROD=`echo '{"S3_BUCKET":"awsa6-digital-marketing-bieber-runner-prod",
 
 if [[ $ENV == "prod" ]]; then
     USER_DATA="$USER_DATA_PROD"
+    VAULT_KV_PATH="digital-marketing/bieber-runner/prod"
 else
     USER_DATA="$USER_DATA_DEV"
+    VAULT_KV_PATH="digital-marketing/bieber-runner/dev"
 fi
 
-jq ".Git.Ref=\"$GIT_REF\"|.Git.Revision=\"$GIT_COMMIT\"|.Image.Tag=\"$GIT_COMMIT\"|.Config.UserData=\"$USER_DATA\"|.K8S.ClusterName=\"$CLUSTER\"|.K8S.Namespace=\"$NAMESPACE\"" \
+jq ".Git.Ref=\"$GIT_REF\"|.Git.Revision=\"$GIT_COMMIT\"|.Image.Tag=\"$GIT_COMMIT\"|.Config.VaultKVPath=\"$VAULT_KV_PATH\"|.Config.UserData=\"$USER_DATA\"|.K8S.ClusterName=\"$CLUSTER\"|.K8S.Namespace=\"$NAMESPACE\"" \
     devops/tekton/trigger.json > trigger.json
 
 cat trigger.json
