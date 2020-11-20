@@ -63,6 +63,16 @@
 		</div>
 
 		<!-- set name -->
+		<div id="sync_spotify" hidden>
+			<h3 style="color: #000">Sync Spotify</h3>
+			<br /><br />
+			<p style="color: #000; font-family: Helvetica">Click the button below to open Spotify, start playing a song and come back to start the game with your music synced!</p>
+			<a href="https://open.spotify.com/playlist/7hPB7pa0fRo7iySIYoBchs?si=B-P8rmWrSXqY745W7YWdnA" target="_blank"></a>
+			<br /><br />
+			<a href="https://open.spotify.com/playlist/7hPB7pa0fRo7iySIYoBchs?si=B-P8rmWrSXqY745W7YWdnA" target="_blank" class="btn" style="box-shadow: 0px 0px 20px rgba(0,0,0,.15); width: 100%">OPEN SPOTIFY</a>
+		</div>
+
+		<!-- set name -->
 		<div id="name" hidden>
 			<h3>What's your name?</h3>
 			<br />
@@ -153,7 +163,7 @@ const play = ({
   getOAuthToken(access_token => {
     fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
       method: 'PUT',
-      body: JSON.stringify({ uris, offset: {uri: spotify_uri}, position_ms }),
+      body: JSON.stringify({ uris }),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${access_token}`
@@ -170,7 +180,7 @@ function initSpotifyWebPlayback(oauth_token, onPlayerReady, onPlayerStateChange)
 	  let token_update = Date.now();
 
 	  let spotify_player = new Spotify.Player({
-	    name: 'tunecast.com',
+	    name: 'Purpose Pro 2',
 	    getOAuthToken: async cb => { 
 	    	if(Date.now() - token_update < 1000 * 60 * 60)
 	    		return cb(token); 
