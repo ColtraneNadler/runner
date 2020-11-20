@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -ev
+
+cd /usr/share/nginx/html/
+
+ # USER_DATA = base64({"S3_BUCKET": "", "AWS_IAM_ROLE_ARN": "", "CLOUDFRONT_DISTRIBUTION_ID": "", "ENV": ""})
+USER_DATA_JSON=`echo "$USER_DATA" | base64 --decode`
+export $(echo $USER_DATA_JSON | jq -r '. | to_entries|map("\(.key)=\(.value|tostring)")|.[]')
+
+export AWS_REGION=us-east-1
+
+echo ======= env =======
+env | grep -v -e KEY -e TOKEN -e PASS
+env | grep -e KEY -e TOKEN -e PASS | sed 's,=.*,=***********,'
+echo ======= env =======
+
+ls -alth
+
+if [[ -z $S3_BUCKET ]]; then
+    echo S3_BUCKET required
+    exit 1
+fi
+
+cp config/$ENV.js config/index.js
+
+aws_assume_role() {
+	# Assume AWS role for specified account
+	export aws_assume_creds=$(aws sts assume-role --role-arn $AWS_IAM_ROLE_ARN --role-session-name bieb-runner)
+	export AWS_ACCESS_KEY_ID=$(echo $aws_assume_creds | jq -r ".Credentials.AccessKeyId" | tr -d "\n")
+	export AWS_SECRET_ACCESS_KEY=$(echo $aws_assume_creds | jq -r ".Credentials.SecretAccessKey" | tr -d "\n")
+	export AWS_SESSION_TOKEN=$(echo $aws_assume_creds | jq -r ".Credentials.SessionToken" | tr -d "\n")
+	# END Assume AWS role for specified account
+	if [[ -z $AWS_SESSION_TOKEN ]]; then
+		echo AWS_SESSION_TOKEN required
+		exit 1
+	fi
+}
+
+aws_assume_role
+
+aws sts get-caller-identity
+
+aws s3 sync . s3://$S3_BUCKET \
+    --delete \
+    --exclude ".git/*" \
+    --exclude ".git" \
+    --exclude "devops/*" \
+    --exclude "devops" \
+    --exclude ".env" \
+    --cache-control "max-age=31536000,public,immutable"
+
+aws configure set preview.cloudfront true
+aws cloudfront \
+    create-invalidation \
+    --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
+    --paths '/*'

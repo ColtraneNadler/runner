@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bieb-runner-frontend
+  namespace: tunecast-dev
+  labels:
+    app: bieb-runner-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: bieb-runner-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
+      targetPort: 80
