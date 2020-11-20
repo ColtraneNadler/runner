@@ -70,7 +70,7 @@ class EnvController {
         }
         this.staticInitFunc(this);
         this.InitializeCoinPool();
-        console.log('the world', gltfModel.scene.children);
+        // console.log('the world', gltfModel.scene.children);
         scene.add(this.rootObj);
         this.rootObj.visible = false;
     }

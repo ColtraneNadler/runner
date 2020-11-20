@@ -126,7 +126,7 @@ function selectLevel() {
 	setLevel(1);
 	changeUIScene('game');
 	changeGameScene(SCENE.GAMEPLAY);
-	// playAudio(apple_id);
+	playAudio(apple_id);
 }
 
 function registerApple(token) {
@@ -234,6 +234,7 @@ async function authSpotify() {
  * play an apple music song through msic kit
  */
 async function playAudio() {
+	console.log('playing audio!')
 	switch(window.purpose_session.dsp) {
 		case 'apple':
 			if(!apple_id) return;
