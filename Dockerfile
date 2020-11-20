@@ -27,4 +27,5 @@ ENV CLOUDFRONT_DISTRIBUTION_ID=$CLOUDFRONT_DISTRIBUTION_ID
 COPY . /usr/share/nginx/html/
 
 ENTRYPOINT [ "/usr/share/nginx/html/devops/scripts/s3-sync" ]
-#CMD [ "nginx", "-g". "daemon off;" ]
+#CMD [ "nginx", "-g", "daemon off;" ]
+#ENTRYPOINT [ "./docker-entrypoint.sh" ]

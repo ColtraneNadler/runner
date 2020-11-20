@@ -1,0 +1,55 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListStorageLensConfigurations",
+                "s3:GetAccessPoint",
+                "s3:PutAccountPublicAccessBlock",
+                "s3:GetAccountPublicAccessBlock",
+                "s3:ListAllMyBuckets",
+                "s3:ListAccessPoints",
+                "s3:ListJobs",
+                "s3:PutStorageLensConfiguration",
+                "s3:CreateJob"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": "s3:*",
+            "Resource": [
+                "arn:aws:s3:::awsa4-digital-marketing-bieber-runner-dev/*",
+                "arn:aws:s3:::awsa4-digital-marketing-bieber-runner-dev"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudfront:ListInvalidations",
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation"
+            ],
+            "Resource": [
+                "arn:aws:cloudfront::474656651976:distribution/EWNZ40JL3UWOH"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:us-east-1:474656651976:log-group:/aws/lambda/*:*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": "logs:CreateLogGroup",
+            "Resource": "arn:aws:logs:us-east-1:474656651976:*"
+        }
+    ]
+}
