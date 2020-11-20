@@ -28,6 +28,7 @@ function getCookie(name) {
   // Return null if not found
   return null;
 }
+
 /**
  * INIT
  */
@@ -59,14 +60,21 @@ fetch(`${env.api}/token`)
 .then(res => res.json())
 .then(res => registerApple(res.token))
 
-
 let scenes = {
+	instagram: document.getElementById('instagram'),
 	landing: document.getElementById('landing'),
 	name: document.getElementById('name'),
 	characterSelect: document.getElementById('character-select'),
 	levelSelect: document.getElementById('level-select'),
 	game: document.getElementById('game'),
 }
+
+/**
+ * instagram
+ */
+if(navigator.userAgent.toLowerCase().indexOf('instagram') > -1)
+	changeUIScene('instagram');
+
 
 function changeUIScene(scene) {
 	for(prop in scenes) {
@@ -82,8 +90,6 @@ function auth() {
 }
 
 function submitName() {
-	console.log(`the name is ${nameInput.value}`);
-
 	if(nameInput.value.length === 0)
 		return alert('You must enter a name!');
 	if(nameInput.value.length > 13)
