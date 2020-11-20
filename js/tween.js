@@ -46,12 +46,17 @@ class TWEEN {
 			let updated = true;
 
 			for(let j in this.finals) {
-				if (this.diffs[j] > 0 && this.ref[j] >= this.finals[j])
+				let to_val = this.diffs[j] / this.STEPS;
+
+				if (this.diffs[j] > 0 && this.ref[j] + to_val >= this.finals[j])
 					this.ref[j] = this.finals[j]
-				else if (this.diffs[j] < 0 && this.ref[j] <= this.finals[j])
+
+				else if (this.diffs[j] < 0 && this.ref[j] + to_val <= this.finals[j])
 					this.ref[j] = this.finals[j]
+
 				else if (this.diffs[j] > 0 && this.ref[j] < this.finals[j])
 					updated = false;
+
 				else if (this.diffs[j] < 0 && this.ref[j] > this.finals[j])
 					updated = false;
 			}
@@ -60,7 +65,9 @@ class TWEEN {
 				this.stopped = true;
 			if(!this.stopped) {
 				setTimeout(this.run.bind(this), this.STEP);
+
 				// number of steps
+				// dont over step it
 				for (let prop in this.diffs)
 					this.ref[prop] += this.diffs[prop] / this.STEPS;
 			}
