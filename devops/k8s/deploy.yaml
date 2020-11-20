@@ -23,7 +23,7 @@ spec:
         image: docker-registry.umusic.com/mira/bieb-runner-frontend
         command:
         - bash
-        - "./docker-entrypoint.sh"
+        - "/usr/share/nginx/html/docker-entrypoint.sh"
         resources:
           limits:
             memory: 500Mi
