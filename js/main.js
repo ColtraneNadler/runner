@@ -104,6 +104,9 @@ function submitName() {
 		window.purpose_session.token = res.token;
 		window.purpose_session.user = res.user;
 
+		if(!window.avatar_loaded)
+			console.log('not loaded yet');
+
 		changeUIScene('characterSelect');
 		changeGameScene(SCENE.OUTFIT);
 	});

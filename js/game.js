@@ -182,6 +182,9 @@ const animations = {
 let current_animation = animations.Push;
 loader.load('/assets/bieberRC13/bSkater.glb', function (glb) {
 	let models = glb.scene;
+
+	console.log('gl.biRC13.lod' + Math.random().toString().substring(0,5))
+	window.avatar_loaded = true;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
 			// child.layers.set(1);
