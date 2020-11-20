@@ -164,11 +164,11 @@ function selectLevel() {
 }
 
 window.onfocus = () => {
+	console.log('focusing!', window.selected_level)
 	if(!window.selected_level) return;
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
-		window.selected_level = null
 		if(res.playing)
 			return startGame();
 
@@ -178,6 +178,7 @@ window.onfocus = () => {
 }
 
 function startGame() {
+	window.selected_level = null
 	fetch(`${window.env.api}/gt`)
 	.then(res => res.json())
 	.then(res => {
