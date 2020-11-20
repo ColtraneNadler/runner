@@ -116,6 +116,8 @@ function submitName() {
 		window.purpose_session.token = res.token;
 		window.purpose_session.user = res.user;
 
+		document.cookie = `p2.session=${res.token}`;
+
 		if(!window.avatar_loaded)
 			console.log('not loaded yet');
 
@@ -198,7 +200,7 @@ function registerApple(token) {
 			if(e.state !== 2 || playing) return;
 
 			// playing
-			playing = true;
+			// playing = true;
 			// startGame()
 		})
 	});
@@ -210,7 +212,6 @@ function registerApple(token) {
 }
 
 // sorry (j balvin remix)
-let apple_id = '1444617719'
 
 async function authNext() {
 	changeUIScene('name');
@@ -221,6 +222,29 @@ async function authNext() {
  * Authorize Apple Music user
  */
 async function authApple() {
+	let cookie = getCookie('p2.session');
+
+	if(cookie) {
+		let res = await fetch(`${window.env.api}/session?token=${cookie}`);
+		let data = await res.json();
+
+		if(data.success) {
+			apple_player.musicUserToken = data.access_token;
+
+			window.purpose_session = {
+				dsp: 'apple',
+				access_token: data.access_token,
+				token: data.token,
+				user: data.user
+			}
+
+			document.cookie = `p2.session=${data.token}`;
+			changeUIScene('characterSelect');
+			changeGameScene(SCENE.OUTFIT);
+			return
+		}
+	}
+
 	authorized = await apple_player.authorize();
 	window.purpose_session = {
 		dsp: 'apple',
@@ -230,8 +254,6 @@ async function authApple() {
 	console.log('authorized!!')
 	console.log('changed ui scene!');
 	changeUIScene('name');
-	// playAudio(apple_id);
-	// wrapper.hidden = true;
 }
 
 let popup;
@@ -284,19 +306,17 @@ async function authSpotify() {
 }
 
 let tracks = {
-	0: 'spotify:track:5u1n1kITHCxxp8twBcZxWy', // holy
-	1: 'spotify:track:4y4spB9m0Q6026KfkAvy9Q', // lonely
-	2: 'spotify:track:2Z8yfpFX0ZMavHkcIeHiO1', // monster
+	0: { sp: 'spotify:track:5u1n1kITHCxxp8twBcZxWy', ap: 1531508507 }, // holy
+	1: { sp: 'spotify:track:4y4spB9m0Q6026KfkAvy9Q', ap: 1535542529 }, // lonely
+	2: { sp: 'spotify:track:2Z8yfpFX0ZMavHkcIeHiO1', ap: 1541060450 }, // monster
 
-	3: 'spotify:track:09CtPGIpYB4BrO8qb1RGsF', // sorry,
-	4: 'spotify:track:4B0JvthVoAAuygILe3n4Bs', // what do u mean
-	5: 'spotify:track:0n8ob8S72lvznoVfiwz4qL', // where r u now
-	6: 'spotify:track:0SNIAtRCPVVLoGEPcuHSIc', // ill show you
-	7: 'spotify:track:2SnNaoNhMjC1WRMTWD8qTX', // mark my words
-	8: 'spotify:track:61uyGDPJ06MkxJtHgPmuyO', // company
+	3: { sp: 'spotify:track:09CtPGIpYB4BrO8qb1RGsF', ap: 1440829610 }, // sorry,
+	4: { sp: 'spotify:track:4B0JvthVoAAuygILe3n4Bs', ap: 1440829606 }, // what do u mean
+	5: { sp: 'spotify:track:0n8ob8S72lvznoVfiwz4qL', ap: 971262282 }, // where r u now
+	6: { sp: 'spotify:track:0SNIAtRCPVVLoGEPcuHSIc', ap: 1440829480 }, // ill show you
+	7: { sp: 'spotify:track:2SnNaoNhMjC1WRMTWD8qTX', ap: 1440829467 }, // mark my words
+	8: { sp: 'spotify:track:61uyGDPJ06MkxJtHgPmuyO', ap: 1440829617 }, // company
 }
-
-let track_indexes = Object.keys(tracks);
 
 /**
  * METHOD playAudio
@@ -304,12 +324,13 @@ let track_indexes = Object.keys(tracks);
  */
 async function playAudio(idx) {
 	console.log('playing audio!')
+	let track_indexes = Object.keys(tracks);
+
+	let first = tracks[idx];
+	track_indexes.splice(idx, 1);
+
 	switch(window.purpose_session.dsp) {
 		case 'apple':
-			if(!apple_id) return;
-			console.log('playing',apple_id)
-			if(!authorized) return authorize(apple_id);
-
 			if(playing) return; // pauseAudio();
 			let queue, data, seeked;
 
@@ -321,7 +342,10 @@ async function playAudio(idx) {
 
 			try {
 				await apple_player.setQueue({
-			      songs: [apple_id], // queue's last
+			      songs: [
+			      	first.ap,
+			      	...track_indexes.map(i => tracks[i].ap)
+			      ], // queue's last
 			    })
 			} catch(err) {
 				return console.log('ERROR QUEUING',err);
@@ -335,12 +359,9 @@ async function playAudio(idx) {
 			break;
 		case 'spotify':
 			if(web_sdk) {
-				let first = tracks[idx];
-			  	track_indexes.splice(idx, 1);
-
 			  	let uris = [
-			      		first,
-			      		...track_indexes.map(i => tracks[i])
+			      		first.sp,
+			      		...track_indexes.map(i => tracks[i].sp)
 			      	];
 
 			    console.log('the uris are',uris)

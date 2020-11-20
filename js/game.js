@@ -117,9 +117,7 @@ envs.forEach((env) => {
 	}, null, console.log);
 })
 
-
 // skybox 
-
 function createPathStrings(filename) {
 	const basePath = "/assets/cSkybox_small/";
 	const baseFilename = basePath + filename;
@@ -445,8 +443,8 @@ function updateForScene(scene, dt) {
 		case SCENE.GAMEPLAY: {
 			gameTime += dt;
 			playerMovementUpdate(dt);
-			//envspeed moves up 1 every 20 seconds, from 3 to 7
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime / 20, 4);
+			//envspeed moves up 1 every 20 seconds, from 5 to 10
+			let envSpeed = (current_animation == animations.FALL) ? 0 : 4 + Math.min(gameTime / 20, 6);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 
