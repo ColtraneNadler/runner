@@ -25,6 +25,13 @@
 	<div id="wrapper">
 		<!-- <div id="bkg"></div> -->
 
+		<div id="instructions" hidden>
+			<div>
+				<p id="instructions-desktop" hidden>Use the A W D or Arrow keys to help Justin avoid the obstacles in his way!</p>
+				<p id="instructions-mobile" hidden>Swipe left, right, or up to help Justin avoid the obstacles in his way!</p>
+			</div>
+		</div>
+
 		<div id="popup-wrapper" hidden>
 			<div id="popup">
 				<h4 id="leaderboard-score">SCORE: 15102</h4>
@@ -100,7 +107,9 @@
 
 			<div style="display: flex; margin-top: 4rem; margin-bottom: 4rem">
 				<button class="outfit-btn" id="level-prev"><i class="fa fa-arrow-left"></i></button>
-				<div style="background-image: url(/img/env0.jpg)" id="level-image"></div>
+				<div style="background-image: url(/img/env0.jpg)" id="level-image">
+					<p style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 10px #555;" id="level-name">HOLY</p>
+				</div>
 				<button class="outfit-btn" id="level-next"><i class="fa fa-arrow-right"></i></button>
 			</div>
 			<br />

@@ -10,6 +10,13 @@ let leaderboardElement = document.getElementById('popup-wrapper');
 let leaderboardScoreElement = document.getElementById('leaderboard-score');
 let leaderboardScoresElement = document.getElementById('leaderboard-scores');
 let levelImageElement = document.getElementById('level-image');
+let levelNameElement = document.getElementById('level-name')
+
+let levelNames = [
+	'HOLY',
+	'LONELY',
+	'MONSTER'
+]
 
 /**
  * SETUP THREE.JS SCENE
@@ -267,6 +274,7 @@ prevEnvBtn.addEventListener("click", () => {
 		envIdx--;
 	}
 
+	levelNameElement.innerHTML = levelNames[envIdx];
 	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
 });
 
@@ -277,6 +285,7 @@ nextEnvBtn.addEventListener("click", () => {
 		envIdx++;
 	}
 
+	levelNameElement.innerHTML = levelNames[envIdx];
 	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
 });
 
@@ -443,8 +452,11 @@ function updateForScene(scene, dt) {
 		case SCENE.GAMEPLAY: {
 			gameTime += dt;
 			playerMovementUpdate(dt);
-			//envspeed moves up 1 every 20 seconds, from 5 to 10
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 4 + Math.min(gameTime / 20, 6);
+			//envspeed moves up 1 every 20 seconds, from 4 to 14
+			let cookie = getCookie('p2.first');
+			let c_start = cookie ? 4 : 2;
+			document.cookie = 'p2.first=true';
+			let envSpeed = (current_animation == animations.FALL) ? 0 : c_start + Math.min(gameTime / 20, 10);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 

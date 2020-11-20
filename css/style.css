@@ -29,6 +29,21 @@ button:hover {
 	opacity: .3;
 }
 
+#instructions {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-shadow: 0 0 10px #555;
+}
+
+#instructions div {
+	max-width: 500px;
+	padding: 20px;
+}
+
 #wrapper {
 	display: flex;
 	align-items: center;
@@ -258,6 +273,7 @@ button:hover {
  */
 
 #level-image {
+	position: relative;
 	background-size: cover;
 	background-position: center;
 	width: 22rem;
