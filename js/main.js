@@ -167,7 +167,7 @@ window.onfocus = () => {
 		if(res.playing)
 			return startGame();
 
-		window.selected_level = envIdx;
+		window.selected_level = null;
 		changeUIScene('syncSpotify');
 	});
 }
