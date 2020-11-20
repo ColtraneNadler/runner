@@ -14,7 +14,7 @@
 #RUN npm run build
 
 FROM docker-registry.umusic.com/devops/nginx-aws:v0.0.1 as app
-
+WORKDIR /usr/share/nginx/html
 ARG S3_BUCKET
 ARG AWS_IAM_ROLE_ARN
 ARG CLOUDFRONT_DISTRIBUTION_ID
