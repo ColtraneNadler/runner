@@ -169,6 +169,7 @@ window.onfocus = () => {
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
+		console.log('res is', res)
 		if(res.playing)
 			return startGame();
 
@@ -223,10 +224,6 @@ function registerApple(token) {
 		apple_player.addEventListener('playbackStateDidChange', async e => {
 			console.log(e.state,e);
 			if(e.state !== 2 || playing) return;
-
-			// playing
-			// playing = true;
-			// startGame()
 		})
 	});
 
