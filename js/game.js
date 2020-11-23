@@ -146,18 +146,17 @@ function createMaterialArray(filename, tintColor) {
 	});
 	return materialArray;
 }
-
+let materialArray = []
+let skybox;
 function initSkybox(color) {
 	materialArray = createMaterialArray("cartoon", color);
 	let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
-	let skybox = new THREE.Mesh(skyboxGeo, materialArray);
+	skybox = new THREE.Mesh(skyboxGeo, materialArray);
 	skybox.position.set(200, 0, 0);
-	skybox.name = 'skybox';
 	scene.add(skybox);
-	console.log('added skybox',skybox)
+	skybox.visible = false;
 }
-let materialArray = []
-
+initSkybox(new THREE.Color("#dfa6fb"));
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
@@ -352,7 +351,6 @@ function SetUpDefaultEnvProps(baseSpawner) {
 }
 
 function setupForScene(scene_name) {
-	let skybox = scene.getObjectByName('sykbox');
 	switch (scene_name) {
 		case SCENE.APPLE: {
 			camera.position.set(-100, 1., 2.6)
@@ -372,7 +370,7 @@ function setupForScene(scene_name) {
 			break;
 		}
 		case SCENE.GAMEPLAY: {
-			initSkybox(new THREE.Color("#dfa6fb"));
+			skybox.visible = true;
 			current_animation = animations.PUSH;
 			sceneTitle.hidden = true;
 			scoreWrapElement.hidden = false;
@@ -390,6 +388,7 @@ function setupForScene(scene_name) {
 		}
 		case SCENE.GAMEOVER: {
 			console.log('the scene is',scene)
+			skybox.visible = false;
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			let key = isTouchDevice ? "touch" : "press space";
