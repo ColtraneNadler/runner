@@ -4,12 +4,18 @@
 	margin: 0;
 	border: 0;
 	/*color: black;*/
+	outline: none !important;
 }
 
 body {
 	overflow: hidden;
 	background-color: #fff;
 	font-family: 'Press Start 2P', monospace;
+}
+
+button:hover {
+	cursor: pointer;
+	opacity: .8;
 }
 
 #bkg {
@@ -23,6 +29,21 @@ body {
 	opacity: .3;
 }
 
+#instructions {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-shadow: 0 0 10px #555;
+}
+
+#instructions div {
+	max-width: 500px;
+	padding: 20px;
+}
+
 #wrapper {
 	display: flex;
 	align-items: center;
@@ -32,6 +53,35 @@ body {
 	height: 100vh;
 	width: 100vw;
 	color: #fff;
+	text-align: center;
+}
+
+#score-wrap {
+	position: fixed;
+	top: 1.5rem;
+	right: 1.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#score-wrapper {
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	box-shadow: 0px 0px 20px #FFFFFF;
+	border-radius: 10px;
+	color: #333;
+	padding: 1.3rem 2rem;
+	font-family: 'Press Start 2P', monospace;
+}
+
+#pause-btn {
+	margin-left: 1rem;
+	background: #FFFFFF 0% 0% no-repeat padding-box;
+	box-shadow: 0px 0px 20px #FFFFFF;
+	border-radius: 50%;
+	color: #999;
+	width: 2.4rem;
+	height: 2.4rem;
 }
 
 .btn {
@@ -78,6 +128,10 @@ body {
  	box-sizing: border-box;
 }
 
+#character-select, #level-select {
+	/*margin-top: -30rem;*/
+}
+
 /**
  * outfit select
  */ 
@@ -91,13 +145,35 @@ body {
 	text-shadow: 0px 0px 20px #FFFFFF;
 }
 
+#level-prev {
+	margin-right: 1rem;
+}
+
+#level-next {
+	margin-left: 1rem;
+}
+
+#popup-wrapper {
+	position: fixed;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgba(0,0,0,.3);
+	z-index: 50000000000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+[hidden] {
+    display: none !important;
+}
+
 #popup {
 	background: #000000 0% 0% no-repeat padding-box;
 	box-shadow: 0px 0px 20px #FFFFFF;
 	border-radius: 10px;
 	opacity: 1;
-	position: fixed;
-	margin-left: 50%;
+	position: relative;
 	width: 500px;
 	padding: 2rem;
 	text-align: center;
@@ -190,6 +266,21 @@ button:hover {
 	height: 100%;
 }
 
+/**
+ *
+ * level seleect
+ *
+ */
+
+#level-image {
+	position: relative;
+	background-size: cover;
+	background-position: center;
+	width: 22rem;
+	height: 12rem;
+	box-shadow: 0px 0px 10px #FFFFFF;
+}
+
 #loadingTitle {
 	z-index: 100;
 	margin-top: 2rem;
@@ -230,16 +321,21 @@ button:hover {
 	#content img {
 		max-width: 100%;
 	}
-	button {
-		font-size: 20px;
-		border-width: .3rem;
-		padding: 1rem 4rem;
-	}
 	#sceneTitle {
-		font-size: 20px;
+		font-size: 14px;
 	}
-	#loadingTitle {
-		font-size: 20px;
+
+	#level-image {
+		width: 12rem;
+    	height: 8rem;
+	}
+
+	.hide-mob {
+		display: none;
+	}
+
+	.outfit-btn {
+		font-size: 2.6rem;
 	}
 }
 

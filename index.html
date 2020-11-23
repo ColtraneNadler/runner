@@ -25,38 +25,65 @@
 	<div id="wrapper">
 		<!-- <div id="bkg"></div> -->
 
-		<!-- <div id="popup">
-			<h4>SCORE: 15102</h4>
-			<br />
-			<table>
-				<tr>
-					<td>LEAH</td>
-					<td>15102</td>
-				</tr>
-				<tr>
-					<td>TROY</td>
-					<td>12322</td>
-				</tr>
-			</table>
-			<br />
-			<button class="btn">RESUME</button>
+		<div id="instructions" hidden>
+			<div>
+				<p id="instructions-desktop" hidden>Use the A W D or Arrow keys to help Justin avoid the obstacles in his way!</p>
+				<p id="instructions-mobile" hidden>Swipe left, right, or up to help Justin avoid the obstacles in his way!</p>
+			</div>
 		</div>
- -->
+
+		<div id="popup-wrapper" hidden>
+			<div id="popup">
+				<h4 id="leaderboard-score">SCORE: 15102</h4>
+				<br />
+				<table id="leaderboard-scores">
+					<tr>
+						<td>LEAH</td>
+						<td>15102</td>
+					</tr>
+					<tr>
+						<td>TROY</td>
+						<td>12322</td>
+					</tr>
+				</table>
+				<br />
+				<button class="btn" onclick="togglePause()">RESUME</button>
+			</div>
+		</div>
+
+		<!-- instagram -->
+		<div id="instagram" hidden>
+			<h1>Purpose Pro 2</h1>
+			<br />
+			<p>click on the 3 buttons in the top right corner, and press "open in safari"</p>
+		</div>
+
 		<!-- landing -->
 		<div id="landing">
 			<h1>Purpose Pro 2</h1>
 			<br />
-			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+			<p>In honor of the 5th anniversary of Purpose, skate with Justin to Holy, Lonely and Monster!</p>
 			<br /><br />
-			<button id="play_btn" class="btn" onclick="authorize()">APPLE MUSIC</button>
-			<button id="play_btn" class="btn" onclick="auth()">SPOTIFY</button>
+			<button id="play_btn" class="btn" onclick="authApple()">APPLE</button>
+			<button id="play_btn" class="btn" onclick="authSpotify()">SPOTIFY</button>
+			<!-- <button id="play_btn" class="btn" onclick="auth()">PLAY</button> -->
+		</div>
+
+		<!-- set name -->
+		<div id="sync_spotify" hidden>
+			<h3 style="color: #000">Sync Spotify</h3>
+			<br /><br />
+			<p style="color: #000; font-family: Helvetica">Click the button below to open Spotify, start playing a song and come back to start the game with your music synced!</p>
+			<a href="https://open.spotify.com/playlist/7hPB7pa0fRo7iySIYoBchs?si=B-P8rmWrSXqY745W7YWdnA" target="_blank"></a>
+			<br /><br />
+			<a href="https://open.spotify.com/playlist/7hPB7pa0fRo7iySIYoBchs?si=B-P8rmWrSXqY745W7YWdnA" target="_blank" class="btn" style="box-shadow: 0px 0px 20px rgba(0,0,0,.15); width: 100%">OPEN SPOTIFY</a>
 		</div>
 
 		<!-- set name -->
 		<div id="name" hidden>
 			<h3>What's your name?</h3>
 			<br />
-			<input type="" name="" placeholder="Enter your name...">
+			<input type="text" id="name-input" placeholder="Enter your name...">
 			<br />
 			<button class="btn" style="width: 100%" onclick="submitName()">SUBMIT</button>
 		</div>
@@ -64,31 +91,46 @@
 		<!-- select character -->
 		<div id="character-select" hidden>
 			<h3>Character Select</h3>
-			<button class="outfit-btn" id="outfit-prev"><i class="fa fa-arrow-left"></i></button>
-			<button class="outfit-btn" id="outfit-next"><i class="fa fa-arrow-right"></i></button>
+			<div class="hide-mob"><br /><br /><br /><br /><br /><br /></div>
+			<br /><br /><br /><br /><br /><br /><br />
+			<button class="outfit-btn" id="outfit-prev" style="margin-right: 5rem"><i class="fa fa-arrow-left"></i></button>
+			<button class="outfit-btn" id="outfit-next" style="margin-left: 5rem"><i class="fa fa-arrow-right"></i></button>
 
-			<br />
-			<button class="btn" onclick="selectCharacter()">NEXT</button>
+			<div class="hide-mob"><br /><br /><br /><br /></div>
+			<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+			<button class="btn" onclick="selectCharacter()" style="width: 12rem">NEXT</button>
 		</div>
 
 		<!-- select level -->
 		<div id="level-select" hidden>
 			<h3>LEVEL Select</h3>
-			<button class="outfit-btn" id="level-prev"><i class="fa fa-arrow-left"></i></button>
-			<button class="outfit-btn" id="level-next"><i class="fa fa-arrow-right"></i></button>
 
+			<div style="display: flex; margin-top: 4rem; margin-bottom: 4rem">
+				<button class="outfit-btn" id="level-prev"><i class="fa fa-arrow-left"></i></button>
+				<div style="background-image: url(/img/env0.jpg)" id="level-image">
+					<p style="position: absolute; bottom: 10px; left: 10px; text-shadow: 0 0 10px #555;" id="level-name">HOLY</p>
+				</div>
+				<button class="outfit-btn" id="level-next"><i class="fa fa-arrow-right"></i></button>
+			</div>
 			<br />
-			<button class="btn" onclick="selectLevel()">PLAY</button>
+			<button class="btn" onclick="selectLevel()" style="width: 12rem">PLAY</button>
 		</div>
 
 		
 		<div id="game" hidden>
 			<div class="ui">
-				<p id="sceneTitle">score: 0</p>
+				<div id="score-wrap">
+					<div id="score-wrapper">
+						<span id="score">score: 0</span>
+					</div>
+					<button id="pause-btn" onclick="togglePause()">
+						<i class="fa fa-pause"></i>
+					</button>
+				</div>
+
+				<p id="sceneTitle"></p>
 			</div>
 		</div>
-
-	</div>
 
 
 	<div id="stats" style="position: absolute; top: 0;">
@@ -97,6 +139,92 @@
 <script type="text/javascript" src="/config/index.js"></script>
 <script type="text/javascript" src="/js/tween.js"></script>
 <script type="text/javascript" src="/js/game.js"></script>
-<script type="text/javascript" src="/js/apple.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WP28MSFMTM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WP28MSFMTM');
+</script>
+<script type="text/javascript">
+window.addScript = link => {
+	let tag = document.createElement("script");
+	tag.src = link;
+	document.getElementsByTagName("head")[0].appendChild(tag);
+}
+</script>
+<script type="text/javascript">
+const play = ({
+  uris,
+  spotify_uri,
+  position_ms,
+  playerInstance: {
+    _options: {
+      getOAuthToken,
+      id
+    }
+  }
+}) => new Promise((res, rej) => {
+  getOAuthToken(access_token => {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ uris }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${access_token}`
+      },
+    }).then(response => res())
+    .catch(err => console.log('ERROR PLAYING SPOTIFY',err));
+  });
+});
+
+function initSpotifyWebPlayback(oauth_token, onPlayerReady, onPlayerStateChange) {
+	window.onSpotifyWebPlaybackSDKReady = () => {
+	  const token = oauth_token;
+
+	  let token_update = Date.now();
+
+	  let spotify_player = new Spotify.Player({
+	    name: 'Purpose Pro 2',
+	    getOAuthToken: async cb => { 
+	    	if(Date.now() - token_update < 1000 * 60 * 60)
+	    		return cb(token); 
+
+	    	// fetch token
+	    	token_update = Date.now();
+	    	cb(token)
+	    }
+	  });
+
+	  // Error handling
+	  spotify_player.addListener('initialization_error', ({ message }) => { console.error('init error', message); });
+	  spotify_player.addListener('authentication_error', ({ message }) => { console.error('auth error', message); });
+	  spotify_player.addListener('account_error', ({ message }) => { console.error('account error', message); });
+	  spotify_player.addListener('playback_error', ({ message }) => { console.error('playback error', message); });
+
+	  // Playback status updates
+	  // spotify_player.addListener('player_state_changed', state => { console.log('SPOTIFY STATE',state); });
+
+	  // spotify_player.addListener('player_state_changed', onPlayerStateChange);
+
+	  // Ready
+	  spotify_player.addListener('ready', ({ device_id }) => {
+	    onPlayerReady(spotify_player);
+	  });
+
+	  // Not Ready
+	  spotify_player.addListener('not_ready', ({ device_id }) => {
+	    console.log('Device ID has gone offline', device_id);
+	  });
+
+	  // Connect to the player!
+	  spotify_player.connect()
+	  .then(() => console.log('successfully connected to spotify connect!'));
+	};
+}
+</script>
 </html>

@@ -1,6 +1,22 @@
 const sceneTitle = document.getElementById('sceneTitle')
+const scoreWrapElement = document.getElementById('score-wrap')
+const scoreElement = document.getElementById('score')
 const prevOutfitBtn = document.getElementById('outfit-prev');
 const nextOutfitBtn = document.getElementById('outfit-next');
+const prevEnvBtn = document.getElementById('level-prev');
+const nextEnvBtn = document.getElementById('level-next');
+let paused = false;
+let leaderboardElement = document.getElementById('popup-wrapper');
+let leaderboardScoreElement = document.getElementById('leaderboard-score');
+let leaderboardScoresElement = document.getElementById('leaderboard-scores');
+let levelImageElement = document.getElementById('level-image');
+let levelNameElement = document.getElementById('level-name')
+
+let levelNames = [
+	'HOLY',
+	'LONELY',
+	'MONSTER'
+]
 
 /**
  * SETUP THREE.JS SCENE
@@ -108,9 +124,7 @@ envs.forEach((env) => {
 	}, null, console.log);
 })
 
-
 // skybox 
-
 function createPathStrings(filename) {
 	const basePath = "/assets/cSkybox_small/";
 	const baseFilename = basePath + filename;
@@ -173,6 +187,9 @@ const animations = {
 let current_animation = animations.Push;
 loader.load('/assets/bieberRC16/bSkaterRC16.glb', function (glb) {
 	let models = glb.scene;
+
+	console.log('gl.biRC13.lod' + Math.random().toString().substring(0,5))
+	window.avatar_loaded = true;
 	models.traverse((child) => {
 		if (child instanceof THREE.Mesh) {
 			// child.layers.set(1);
@@ -250,6 +267,28 @@ function setLevel(idx) {
 	envController.SetVisibility(true);
 }
 
+prevEnvBtn.addEventListener("click", () => {
+	if (envIdx === 0) {
+		envIdx = envs.length - 1;
+	} else {
+		envIdx--;
+	}
+
+	levelNameElement.innerHTML = levelNames[envIdx];
+	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
+});
+
+nextEnvBtn.addEventListener("click", () => {
+	if (envIdx === envs.length - 1) {
+		envIdx = 0;
+	} else {
+		envIdx++;
+	}
+
+	levelNameElement.innerHTML = levelNames[envIdx];
+	levelImageElement.setAttribute('style', `background-image: url(/img/env${envIdx}.jpg)`);
+});
+
 prevOutfitBtn.addEventListener("click", () => {
 	if (currentOutfit === 0) {
 		currentOutfit = outfits.length - 1;
@@ -317,7 +356,6 @@ function setupForScene(scene) {
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
 			camera.position.set(200, 1., 2.6)
-			sceneTitle.innerHTML = "outfit select"
 			SetUpDefaultEnvProps();
 			break;
 		}
@@ -327,12 +365,16 @@ function setupForScene(scene) {
 		}
 		case SCENE.GAMEPLAY: {
 			current_animation = animations.PUSH;
+			sceneTitle.hidden = true;
+			scoreWrapElement.hidden = false;
 			envController.InitTilesWithSpawnedObjects();
 			avatar.position.set(0, -1, .1)
 			avatar.rotation.y = Math.PI;
 			camera.position.set(0, 1.4, 4.6)
 			currentScore = 0;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
+			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
+			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			current_lane = lanes.MIDDLE;
 			gameTime = 0;
 			break;
@@ -341,6 +383,8 @@ function setupForScene(scene) {
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			let key = isTouchDevice ? "touch" : "press space";
+			scoreWrapElement.hidden = true;
+			sceneTitle.hidden = false;
 			sceneTitle.innerHTML = "score: " + Math.floor(currentScore) + "<br>" + key + " to skate a new location</br>";
 			avatar.position.set(300, 0, 0)
 			avatar.rotation.y = 0;
@@ -370,6 +414,22 @@ function initFall() {
 	boy_actions[animations.FALL].setDuration(3)
 	boy_actions[animations.FALL].time = 0.7;
 
+	/**
+	 * ajex request to post score
+	 */
+	fetch(`${window.env.api}/score?token=${window.purpose_session.token}`, {
+		method: 'POST',
+		headers: {
+			'content-type': 'application/json'
+		},
+		body: JSON.stringify({
+			gt: window.purpose_session.gt,
+			score: Math.floor(currentScore)
+		})
+	})
+	.then(res => res.json())
+	.then(res => console.log('posted the score',res));
+
 	setTimeout(function () {
 		clearScene(currentScene);
 		currentScene = SCENE.GAMEOVER;
@@ -392,31 +452,40 @@ function updateForScene(scene, dt) {
 		case SCENE.GAMEPLAY: {
 			gameTime += dt;
 			playerMovementUpdate(dt);
-			//envspeed moves up 1 every 20 seconds, from 3 to 7
-			let envSpeed = (current_animation == animations.FALL) ? 0 : 3 + Math.min(gameTime / 20, 4);
+			//envspeed moves up 1 every 20 seconds, from 4 to 14
+			let cookie = getCookie('p2.first');
+			let c_start = cookie ? 4 : 2;
+			document.cookie = 'p2.first=true';
+			let envSpeed = (current_animation == animations.FALL) ? 0 : c_start + Math.min(gameTime / 20, 10);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
-			sceneTitle.innerHTML = "score: " + Math.floor(currentScore);
+
+			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
+			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check
-			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1));
+			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.5, -0.2));
 			if (col[0]) {
+				currentScore += 5;
+			}
+			let bCol = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2));
+			if (bCol[0]) {
 				currentScore += 5;
 			}
 			//forward, left and right collision checks. break early if one succeeds
 			if(current_animation == animations.FALL) {
 				break;
 			}
-			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1))
+			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2))
 			if (fCol[0] && fCol[1] < 0.1) {
 				initFall();
 				break;
 			}
-			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0))
+			let lCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0.1, -0.2))
 			if (lCol[0] && lCol[1] < 0.2) {
 				initFall();
 				break;
 			}
-			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0))
+			let rCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0.1, -0.2))
 			if (rCol[0] && rCol[1] < 0.2) {
 				initFall();
 				break;
@@ -431,16 +500,18 @@ function updateForScene(scene, dt) {
 }
 
 //Keep track of FPS
-let stats = new Stats();
-stats.showPanel(0);
-document.getElementById('stats').appendChild(stats.domElement);
+// let stats = new Stats();
+// stats.showPanel(0);
+// document.getElementById('stats').appendChild(stats.domElement);
 let clock = new THREE.Clock();
 /**
  * RENDER
  */
 function render() {
+	if(paused) return;
+
 	requestAnimationFrame(render);
-	stats.begin();
+	// stats.begin();
 
 	// Used with light select layers
 	// renderer.autoClear = true;
@@ -452,10 +523,38 @@ function render() {
 	renderer.render(scene, camera);
 	let delta = clock.getDelta();
 	updateForScene(currentScene, delta)
-	stats.end();
+	// stats.end();
 	// composer.render();
 }
 render();
+
+function togglePause() {
+	paused = !paused;
+
+	clock.stop();
+	renderLeaderboard()
+
+	if(!paused) {
+		leaderboardElement.hidden = true;
+		clock.start();
+		render();
+	} else {
+		leaderboardElement.hidden = false;
+	}
+}
+
+function renderLeaderboard() {
+	let str = '';
+
+	if(!window.purpose_session.leaderboard) return;
+	window.purpose_session.leaderboard.forEach(v => str += createLbTr(v));
+
+	leaderboardScoresElement.innerHTML = str;
+}
+
+function createLbTr(v) {
+	return `<tr><td>${v.name}</td><td>${v.score}</td></tr>`
+}
 
 /**
  * MOVEMENT CONFIG
@@ -489,23 +588,36 @@ let movementParams = {
  * KEYBINDING CONTROLS
  */
 window.addEventListener('keydown', e => {
-	switch (e.keyCode) {
-		case 38:
-			movePlayer('UP');
-			break;
-		case 37:
-			movePlayer('LEFT')
-			break;
-		case 39:
-			movePlayer('RIGHT')
-			break;
-		case 32:
-			if (currentScene == SCENE.GAMEOVER) {
-				changeUIScene('characterSelect');
-				clearScene(currentScene)
-				currentScene = SCENE.OUTFIT
-				setupForScene(currentScene)
-			}
+	if(currentScene === SCENE.GAMEPLAY)
+		switch (e.keyCode) {
+			case 87:
+				movePlayer('UP');
+				break;
+			case 32:
+				movePlayer('UP');
+				break;
+			case 65:
+				movePlayer('LEFT')
+				break;
+			case 68:
+				movePlayer('RIGHT')
+				break;
+			case 38:
+				movePlayer('UP');
+				break;
+			case 37:
+				movePlayer('LEFT')
+				break;
+			case 39:
+				movePlayer('RIGHT')
+				break;
+		}
+
+	if(currentScene === SCENE.GAMEOVER && e.keyCode === 32) {
+		changeUIScene('characterSelect');
+		clearScene(currentScene)
+		currentScene = SCENE.OUTFIT
+		setupForScene(currentScene)
 	}
 })
 
@@ -533,6 +645,7 @@ function handleTouchStart(evt) {
 	xDown = evt.touches[0].clientX;
 	yDown = evt.touches[0].clientY;
 	if (currentScene == SCENE.GAMEOVER) {
+		changeUIScene('characterSelect');
 		clearScene(currentScene)
 		currentScene = SCENE.OUTFIT
 		setupForScene(currentScene)
@@ -557,8 +670,6 @@ function handleTouchMove(evt) {
 	else
 		if (yDiff > 0)
 			movePlayer('UP')
-		else
-			console.log('DOWN')
 
 	/* reset values */
 	xDown = null;
@@ -648,7 +759,7 @@ function playerMovementUpdate(dt) {
 		//while jumping, check if there is a collider underneath 
 		// if you are close enough to it, land
 		if (!landed) {
-			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
+			let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0), new THREE.Vector3(0, 0.1, -0.2));
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
@@ -671,7 +782,7 @@ function playerMovementUpdate(dt) {
 
 	//stopped jumping and waiting to land back to the ground
 	if (landed && !jumping) {
-		let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0));
+		let c = envController.CollisionCheck("Jump", new THREE.Vector3(0, -1, 0), new THREE.Vector3(0, 0.1, -0.2));
 		if (!c[0]) {
 			avatar_land_tween = new TWEEN(avatar.position);
 			avatar_land_tween.to({ y: -1 }, 100);
@@ -721,3 +832,13 @@ function HardResetAnimsToIdle() {
 	}
 }
 
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}

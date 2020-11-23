@@ -70,7 +70,7 @@ class EnvController {
         }
         this.staticInitFunc(this);
         this.InitializeCoinPool();
-        console.log('the world', gltfModel.scene.children);
+        // console.log('the world', gltfModel.scene.children);
         scene.add(this.rootObj);
         this.rootObj.visible = false;
     }
@@ -271,7 +271,7 @@ class EnvController {
         }
 
     }
-    CollisionCheck(collisionType, dir) {
+    CollisionCheck(collisionType, dir, offset) {
         // do a raycast from player to spawned objects nearby
         // get spawned objects in the nearby tiles
         let nearbyObjectsToCollide = []
@@ -309,7 +309,7 @@ class EnvController {
                 }
             })
         }
-        this.raycaster.set(new THREE.Vector3(0, 0.1, -0.2).add(avatar.position), dir)
+        this.raycaster.set(offset.add(avatar.position), dir)
         for (let i = 0; i < nearbyObjectsToCollide.length; i++) {
             let obj = nearbyObjectsToCollide[i];
             this.inverseMatrix.getInverse(obj.matrixWorld);
