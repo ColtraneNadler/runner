@@ -149,18 +149,20 @@ function selectLevel() {
 	setLevel(1);
 
 	console.log('selecting level!', web_sdk)
-	if(window.purpose_session.dsp === 'apple' || web_sdk)
-		return startGame();
+	changeUIScene('game');
+		changeGameScene(SCENE.GAMEPLAY);
+	// if(window.purpose_session.dsp === 'apple' || web_sdk)
+	// 	return startGame();
 
-	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
-	.then(res => res.json())
-	.then(res => {
-		if(res.playing)
-			return startGame();
+	// fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
+	// .then(res => res.json())
+	// .then(res => {
+	// 	if(res.playing)
+	// 		return startGame();
 
-		window.selected_level = envIdx;
-		changeUIScene('syncSpotify');
-	});
+	// 	window.selected_level = envIdx;
+	// 	changeUIScene('syncSpotify');
+	// });
 }
 
 window.onfocus = () => {
