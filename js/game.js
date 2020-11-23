@@ -212,11 +212,11 @@ loader.load('/assets/bieberRC13/bSkater.glb', function (glb) {
 	geo.children.forEach((child, idx) => {
 
 		if (child.name.startsWith("o1")) {
-			outfits[0].push(idx);
+			outfits[2].push(idx);
 		} else if (child.name.startsWith("o4")) {
 			outfits[1].push(idx);
 		} else if (child.name.startsWith("o2")) {
-			outfits[2].push(idx);
+			outfits[0].push(idx);
 		} 
 		else if (child.name.startsWith("o3")) {
 			child.visible = false;
