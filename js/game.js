@@ -24,7 +24,7 @@ let levelNames = [
  */
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-renderer = new THREE.WebGLRenderer({ alpha: false, antialias: true });//renderer with transparent backdrop
+renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });//renderer with transparent backdrop
 // renderer.shadowMap.enabled = true;
 // renderer.shadowMapSoft = true;
 // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -152,10 +152,12 @@ function initSkybox(color) {
 	let skyboxGeo = new THREE.BoxGeometry(1000, 1000, 1000);
 	let skybox = new THREE.Mesh(skyboxGeo, materialArray);
 	skybox.position.set(200, 0, 0);
+	skybox.name = 'skybox';
 	scene.add(skybox);
+	console.log('added skybox',skybox)
 }
 let materialArray = []
-initSkybox(new THREE.Color("#dfa6fb"));
+
 /**
  * LOAD AVATAR AND ANIMATIONS
  */
@@ -349,13 +351,16 @@ function SetUpDefaultEnvProps(baseSpawner) {
     });
 }
 
-function setupForScene(scene) {
-	switch (scene) {
+function setupForScene(scene_name) {
+	let skybox = scene.getObjectByName('sykbox');
+	switch (scene_name) {
 		case SCENE.APPLE: {
 			camera.position.set(-100, 1., 2.6)
 			break;
 		}
 		case SCENE.OUTFIT: {
+			console.log('removing ',skybox)
+			scene.remove(skybox)
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			avatar.position.set(200, 0, 0)
@@ -365,10 +370,13 @@ function setupForScene(scene) {
 			break;
 		}
 		case SCENE.LEVEL: {
+			console.log('removing ',skybox)
+			scene.remove(skybox)
 			camera.position.set(-100, 1., 2.6)
 			break;
 		}
 		case SCENE.GAMEPLAY: {
+			initSkybox(new THREE.Color("#dfa6fb"));
 			current_animation = animations.PUSH;
 			sceneTitle.hidden = true;
 			scoreWrapElement.hidden = false;
@@ -385,6 +393,9 @@ function setupForScene(scene) {
 			break;
 		}
 		case SCENE.GAMEOVER: {
+			console.log('removing ',skybox)
+			scene.remove(skybox)
+			console.log('the scene is',scene)
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			let key = isTouchDevice ? "touch" : "press space";
