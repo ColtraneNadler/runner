@@ -165,7 +165,7 @@ function selectLevel() {
 
 window.onfocus = () => {
 	console.log('focusing!', window.selected_level)
-	if(!window.selected_level) return;
+	if(typeof window.selected_level !== 'number') return;
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
