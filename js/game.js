@@ -359,8 +359,6 @@ function setupForScene(scene_name) {
 			break;
 		}
 		case SCENE.OUTFIT: {
-			console.log('removing ',skybox)
-			scene.remove(skybox)
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			avatar.position.set(200, 0, 0)
@@ -370,8 +368,6 @@ function setupForScene(scene_name) {
 			break;
 		}
 		case SCENE.LEVEL: {
-			console.log('removing ',skybox)
-			scene.remove(skybox)
 			camera.position.set(-100, 1., 2.6)
 			break;
 		}
@@ -393,8 +389,6 @@ function setupForScene(scene_name) {
 			break;
 		}
 		case SCENE.GAMEOVER: {
-			console.log('removing ',skybox)
-			scene.remove(skybox)
 			console.log('the scene is',scene)
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
