@@ -388,9 +388,9 @@ async function playAudio(idx) {
 
 			    console.log('the uris are',uris)
 
-			    let state = await spotify_player.getCurrentState();
+			    // let state = await spotify_player.getCurrentState();
 
-			    if(state.track_window.uri === first.sp) return;
+			    // if(state.track_window.uri === first.sp) return;
 				return play({
 			      playerInstance: window.spotify_player,
 			      uris
