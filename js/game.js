@@ -11,6 +11,7 @@ let leaderboardScoreElement = document.getElementById('leaderboard-score');
 let leaderboardScoresElement = document.getElementById('leaderboard-scores');
 let levelImageElement = document.getElementById('level-image');
 let levelNameElement = document.getElementById('level-name')
+let characterNameElement = document.getElementById('character-name');
 
 let levelNames = [
 	'HOLY',
@@ -296,6 +297,8 @@ prevOutfitBtn.addEventListener("click", () => {
 		currentOutfit--;
 	}
 	setUpForCurrentOutfit();
+
+	characterNameElement.innerHTML = levelNames[currentOutfit];
 });
 
 nextOutfitBtn.addEventListener("click", () => {
@@ -305,6 +308,8 @@ nextOutfitBtn.addEventListener("click", () => {
 		currentOutfit++;
 	}
 	setUpForCurrentOutfit();
+
+	characterNameElement.innerHTML = levelNames[currentOutfit];
 });
 
 /**
