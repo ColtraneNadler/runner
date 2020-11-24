@@ -472,11 +472,11 @@ function updateForScene(scene, dt) {
 			scoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			leaderboardScoreElement.innerHTML = "score: " + Math.floor(currentScore);
 			// coin collision check
-			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.5, -0.2));
+			let col = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.5, 0));
 			if (col[0]) {
 				currentScore += 5;
 			}
-			let bCol = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2));
+			let bCol = envController.CollisionCheck("Coin", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, 0));
 			if (bCol[0]) {
 				currentScore += 5;
 			}
@@ -485,7 +485,7 @@ function updateForScene(scene, dt) {
 				break;
 			}
 			let fCol = envController.CollisionCheck("Obstacle", new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.1, -0.2))
-			if (fCol[0] && fCol[1] < 0.1) {
+			if (fCol[0] && fCol[1] < 0.3) {
 				initFall();
 				break;
 			}
