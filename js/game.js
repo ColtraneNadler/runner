@@ -463,9 +463,9 @@ function updateForScene(scene, dt) {
 			playerMovementUpdate(dt);
 			//envspeed moves up 1 every 20 seconds, from 3.5 to 10.5
 			let cookie = getCookie('p2.first');
-			let c_start = cookie ? 3.5 : 2;
+			let c_start = cookie ? 3 : 2;
 			document.cookie = 'p2.first=true';
-			let envSpeed = (current_animation == animations.FALL) ? 0 : c_start + Math.min(gameTime / 20, 7);
+			let envSpeed = (current_animation == animations.FALL) ? 0 : c_start + Math.min(gameTime / 30, 6);
 			envController.EnvUpdate(envSpeed * dt);
 			currentScore += envSpeed * dt / 3;
 
