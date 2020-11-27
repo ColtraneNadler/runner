@@ -73,6 +73,7 @@ let scenes = {
 	instagram: document.getElementById('instagram'),
 	landing: document.getElementById('landing'),
 	syncSpotify: document.getElementById('sync_spotify'),
+	loading: document.getElementById('loading'),
 	name: document.getElementById('name'),
 	characterSelect: document.getElementById('character-select'),
 	levelSelect: document.getElementById('level-select'),
@@ -123,7 +124,7 @@ function submitName() {
 		document.cookie = `p2.session=${res.token}`;
 
 		if(!window.avatar_loaded)
-			console.log('not loaded yet');
+			console.log('nip');
 
 		changeUIScene('characterSelect');
 		changeGameScene(SCENE.OUTFIT);
@@ -148,7 +149,6 @@ function selectCharacter() {
 function selectLevel() {
 	setLevel(1);
 
-	console.log('selecting level!', web_sdk)
 	if(window.purpose_session.dsp === 'apple' || web_sdk)
 		return startGame();
 
@@ -164,14 +164,16 @@ function selectLevel() {
 }
 
 window.onfocus = () => {
-	console.log('focusing!', window.selected_level)
 	if(typeof window.selected_level !== 'number') return;
 	fetch(`${window.env.api}/playing?accessToken=${window.purpose_session.access_token}`)
 	.then(res => res.json())
 	.then(res => {
-		console.log('res is', res)
-		if(res.playing)
-			return startGame();
+		if(res.playing) {
+			changeUIScene('loading');
+
+			return setTimeout(startGame, 3000)
+			// return startGame();
+		}
 
 		window.selected_level = envIdx;
 		changeUIScene('syncSpotify');
@@ -222,7 +224,6 @@ function registerApple(token) {
 		apple_player = MusicKit.getInstance();
 
 		apple_player.addEventListener('playbackStateDidChange', async e => {
-			console.log(e.state,e);
 			if(e.state !== 2 || playing) return;
 		})
 	});
@@ -273,13 +274,10 @@ async function authApple() {
 		access_token: authorized
 	};
 
-	console.log('authorized!!')
-	console.log('changed ui scene!');
 	changeUIScene('name');
 }
 
 let popup;
-console.log('registering callbaasdfasdfck');
 
 window.addEventListener('message', handleMessage, false);
 
@@ -345,7 +343,6 @@ let tracks = {
  * play an apple music song through msic kit
  */
 async function playAudio(idx) {
-	console.log('playing audio!')
 	let track_indexes = Object.keys(tracks);
 
 	let first = tracks[idx];
@@ -386,11 +383,8 @@ async function playAudio(idx) {
 			      		...track_indexes.map(i => tracks[i].sp)
 			      	];
 
-			    console.log('the uris are',uris)
-
 			    let state = await spotify_player.getCurrentState();
 
-			    console.log(state)
 			    if(state && state.track_window.current_track.uri === first.sp) return;
 				return play({
 			      playerInstance: window.spotify_player,
