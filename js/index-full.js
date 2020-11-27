@@ -171,7 +171,7 @@ window.onfocus = () => {
 		if(res.playing) {
 			changeUIScene('loading');
 
-			return setTimeout(startGame, 3000)
+			return setTimeout(startGame, 1000)
 			// return startGame();
 		}
 
