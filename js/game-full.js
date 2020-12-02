@@ -187,7 +187,9 @@ const animations = {
 	IDLE: 6,
 }
 let current_animation = animations.Push;
-loader.load('/assets/bieberRC16/bSkaterRC16.glb', function (glb) {
+
+let timeout = ms => new Promise((res, rej) => setTimeout(res, ms));
+loader.load('/assets/bieberRC16/bSkaterRC16.glb', async function (glb) {
 	let models = glb.scene;
 
 	console.log('gl.biRC13.lod' + Math.random().toString().substring(0,5))
@@ -356,6 +358,7 @@ function setupForScene(scene_name) {
 			break;
 		}
 		case SCENE.OUTFIT: {
+			if(!avatar) return setTimeout(() => setupForScene(SCENE.OUTFIT), 500);
 			current_animation = animations.IDLE;
 			HardResetAnimsToIdle();
 			avatar.position.set(200, 0, 0)

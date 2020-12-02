@@ -1,4 +1,4 @@
 window.env = {
-	env: 'local',
-  	api: "http://localhost:4000"
+	env: 'prod',
+  	api: "https://api.purposepro.justinbiebermusic.com"
 }
