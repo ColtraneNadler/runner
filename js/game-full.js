@@ -266,6 +266,9 @@ function setLevel(idx) {
 	if (envController) {
 		envController.SetVisibility(false);
 	}
+	console.log(idx)
+	console.log(envs);
+	console.log(envs[envIdx])
 	envController = envs[envIdx][5]
 	envController.SetVisibility(true);
 }

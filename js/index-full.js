@@ -149,6 +149,9 @@ function selectCharacter() {
 function selectLevel() {
 	setLevel(1);
 
+	// edit out
+	return startGame()
+
 	if(window.purpose_session.dsp === 'apple' || web_sdk)
 		return startGame();
 
@@ -181,6 +184,12 @@ window.onfocus = () => {
 }
 
 function startGame() {
+
+	// edit out
+		changeUIScene('game');
+		changeGameScene(SCENE.GAMEPLAY);
+
+		return;
 	window.selected_level = null
 	fetch(`${window.env.api}/gt`)
 	.then(res => res.json())
