@@ -265,6 +265,12 @@ loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
 	boy_actions[animations.PUSH].clampWhenFinished = false;
 	boy_actions[animations.IDLE].setLoop(THREE.LoopRepeat);
 	boy_actions[animations.IDLE].clampWhenFinished = false;
+	
+	boy_actions[animations.BIKE_FORWARD].setLoop(THREE.LoopRepeat);
+	boy_actions[animations.BIKE_FORWARD].clampWhenFinished = false;
+	boy_actions[animations.BIKE_IDLE].setLoop(THREE.LoopRepeat);
+	boy_actions[animations.BIKE_IDLE].clampWhenFinished = false;
+	
 	current_animation = animations.IDLE;
 }, undefined, err => {
 	console.error('Error loading avatar glb', err);
