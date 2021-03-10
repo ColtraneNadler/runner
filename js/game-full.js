@@ -441,7 +441,7 @@ function clearScene(scene) {
 }
 
 function initFall() {
-	current_animation = currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL;
+	current_animation = animations.FALL;
 	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].reset()
 	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].setDuration(3)
 	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].time = 0.7;
@@ -774,7 +774,7 @@ let maxCamDistanceDelta = 3.5;
 function playerMovementUpdate(dt) {
 
 	//move char towards current lane , unless they are falling 
-	if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
+	if (current_animation !== animations.FALL) {
 		let dif = lane_positions[current_lane] - avatar.position.x;
 		if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
 			avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
@@ -794,7 +794,7 @@ function playerMovementUpdate(dt) {
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
-				if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
+				if (current_animation !== animations.FALL) {
 					current_animation = animations.TURN_RIGHT;
 					boy_actions[animations.TURN_RIGHT].reset()
 					boy_actions[animations.TURN_RIGHT].setDuration(2.5)
@@ -819,7 +819,7 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.to({ y: -1 }, 100);
 			avatar_land_tween.start();
 			landed = false
-			if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
+			if (current_animation !== animations.FALL) {
 				current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 				// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 				//So I'm trying to reset the duration back to 1 when not grinding
@@ -835,7 +835,7 @@ function animationUpdate(dt) {
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
 
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && (current_animation != animations.FALL || current_animation !== animations.BIKE_FALL)) {
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && (current_animation != animations.FALL)) {
 		current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 	}
 
