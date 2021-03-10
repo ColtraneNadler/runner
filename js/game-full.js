@@ -14,10 +14,10 @@ let levelNameElement = document.getElementById('level-name')
 let characterNameElement = document.getElementById('character-name');
 
 let levelNames = [
+	'HOLD ON',
 	'HOLY',
 	'LONELY',
 	'MONSTER',
-	'HOLD ON'
 ]
 
 /**
@@ -110,10 +110,10 @@ let jumping = false
  */
 
 let envs = [
+	['/assets/Env4Packaged/level.gltf', InitHoldEnv, SetUpStaticHoldEnv, HoldSpawnTypes, SetUpHoldEnvProps], // hold on
 	['/assets/Env1Packaged/Enviroment1Packaged.gltf', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps], // holy
 	['/assets/Env2Packaged/Enviroment2Packaged.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps], // lonely
 	['/assets/Env3Packaged/Enviroment3Packaged.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps], // monster
-	['/assets/Env4Packaged/level.gltf', InitHoldEnv, SetUpStaticHoldEnv, HoldSpawnTypes, SetUpHoldEnvProps], // hold on
 ]
 let initialized = []
 // load all envs in
@@ -164,11 +164,20 @@ initSkybox(new THREE.Color("#dfa6fb"));
  */
 
 // TEMP FOR TEST
-const outfits = [[], [], []];
+const outfits = [[], [], [], []];
 let currentOutfit = 0;
 
 function setUpForCurrentOutfit() {
+	if(currentOutfit === 0)
+		current_animation = animations.BIKE_IDLE;
+	else
+		current_animation = animations.IDLE;
+
 	let geo = avatar.getObjectByName("geo");
+
+	// toggle skateboard
+	geo.children[0].visible = currentOutfit !== 0;
+
 	for (let i = 0; i < outfits.length; i++) {
 		outfits[i].forEach((idx) => {
 			geo.children[idx].visible = (i == currentOutfit);
@@ -187,8 +196,15 @@ const animations = {
 	TURN_RIGHT: 4,
 	FALL: 5,
 	IDLE: 6,
+
+	BIKE_FORWARD: 7,
+	BIKE_TURN_RIGHT: 8,
+	BIKE_FALL: 9,
+	BIKE_IDLE: 10,
+	BIKE_TURN_LEFT: 11
 }
-let current_animation = animations.Push;
+
+let current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 
 let timeout = ms => new Promise((res, rej) => setTimeout(res, ms));
 loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
@@ -221,10 +237,10 @@ loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
 		} else if (child.name.startsWith("o4")) {
 			outfits[1].push(idx);
 		} else if (child.name.startsWith("o2")) {
+			outfits[3].push(idx);
+		} else if (child.name.startsWith("o3")) {
 			outfits[0].push(idx);
-		} 
-		else if (child.name.startsWith("o3")) {
-			child.visible = false;
+			// child.visible = false;
 		}
 
 	})
@@ -233,6 +249,7 @@ loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
 
 	// set up mixer
 	boy_clips = glb.animations;
+	console.log(glb.animations)
 	boy_mixer = new THREE.AnimationMixer(glb.scene);
 
 	//initialize clip actions
@@ -364,7 +381,7 @@ function setupForScene(scene_name) {
 		}
 		case SCENE.OUTFIT: {
 			if(!avatar) return setTimeout(() => setupForScene(SCENE.OUTFIT), 500);
-			current_animation = animations.IDLE;
+			current_animation = animations.BIKE_IDLE;
 			HardResetAnimsToIdle();
 			avatar.position.set(200, 0, 0)
 			avatar.rotation.y = 0;
@@ -378,7 +395,7 @@ function setupForScene(scene_name) {
 		}
 		case SCENE.GAMEPLAY: {
 			skybox.visible = true;
-			current_animation = animations.PUSH;
+			current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 			sceneTitle.hidden = true;
 			scoreWrapElement.hidden = false;
 			envController.InitTilesWithSpawnedObjects();
@@ -424,10 +441,10 @@ function clearScene(scene) {
 }
 
 function initFall() {
-	current_animation = animations.FALL;
-	boy_actions[animations.FALL].reset()
-	boy_actions[animations.FALL].setDuration(3)
-	boy_actions[animations.FALL].time = 0.7;
+	current_animation = currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL;
+	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].reset()
+	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].setDuration(3)
+	boy_actions[currentOutfit === 0 ? animations.BIKE_FALL : animations.FALL].time = 0.7;
 
 	/**
 	 * ajex request to post score
@@ -732,17 +749,17 @@ function movePlayer(dir) {
 		case 'LEFT':
 			if (current_lane === lanes.LEFT || landed == true) return;
 			current_lane = current_lane === lanes.RIGHT ? lanes.MIDDLE : lanes.LEFT;
-			current_animation = animations.TURN_LEFT;
-			boy_actions[animations.TURN_LEFT].reset()
-			boy_actions[animations.TURN_LEFT].time = 0.2;
+			current_animation = currentOutfit === 0 ? animations.BIKE_TURN_LEFT : animations.TURN_LEFT;
+			boy_actions[currentOutfit === 0 ? animations.BIKE_TURN_LEFT : animations.TURN_LEFT].reset()
+			boy_actions[currentOutfit === 0 ? animations.BIKE_TURN_LEFT : animations.TURN_LEFT].time = 0.2;
 			break;
 		case 'RIGHT':
 			if (current_lane === lanes.RIGHT || landed == true) return;
 			current_lane = current_lane === lanes.LEFT ? lanes.MIDDLE : lanes.RIGHT;
 
-			current_animation = animations.TURN_RIGHT;
-			boy_actions[animations.TURN_RIGHT].reset()
-			boy_actions[animations.TURN_RIGHT].time = 0.2;
+			current_animation = currentOutfit === 0 ? animations.BIKE_TURN_RIGHT : animations.TURN_RIGHT;
+			boy_actions[currentOutfit === 0 ? animations.BIKE_TURN_RIGHT : animations.TURN_RIGHT].reset()
+			boy_actions[currentOutfit === 0 ? animations.BIKE_TURN_RIGHT : animations.TURN_RIGHT].time = 0.2;
 			break;
 	}
 
@@ -757,7 +774,7 @@ let maxCamDistanceDelta = 3.5;
 function playerMovementUpdate(dt) {
 
 	//move char towards current lane , unless they are falling 
-	if (current_animation !== animations.FALL) {
+	if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
 		let dif = lane_positions[current_lane] - avatar.position.x;
 		if (Math.abs(dif) > dt * maxPlayerDistanceDelta) {
 			avatar.position.x += Math.sign(dif) * dt * maxPlayerDistanceDelta;
@@ -777,7 +794,7 @@ function playerMovementUpdate(dt) {
 			//this is set up to only work with the grind pipe
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
-				if (current_animation !== animations.FALL) {
+				if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
 					current_animation = animations.TURN_RIGHT;
 					boy_actions[animations.TURN_RIGHT].reset()
 					boy_actions[animations.TURN_RIGHT].setDuration(2.5)
@@ -802,11 +819,11 @@ function playerMovementUpdate(dt) {
 			avatar_land_tween.to({ y: -1 }, 100);
 			avatar_land_tween.start();
 			landed = false
-			if (current_animation !== animations.FALL) {
-				current_animation = animations.PUSH;
+			if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
+				current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 				// for some reason, when I set the turn right duration longer for grinding it also affects turning right when NOT jumping. 
 				//So I'm trying to reset the duration back to 1 when not grinding
-				boy_actions[animations.TURN_RIGHT].setDuration(1.4)
+				boy_actions[currentOutfit ? animations.BIKE_TURN_RIGHT : animations.TURN_RIGHT].setDuration(1.4)
 			}
 		}
 
@@ -818,8 +835,8 @@ function animationUpdate(dt) {
 	//blend to current animation, once current animation is complete, set anim state back to push
 	let action = boy_actions[current_animation];
 
-	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && current_animation != animations.FALL) {
-		current_animation = animations.PUSH;
+	if (action.loop == THREE.LoopOnce && action._clip.duration - action.time < 0.75 && (current_animation != animations.FALL || current_animation !== animations.BIKE_FALL)) {
+		current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 	}
 
 	// blend in / out target and other animations
@@ -838,7 +855,7 @@ function animationUpdate(dt) {
 
 function HardResetAnimsToIdle() {
 	for (let i = 0; i < boy_actions.length; i++) {
-		if (i == animations.IDLE) {
+		if ((currentOutfit === 0 && i == animations.BIKE_IDLE) || (currentOutfit !== 0 && i == animations.IDLE)) {
 			boy_actions[i].setEffectiveWeight(1.0)
 		} else {
 			boy_actions[i].setEffectiveWeight(0.0)

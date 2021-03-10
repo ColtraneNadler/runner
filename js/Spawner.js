@@ -57,7 +57,6 @@ class EnvController {
     }
 
     Init(gltfModel) {
-        console.log('the gltfmodel',gltfModel)
         let tileableWorld = this.initFunc(this, gltfModel);
         for (let i = 0; i < this.numTiles; i++) {
             let tile2 = tileableWorld.clone()
