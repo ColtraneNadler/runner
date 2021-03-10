@@ -16,7 +16,8 @@ let characterNameElement = document.getElementById('character-name');
 let levelNames = [
 	'HOLY',
 	'LONELY',
-	'MONSTER'
+	'MONSTER',
+	'HOLD ON'
 ]
 
 /**
@@ -109,9 +110,10 @@ let jumping = false
  */
 
 let envs = [
-	['/assets/Env1Packaged/Enviroment1Packaged.gltf', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps],
-	['/assets/Env2Packaged/Enviroment2Packaged.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps],
-	['/assets/Env3Packaged/Enviroment3Packaged.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps]
+	['/assets/Env1Packaged/Enviroment1Packaged.gltf', InitConstructionEnv, SetUpStaticConstructionEnv, ConstructionSpawnTypes, SetUpConstructionEnvProps], // holy
+	['/assets/Env2Packaged/Enviroment2Packaged.gltf', InitCityEnv, SetUpStaticCityEnv, CitySpawnTypes, SetUpCityEnvProps], // lonely
+	['/assets/Env3Packaged/Enviroment3Packaged.gltf', InitForestEnv, SetUpStaticForestEnv, ForestSpawnTypes, SetUpForestEnvProps], // monster
+	['/assets/Env4Packaged/level.gltf', InitHoldEnv, SetUpStaticHoldEnv, HoldSpawnTypes, SetUpHoldEnvProps], // hold on
 ]
 let initialized = []
 // load all envs in
@@ -189,7 +191,7 @@ const animations = {
 let current_animation = animations.Push;
 
 let timeout = ms => new Promise((res, rej) => setTimeout(res, ms));
-loader.load('/assets/bieberRC16/bSkaterRC16.glb', async function (glb) {
+loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
 	let models = glb.scene;
 
 	console.log('gl.biRC13.lod' + Math.random().toString().substring(0,5))
