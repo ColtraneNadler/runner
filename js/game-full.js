@@ -201,13 +201,14 @@ const animations = {
 	BIKE_TURN_RIGHT: 8,
 	BIKE_FALL: 9,
 	BIKE_IDLE: 10,
-	BIKE_TURN_LEFT: 11
+	BIKE_TURN_LEFT: 11,
+	BIKE_JUMP: 12
 }
 
 let current_animation = currentOutfit === 0 ? animations.BIKE_FORWARD : animations.PUSH;
 
 let timeout = ms => new Promise((res, rej) => setTimeout(res, ms));
-loader.load('/assets/bikerbieber_rc3.glb', async function (glb) {
+loader.load('/assets/bikerbieber_rc5.glb', async function (glb) {
 	let models = glb.scene;
 
 	console.log('gl.biRC13.lod' + Math.random().toString().substring(0,5))
@@ -731,22 +732,37 @@ function movePlayer(dir) {
 
 			jumping = true;
 			jump_time = 0
+			
+	
 
-			// I created a flip flop so we can alternate my two jumping animations
-			if (jumpFlipFlop == true) {
-				current_animation = animations.JUMP;
-				boy_actions[animations.JUMP].reset()
-				boy_actions[animations.JUMP].setDuration(2.7)
-				boy_actions[animations.JUMP].time = 0.3;
-				jumpFlipFlop = false;
+
+			// Coltrane, I added this condition to switch to the bike anim for jumping
+			if (currentOutfit === 0 )
+			{
+					current_animation = animations.BIKE_JUMP;
+					boy_actions[animations.BIKE_JUMP].reset()
+					boy_actions[animations.BIKE_JUMP].setDuration(3)
+					boy_actions[animations.BIKE_JUMP].time = 0.3;
 			}
-			else {
-				current_animation = animations.OLLIE;
-				boy_actions[animations.OLLIE].reset()
-				boy_actions[animations.OLLIE].setDuration(3)
-				boy_actions[animations.OLLIE].time = 0.5;
-				jumpFlipFlop = true;
+			else
+			{
+				// I created a flip flop so we can alternate my two jumping animations
+				if (jumpFlipFlop == true) {
+					current_animation = animations.JUMP;
+					boy_actions[animations.JUMP].reset()
+					boy_actions[animations.JUMP].setDuration(2.7)
+					boy_actions[animations.JUMP].time = 0.3;
+					jumpFlipFlop = false;
+				}
+				else {
+					current_animation = animations.OLLIE;
+					boy_actions[animations.OLLIE].reset()
+					boy_actions[animations.OLLIE].setDuration(3)
+					boy_actions[animations.OLLIE].time = 0.5;
+					jumpFlipFlop = true;
+				}
 			}
+	
 
 			if (avatar_land_tween) {
 				avatar_land_tween.stop()
@@ -804,10 +820,23 @@ function playerMovementUpdate(dt) {
 			if (c[0] && c[1] < 0.5) {
 				landed = true;
 				if (current_animation !== animations.FALL || current_animation !== animations.BIKE_FALL) {
-					current_animation = animations.TURN_RIGHT;
-					boy_actions[animations.TURN_RIGHT].reset()
-					boy_actions[animations.TURN_RIGHT].setDuration(2.5)
-					boy_actions[animations.TURN_RIGHT].time = 0.2;
+					
+					if (currentOutfit === 0)
+					{
+						current_animation = animations.BIKE_FORWARD;
+						boy_actions[animations.BIKE_FORWARD].reset()
+						// boy_actions[animations.BIKE_FORWARD].setDuration(2.5)
+						// boy_actions[animations.BIKE_FORWARD].time = 0.2;
+					}
+					else
+					{
+						current_animation = animations.TURN_RIGHT;
+						boy_actions[animations.TURN_RIGHT].reset()
+						boy_actions[animations.TURN_RIGHT].setDuration(2.5)
+						boy_actions[animations.TURN_RIGHT].time = 0.2;
+					}
+
+
 				}
 				landHeight = avatar.position.y - c[1] + 0.1;
 			}
